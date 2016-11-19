@@ -1,6 +1,6 @@
 <schemalist gettext-domain="gnome-shell-extensions">
-  <schema id="org.gnome.shell.extensions.arch-update"
-      path="/org/gnome/shell/extensions/arch-update/">
+  <schema id="org.gnome.shell.extensions.apt-update-indicator"
+      path="/org/gnome/shell/extensions/apt-update-indicator/">
 
     <key type="i" name="boot-wait">
         <default>15</default>
@@ -38,7 +38,7 @@
         <description>Send a notification when new updates are available</description>
     </key>
 
-    <key name="howmuch" type="i">
+    <key name="verbosity" type="i">
       <default>0</default>
         <summary>How much information to show on notifications</summary>
         <description>0:count, 1:list</description>
@@ -51,21 +51,15 @@
     </key>
 
     <key name="check-cmd" type="s">
-      <default>"/usr/bin/checkupdates"</default>
+      <default>"apt update"</default>
       <summary>Command to run to check for updated packages.</summary>
       <description>Command to run to check for updated packages.</description>
     </key>
 
     <key name="update-cmd" type="s">
-      <default>"gnome-terminal -e 'sh -c  \"sudo pacman -Syu ; echo Done - Press enter to exit; read\" '"</default>
+      <default>"apt upgrade"</default>
       <summary>Command to run to update packages.</summary>
       <description>Command to run to update packages.</description>
-    </key>
-
-    <key name="pacman-dir" type="s">
-      <default>"/var/lib/pacman/local"</default>
-        <summary>Pacman directory to monitor</summary>
-        <description></description>
     </key>
 
     <key name="strip-versions" type="b">

@@ -5,10 +5,9 @@ const Gio = imports.gi.Gio;
 const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 
-
 function getSettings() {
 	let extension = ExtensionUtils.getCurrentExtension();
-	let schema = 'org.gnome.shell.extensions.arch-update';
+	let schema = 'org.gnome.shell.extensions.apt-update-indicator';
 
 	const GioSSS = Gio.SettingsSchemaSource;
 

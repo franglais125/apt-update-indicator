@@ -1,20 +1,17 @@
 /*
-    This file is part of Arch Linux Updates Indicator
-
-    Arch Linux Updates Indicator is free software: you can redistribute it and/or modify
+    This file is part of Apt Update Indicator
+    Apt Update Indicator is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
-    Arch Linux Updates Indicator is distributed in the hope that it will be useful,
+    Apt Update Indicator is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
-    along with Arch Linux Updates Indicator.  If not, see <http://www.gnu.org/licenses/>.
-
+    along with Apt Update Indicator.  If not, see <http://www.gnu.org/licenses/>.
     Copyright 2016 Raphaël Rochet
+    Copyright 2016 Fran Glais
 */
 
 const Clutter = imports.gi.Clutter;
@@ -38,405 +35,405 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
 const Format = imports.format;
-const Gettext = imports.gettext.domain('arch-update');
+const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
 /* Options */
-let ALWAYS_VISIBLE     = true;
-let SHOW_COUNT         = true;
-let BOOT_WAIT		   = 15;      // 15s
-let CHECK_INTERVAL     = 60*60;   // 1h
-let NOTIFY             = false;
-let HOWMUCH            = 0;
-let TRANSIENT          = true;
-let UPDATE_CMD         = "gnome-terminal -e 'sh -c  \"sudo pacman -Syu ; echo Done - Press enter to exit; read\" '";
-let CHECK_CMD          = "/usr/bin/checkupdates";
-let PACMAN_DIR         = "/var/lib/pacman/local";
-let STRIP_VERSIONS     = true;
-let AUTO_EXPAND_LIST   = 0;
+let PREPEND_CMD        = "/usr/bin/pkexec --user root ";
+let STOCK_CHECK_CMD    = "apt update";
+let CHECK_CMD          = PREPEND_CMD + STOCK_CHECK_CMD;
+
+let PREPEND_UPDATE_CMD = "gnome-terminal -x sh -c 'echo sudo ";
+let APPEND_UPDATE_CMD  = "; echo Press any key to exit; read line'";
+let STOCK_UPDATE_CMD   = "apt upgrade";
+let UPDATE_CMD         = PREPEND_UPDATE_CMD + STOCK_UPDATE_CMD + "; sudo " + STOCK_UPDATE_CMD + APPEND_UPDATE_CMD;;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
-let FIRST_BOOT         = 1;
 let UPDATES_PENDING    = -1;
 let UPDATES_LIST       = [];
 
-
 function init() {
-	String.prototype.format = Format.format;
-	Utils.initTranslations("arch-update");
+    String.prototype.format = Format.format;
+    Utils.initTranslations("apt-update-indicator");
 }
 
-const ArchUpdateIndicator = new Lang.Class({
-	Name: 'ArchUpdateIndicator',
-	Extends: PanelMenu.Button,
+const AptUpdateIndicator = new Lang.Class({
+    Name: 'AptUpdateIndicator',
+    Extends: PanelMenu.Button,
 
-	_TimeoutId: null,
-	_FirstTimeoutId: null,
-	_updateProcess_sourceId: null,
-	_updateProcess_stream: null,
-	_updateProcess_pid: null,
-	_updateList: [],
+    _TimeoutId: null,
+    _FirstTimeoutId: null,
+    _updateProcess_sourceId: null,
+    _updateProcess_stream: null,
+    _updateProcess_pid: null,
+    _updateList: [],
 
-	_init: function() {
-		this.parent(0.0, "ArchUpdateIndicator");
-		Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('icons').get_path());
+    _init: function() {
+        this.parent(0.0, "AptUpdateIndicator");
 
-		this.updateIcon = new St.Icon({icon_name: "arch-unknown-symbolic", style_class: 'system-status-icon'});
+        this.updateIcon = new St.Icon({icon_name: 'system-software-update', style_class: 'system-status-icon'});
 
-		let box = new St.BoxLayout({ vertical: false, style_class: 'panel-status-menu-box' });
-		this.label = new St.Label({ text: '',
-			y_expand: true,
-			y_align: Clutter.ActorAlign.CENTER });
+        let box = new St.BoxLayout({ vertical: false, style_class: 'panel-status-menu-box' });
+        this.label = new St.Label({ text: '',
+            y_expand: true,
+            y_align: Clutter.ActorAlign.CENTER });
 
-		box.add_child(this.updateIcon);
-		box.add_child(this.label);
-		this.actor.add_child(box);
+        box.add_child(this.updateIcon);
+        box.add_child(this.label);
+        this.actor.add_child(box);
 
-		// Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
-		// Scrollability will also be taken care of by the popupmenu
-		this.menuExpander = new PopupMenu.PopupSubMenuMenuItem('');
-		this.updatesListMenuLabel = new St.Label();
-		this.menuExpander.menu.box.add(this.updatesListMenuLabel);
-		this.menuExpander.menu.box.style_class = 'arch-updates-list';
+        // Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
+        // Scrollability will also be taken care of by the popupmenu
+        this.menuExpander = new PopupMenu.PopupSubMenuMenuItem('');
+        this.updatesListMenuLabel = new St.Label();
+        this.menuExpander.menu.box.add(this.updatesListMenuLabel);
+        this.menuExpander.menu.box.style_class = 'apt-update-indicator-list';
 
-		// Other standard menu items
-		let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
-		this.updateNowMenuItem = new PopupMenu.PopupMenuItem(_('Update now'));
+        // Other standard menu items
+        let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
+        this.updateNowMenuItem = new PopupMenu.PopupMenuItem(_('Apply updates'));
 
-		// A special "Checking" menu item with a stop button
-		this.checkingMenuItem = new PopupMenu.PopupBaseMenuItem( {reactive:false} );
-		let checkingLabel = new St.Label({ text: _('Checking') + " …" });
-		let cancelButton = new St.Button({
-			child: new St.Icon({ icon_name: 'process-stop-symbolic' }),
-			style_class: 'system-menu-action arch-updates-menubutton',
-			x_expand: true
-		});
-		cancelButton.set_x_align(Clutter.ActorAlign.END);
-		this.checkingMenuItem.actor.add_actor( checkingLabel );
-		this.checkingMenuItem.actor.add_actor( cancelButton  );
+        // A special "Checking" menu item with a stop button
+        this.checkingMenuItem = new PopupMenu.PopupBaseMenuItem( {reactive:false} );
+        let checkingLabel = new St.Label({ text: _('Checking')});
+        let cancelButton = new St.Button({
+            child: new St.Icon({ icon_name: 'stop' }),
+            style_class: 'system-menu-action apt-update-indicator-menubutton',
+            x_expand: true
+        });
+        cancelButton.set_x_align(Clutter.ActorAlign.END);
+        this.checkingMenuItem.actor.add_actor( checkingLabel );
+        this.checkingMenuItem.actor.add_actor( cancelButton  );
 
-		// A little trick on "check now" menuitem to keep menu opened
-		this.checkNowMenuItem = new PopupMenu.PopupMenuItem( _('Check now') );
-		this.checkNowMenuContainer = new PopupMenu.PopupMenuSection();
-		this.checkNowMenuContainer.actor.add_actor(this.checkNowMenuItem.actor);
+        // A little trick on "check now" menuitem to keep menu opened
+        this.checkNowMenuItem = new PopupMenu.PopupMenuItem( _('Check now') );
 
-		// Assemble all menu items into the popup menu
-		this.menu.addMenuItem(this.menuExpander);
-		this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-		this.menu.addMenuItem(this.updateNowMenuItem);
-		this.menu.addMenuItem(this.checkingMenuItem);
-		this.menu.addMenuItem(this.checkNowMenuContainer);
-		this.menu.addMenuItem(settingsMenuItem);
+        // Assemble all menu items into the popup menu
+        this.menu.addMenuItem(this.menuExpander);
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(this.updateNowMenuItem);
+        this.menu.addMenuItem(this.checkingMenuItem);
+        this.menu.addMenuItem(this.checkNowMenuItem);
+        this.menu.addMenuItem(settingsMenuItem);
 
-		// Bind some events
-		this.menu.connect('open-state-changed', Lang.bind(this, this._onMenuOpened));
-		this.checkNowMenuItem.connect('activate', Lang.bind(this, this._checkUpdates));
-		cancelButton.connect('clicked', Lang.bind(this, this._cancelCheck));
-		settingsMenuItem.connect('activate', Lang.bind(this, this._openSettings));
-		this.updateNowMenuItem.connect('activate', Lang.bind(this, this._updateNow));
+        // Bind some events
+        this.menu.connect('open-state-changed', Lang.bind(this, this._onMenuOpened));
+        this.checkNowMenuItem.connect('activate', Lang.bind(this, this._checkUpdates));
+        cancelButton.connect('clicked', Lang.bind(this, this._cancelCheck));
+        settingsMenuItem.connect('activate', Lang.bind(this, this._openSettings));
+        this.updateNowMenuItem.connect('activate', Lang.bind(this, this._updateNow));
 
-		// Load settings
-		this._settings = Utils.getSettings();
-		this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._applySettings));
-		this._applySettings();
-		this._showChecking(false);
-		this._updateMenuExpander(false, _('Waiting first check'));
+        // Load settings
+        this._settings = Utils.getSettings();
+        this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._applySettings));
+        this._applySettings();
+        this._showChecking(false);
 
-		if (FIRST_BOOT) {
-			// Schedule first check only if this is the first extension load
-			// This won't be run again if extension is disabled/enabled (like when screen is locked)
-			let that = this;
-			this._FirstTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, BOOT_WAIT, function () {
-				that._checkUpdates();
-				that._FirstTimeoutId = null;
-				FIRST_BOOT = 0;
-				that._startFolderMonitor();
-				return false; // Run once
-			});
-		} else {
-			// Restore previous state
-			this._updateList = UPDATES_LIST;
-			this._updateStatus(UPDATES_PENDING);
-			this._startFolderMonitor();
-		}
-	},
+        // Restore previous state
+        this._updateList = UPDATES_LIST;
+        this._updateStatus(UPDATES_PENDING);
+        this._readUpdates();
+    },
 
-	_openSettings: function () {
-		Util.spawn([ "gnome-shell-extension-prefs", Me.uuid ]);
-	},
+    _openSettings: function () {
+        Util.spawn([ "gnome-shell-extension-prefs", Me.uuid ]);
+    },
 
-	_updateNow: function () {
-		Util.spawnCommandLine(UPDATE_CMD);
-	},
+    _updateNow: function () {
+        Util.spawnCommandLine(UPDATE_CMD);
+    },
 
-	_applySettings: function() {
-		ALWAYS_VISIBLE = this._settings.get_boolean('always-visible');
-		SHOW_COUNT = this._settings.get_boolean('show-count');
-		BOOT_WAIT = this._settings.get_int('boot-wait');
-		CHECK_INTERVAL = 60 * this._settings.get_int('check-interval');
-		NOTIFY = this._settings.get_boolean('notify');
-		HOWMUCH = this._settings.get_int('howmuch');
-		TRANSIENT = this._settings.get_boolean('transient');
-		UPDATE_CMD = this._settings.get_string('update-cmd');
-		CHECK_CMD = this._settings.get_string('check-cmd');
-		PACMAN_DIR = this._settings.get_string('pacman-dir');
-		STRIP_VERSIONS = this._settings.get_boolean('strip-versions');
-		AUTO_EXPAND_LIST = this._settings.get_int('auto-expand-list');
-		this._checkShowHide();
-		let that = this;
-		if (this._TimeoutId) GLib.source_remove(this._TimeoutId);
-		this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CHECK_INTERVAL, function () {
-			that._checkUpdates();
-			return true;
-		});
-	},
+    _applySettings: function() {
+        if (this._settings.get_string('update-cmd') !== "")
+            UPDATE_CMD = PREPEND_UPDATE_CMD + this._settings.get_string('update-cmd') + "; sudo "
+                         + this._settings.get_string('update-cmd') + APPEND_UPDATE_CMD;
+        else
+            UPDATE_CMD = PREPEND_UPDATE_CMD + STOCK_UPDATE_CMD + "; sudo " + STOCK_UPDATE_CMD + APPEND_UPDATE_CMD;
 
-	destroy: function() {
-		if (this._updateProcess_sourceId) {
-			// We leave the checkupdate process end by itself but undef handles to avoid zombies
-			GLib.source_remove(this._updateProcess_sourceId);
-			this._updateProcess_sourceId = null;
-			this._updateProcess_stream = null;
-		}
-		if (this._FirstTimeoutId) {
-			GLib.source_remove(this._FirstTimeoutId);
-			this._FirstTimeoutId = null;
-		}
-		if (this._TimeoutId) {
-			GLib.source_remove(this._TimeoutId);
-			this._TimeoutId = null;
-		}
-		this.parent();
-	},
+        if (this._settings.get_string('check-cmd') !== "")
+            CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd');
+        else
+            CHECK_CMD = PREPEND_CMD + STOCK_CHECK_CMD;
 
-	_checkShowHide: function() {
-		if ( UPDATES_PENDING == -3 ) {
-			// Do not apply visibility change while checking for updates
-			return;
-		}
-		if (!ALWAYS_VISIBLE && UPDATES_PENDING < 1) {
-			this.actor.visible = false;
-		} else {
-			this.actor.visible = true;
-		}
-		this.label.visible = SHOW_COUNT;
-	},
+        if (this._TimeoutId)
+            GLib.source_remove(this._TimeoutId);
 
-	_onMenuOpened: function() {
-		// This event is fired when menu is shown or hidden
-		// Only open the submenu if the menu is being opened and there is something to show
-		this._checkAutoExpandList();
-	},
+        let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
+        if (CHECK_INTERVAL)
+            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CHECK_INTERVAL, function () {
+                that._checkUpdates();
+                return true;
+            });
 
-	_checkAutoExpandList: function() {
-		if (this.menu.isOpen && UPDATES_PENDING > 0 && UPDATES_PENDING <= AUTO_EXPAND_LIST) {
-			this.menuExpander.setSubmenuShown(true);
-		} else {
-			this.menuExpander.setSubmenuShown(false);
-		}
-	},
+        this._checkShowHide();
+    },
 
-	_startFolderMonitor: function() {
-		if (PACMAN_DIR) {
-			this.pacman_dir = Gio.file_new_for_path(PACMAN_DIR);
-			this.monitor = this.pacman_dir.monitor_directory(0, null, null);
-			this.monitor.connect('changed', Lang.bind(this, this._onFolderChanged));
-		}
-	},
-	_onFolderChanged: function() {
-		// Folder have changed ! Let's schedule a check in a few seconds
-		let that = this;
-		if (this._FirstTimeoutId) GLib.source_remove(this._FirstTimeoutId);
-		this._FirstTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, function () {
-			that._checkUpdates();
-			that._FirstTimeoutId = null;
-			return false;
-		});
-	},
+    destroy: function() {
+        if (this._updateProcess_sourceId) {
+            // We leave the checkupdate process end by itself but undef handles to avoid zombies
+            GLib.source_remove(this._updateProcess_sourceId);
+            this._updateProcess_sourceId = null;
+            this._updateProcess_stream = null;
+        }
+        if (this._FirstTimeoutId) {
+            GLib.source_remove(this._FirstTimeoutId);
+            this._FirstTimeoutId = null;
+        }
+        if (this._TimeoutId) {
+            GLib.source_remove(this._TimeoutId);
+            this._TimeoutId = null;
+        }
+        this.parent();
+    },
 
-	_showChecking: function(isChecking) {
-		if (isChecking == true) {
-			this.updateIcon.set_icon_name('arch-unknown-symbolic');
-			this.checkNowMenuContainer.actor.visible = false;
-			this.checkingMenuItem.actor.visible = true;;
-		} else {
-			this.checkNowMenuContainer.actor.visible = true;;
-			this.checkingMenuItem.actor.visible = false;;
-		}
-	},
+    _checkShowHide: function() {
+        if ( UPDATES_PENDING == -3 )
+            // Do not apply visibility change while checking for updates
+            return;
 
-	_updateStatus: function(updatesCount) {
-		updatesCount = typeof updatesCount === 'number' ? updatesCount : UPDATES_PENDING;
-		if (updatesCount > 0) {
-			// Updates pending
-			this.updateIcon.set_icon_name('arch-updates-symbolic');
-			this._updateMenuExpander( true, Gettext.ngettext( "%d update pending", "%d updates pending", updatesCount ).format(updatesCount) );
-			this.updatesListMenuLabel.set_text( this._updateList.join("\n") );
-			this.label.set_text(updatesCount.toString());
-			if (NOTIFY && UPDATES_PENDING < updatesCount) {
-				if (HOWMUCH > 0) {
-					let updateList = [];
-					if (HOWMUCH > 1) {
-						updateList = this._updateList;
-					} else {
-						// Keep only packets that was not in the previous notification
-						updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
-					}
-					if (updateList.length > 0) {
-						// Show notification only if there's new updates
-						this._showNotification(
-							Gettext.ngettext( "New Arch Linux Update", "New Arch Linux Updates", updateList.length ),
-							updateList.join(', ')
-						);
-					}
-				} else {
-					this._showNotification(
-						Gettext.ngettext( "New Arch Linux Update", "New Arch Linux Updates", updatesCount ),
-						Gettext.ngettext( "There is %d update pending", "There are %d updates pending", updatesCount ).format(updatesCount)
-					);
-				}
-			}
-			// Store the new list
-			UPDATES_LIST = this._updateList;
-		} else {
-			this.updatesListMenuLabel.set_text("");
-			this.label.set_text('');
-			if (updatesCount == -1) {
-				// Unknown
-				this.updateIcon.set_icon_name('arch-unknown-symbolic');
-				this._updateMenuExpander( false, '' );
-			} else if (updatesCount == -2) {
-				// Error
-				this.updateIcon.set_icon_name('arch-error-symbolic');
-				this._updateMenuExpander( false, _('Error') );
-			} else {
-				// Up to date
-				this.updateIcon.set_icon_name('arch-uptodate-symbolic');
-				this._updateMenuExpander( false, _('Up to date :)') );
-				UPDATES_LIST = []; // Reset stored list
-			}
-		}
-		UPDATES_PENDING = updatesCount;
-		this._checkAutoExpandList();
-		this._checkShowHide();
-	},
+        if (!this._settings.get_boolean('always-visible') && UPDATES_PENDING < 1)
+            this.actor.visible = false;
+        else
+            this.actor.visible = true;
+        this.label.visible = this._settings.get_boolean('show-count');
+    },
 
-	_updateMenuExpander: function(enabled, label) {
-		if (label == "") {
-			// No text, hide the menuitem
-			this.menuExpander.actor.visible = false;
-		} else {
-		// We make our expander look like a regular menu label if disabled
-			this.menuExpander.actor.reactive = enabled;
-			this.menuExpander._triangle.visible = enabled;
-			this.menuExpander.label.set_text(label);
-			this.menuExpander.actor.visible = true;
-		}
+    _onMenuOpened: function() {
+        // This event is fired when menu is shown or hidden
+        // Only open the submenu if the menu is being opened and there is something to show
+        this._checkAutoExpandList();
+    },
 
-		// 'Update now' visibility is linked so let's save a few lines and set it here
-		this.updateNowMenuItem.actor.reactive = enabled;
-	},
+    _checkAutoExpandList: function() {
+        if (this.menu.isOpen && UPDATES_PENDING > 0 && UPDATES_PENDING <= this._settings.get_int('auto-expand-list')) {
+            this.menuExpander.setSubmenuShown(true);
+        } else {
+            this.menuExpander.setSubmenuShown(false);
+        }
+    },
 
-	_checkUpdates: function() {
-		if(this._updateProcess_sourceId) {
-			// A check is already running ! Maybe we should kill it and run another one ?
-			return;
-		}
-		// Run asynchronously, to avoid  shell freeze - even for a 1s check
-		this._showChecking(true);
-		try {
-			// Parse check command line
-			let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
-			if (!parseok) { throw 'Parse error' };
-			let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
-			// Let's buffer the command's output - that's a input for us !
-			this._updateProcess_stream = new Gio.DataInputStream({
-				base_stream: new Gio.UnixInputStream({fd: out_fd})
-			});
-			// We will process the output at once when it's done
-			this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, function() {this._checkUpdatesRead()}));
-			this._updateProcess_pid = pid;
-		} catch (err) {
-			this._showChecking(false);
-			// TODO log err.message.toString() ?
-			this._updateStatus(-2);
-		}
-	},
+    _showChecking: function(isChecking) {
+        if (isChecking == true) {
+            this.updateIcon.set_icon_name('emblem-synchronizing');
+            this.checkNowMenuItem.actor.visible = false;
+            this.checkingMenuItem.actor.visible = true;;
+        } else {
+            this.checkNowMenuItem.actor.visible = true;;
+            this.checkingMenuItem.actor.visible = false;;
+        }
+    },
 
-	_cancelCheck: function() {
-		if (this._updateProcess_pid == null) { return; };
-		Util.spawnCommandLine( "kill " + this._updateProcess_pid );
-		this._updateProcess_pid = null; // Prevent double kill
-		this._checkUpdatesEnd();
-	},
+    _updateStatus: function(updatesCount) {
+        updatesCount = typeof updatesCount === 'number' ? updatesCount : UPDATES_PENDING;
+        if (updatesCount > 0) {
+            // Updates pending
+            this.updateIcon.set_icon_name('software-update-available');
+            this._updateMenuExpander( true, Gettext.ngettext( "%d update pending", "%d updates pending", updatesCount ).format(updatesCount) );
+            this.updatesListMenuLabel.set_text( this._updateList.join("\n") );
+            this.label.set_text(updatesCount.toString());
+            if (this._settings.get_boolean('notify')
+                && UPDATES_PENDING < updatesCount) {
+                if (this._settings.get_int('verbosity') > 0) {
+                    let updateList = [];
+                    if (this._settings.get_int('verbosity') > 1) {
+                        updateList = this._updateList;
+                    } else {
+                        // Keep only packets that was not in the previous notification
+                        updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
+                    }
+                    if (updateList.length > 0) {
+                        // Show notification only if there's new updates
+                        this._showNotification(
+                            Gettext.ngettext( "New Update", "New Updates", updateList.length ),
+                            updateList.join(', ')
+                        );
+                    }
+                } else {
+                    this._showNotification(
+                        Gettext.ngettext( "New Update", "New Updates", updatesCount ),
+                        Gettext.ngettext( "There is %d update pending", "There are %d updates pending", updatesCount ).format(updatesCount)
+                    );
+                }
+            }
+            // Store the new list
+            UPDATES_LIST = this._updateList;
+        } else {
+            this.updatesListMenuLabel.set_text("");
+            this.label.set_text('');
+            if (updatesCount == -1) {
+                // Unknown
+                this.updateIcon.set_icon_name('dialog-warning');
+                this._updateMenuExpander( false, '' );
+            } else if (updatesCount == -2) {
+                // Error
+                this.updateIcon.set_icon_name('error');
+                this._updateMenuExpander( false, _('Error') );
+            } else {
+                // Up to date
+                this.updateIcon.set_icon_name('system-software-update');
+                this._updateMenuExpander( false, _('Up to date :)') );
+                UPDATES_LIST = []; // Reset stored list
+            }
+        }
+        UPDATES_PENDING = updatesCount;
+        this._checkAutoExpandList();
+        this._checkShowHide();
+    },
 
-	_checkUpdatesRead: function() {
-		// Read the buffered output
-		let updateList = [];
-		let out, size;
-		do {
-			[out, size] = this._updateProcess_stream.read_line_utf8(null);
-			if (out) updateList.push(out);
-		} while (out);
-		// If version numbers should be stripped, do it
-		if (STRIP_VERSIONS == true) {
-			updateList = updateList.map(function(p) {
-				// Try to keep only what's before the first space
-				var chunks = p.split(" ",2);
-				return chunks[0];
-			});
-		}
-		this._updateList = updateList;
-		this._checkUpdatesEnd();
-	},
+    _updateMenuExpander: function(enabled, label) {
+        if (label == "") {
+            // No text, hide the menuitem
+            this.menuExpander.actor.visible = false;
+        } else {
+        // We make our expander look like a regular menu label if disabled
+            this.menuExpander.actor.reactive = enabled;
+            this.menuExpander._triangle.visible = enabled;
+            this.menuExpander.label.set_text(label);
+            this.menuExpander.actor.visible = true;
+        }
 
-	_checkUpdatesEnd: function() {
-		// Free resources
-		this._updateProcess_stream.close(null);
-		this._updateProcess_stream = null;
-		GLib.source_remove(this._updateProcess_sourceId);
-		this._updateProcess_sourceId = null;
-		this._updateProcess_pid = null;
-		// Update indicator
-		this._showChecking(false);
-		this._updateStatus(this._updateList.length);
-	},
+        // 'Update now' visibility is linked so let's save a few lines and set it here
+        this.updateNowMenuItem.actor.reactive = enabled;
+    },
 
-	_showNotification: function(title, message) {
-		if (this._notifSource == null) {
-			// We have to prepare this only once
-			this._notifSource = new MessageTray.SystemNotificationSource();
-			this._notifSource.createIcon = function() {
-				return new St.Icon({ icon_name: 'arch-lit-symbolic' });
-			};
-			// Take care of note leaving unneeded sources
-			this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
-			Main.messageTray.add(this._notifSource);
-		}
-		let notification = null;
-		// We do not want to have multiple notifications stacked
-		// instead we will update previous
-		if (this._notifSource.notifications.length == 0) {
-			notification = new MessageTray.Notification(this._notifSource, title, message);
-			notification.addAction( _('Update now') , Lang.bind(this, function() {this._updateNow()}) );
-		} else {
-			notification = this._notifSource.notifications[0];
-			notification.update( title, message, { clear: true });
-		}
-		notification.setTransient(TRANSIENT);
-		this._notifSource.notify(notification);
-	},
+    _readUpdates: function() {
+        // Run asynchronously, to avoid  shell freeze - even for a 1s check
+        try {
+            // Parse check command line
+            let [parseok, argvp] = GLib.shell_parse_argv( "/usr/bin/apt list --upgradable" );
+            if (!parseok) { throw 'Parse error' };
+            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
+            // Let's buffer the command's output - that's a input for us !
+            this._updateProcess_stream = new Gio.DataInputStream({
+                base_stream: new Gio.UnixInputStream({fd: out_fd})
+            });
+            // We will process the output at once when it's done
+            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._listUpgrades));
+            this._updateProcess_pid = pid;
+        } catch (err) {
+            this._showChecking(false);
+            // TODO log err.message.toString() ?
+            this._updateStatus(-2);
+        }
+    },
+
+    _listUpgrades: function() {
+        // Read the buffered output
+        let updateList = [];
+        let out, size;
+        let skip_first_line = true;
+        do {
+            [out, size] = this._updateProcess_stream.read_line_utf8(null);
+            if (skip_first_line) {
+                skip_first_line = false;
+                continue;
+            }
+            if (out) updateList.push(out);
+        } while (out);
+        // If version numbers should be stripped, do it
+        if (this._settings.get_boolean('strip-versions') == true) {
+            updateList = updateList.map(function(p) {
+                // Try to keep only what's before the first space
+                var chunks = p.split("/",2);
+                return chunks[0];
+            });
+        }
+        this._updateList = updateList;
+        this._listUpgradesEnd();
+    },
+
+    _listUpgradesEnd: function() {
+        // Free resources
+        this._updateProcess_stream.close(null);
+        this._updateProcess_stream = null;
+        GLib.source_remove(this._updateProcess_sourceId);
+        this._updateProcess_sourceId = null;
+        this._updateProcess_pid = null;
+        // Update indicator
+        this._showChecking(false);
+        this._updateStatus(this._updateList.length);
+    },
+
+    _checkUpdates: function() {
+        this.menu.close();
+        if(this._updateProcess_sourceId) {
+            // A check is already running ! Maybe we should kill it and run another one ?
+            return;
+        }
+        // Run asynchronously, to avoid  shell freeze - even for a 1s check
+        this._showChecking(true);
+        try {
+            // Parse check command line
+            let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
+            if (!parseok) { throw 'Parse error' };
+            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
+            // Let's buffer the command's output - that's a input for us !
+            this._updateProcess_stream = new Gio.DataInputStream({
+                base_stream: new Gio.UnixInputStream({fd: out_fd})
+            });
+            // We will process the output at once when it's done
+            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, function() {this._checkUpdatesEnd();}));
+            this._updateProcess_pid = pid;
+        } catch (err) {
+            this._showChecking(false);
+            // TODO log err.message.toString() ?
+            this._updateStatus(-2);
+        }
+    },
+
+    _cancelCheck: function() {
+        if (this._updateProcess_pid == null) { return; };
+        Util.spawnCommandLine( "kill " + this._updateProcess_pid );
+        this._updateProcess_pid = null; // Prevent double kill
+        this._checkUpdatesEnd();
+    },
+
+    _checkUpdatesEnd: function() {
+        // Free resources
+        this._updateProcess_stream.close(null);
+        this._updateProcess_stream = null;
+        GLib.source_remove(this._updateProcess_sourceId);
+        this._updateProcess_sourceId = null;
+        this._updateProcess_pid = null;
+        // Update indicator
+        this._readUpdates()
+    },
+
+    _showNotification: function(title, message) {
+        if (this._notifSource == null) {
+            // We have to prepare this only once
+            this._notifSource = new MessageTray.SystemNotificationSource();
+            this._notifSource.createIcon = function() {
+                return new St.Icon({ icon_name: 'system-software-update' });
+            };
+            // Take care of note leaving unneeded sources
+            this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
+            Main.messageTray.add(this._notifSource);
+        }
+        let notification = null;
+        // We do not want to have multiple notifications stacked
+        // instead we will update previous
+        if (this._notifSource.notifications.length == 0) {
+            notification = new MessageTray.Notification(this._notifSource, title, message);
+            notification.addAction( _('Update now') , Lang.bind(this, function() {this._updateNow()}) );
+        } else {
+            notification = this._notifSource.notifications[0];
+            notification.update( title, message, { clear: true });
+        }
+        notification.setTransient(this._settings.get_boolean('transient'));
+        this._notifSource.notify(notification);
+    },
 
 
 });
 
-let archupdateindicator;
+let aptUpdateIndicator;
 
 function enable() {
-	archupdateindicator = new ArchUpdateIndicator();
-	Main.panel.addToStatusArea('ArchUpdateIndicator', archupdateindicator);
+    aptUpdateIndicator = new AptUpdateIndicator();
+    Main.panel.addToStatusArea('AptUpdateIndicator', aptUpdateIndicator);
 }
 
 function disable() {
-	archupdateindicator.destroy();
+    aptUpdateIndicator.destroy();
 }
