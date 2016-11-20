@@ -150,9 +150,10 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._TimeoutId)
             GLib.source_remove(this._TimeoutId);
 
+        let that = this;
         let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
         if (CHECK_INTERVAL)
-            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CHECK_INTERVAL, this._checkUpdates);
+            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CHECK_INTERVAL, function(){that._checkUpdates();});
 
         this._checkShowHide();
     },
