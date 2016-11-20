@@ -367,10 +367,7 @@ const AptUpdateIndicator = new Lang.Class({
             let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
             if (!parseok) { throw 'Parse error' };
             let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
-            // Let's buffer the command's output - that's a input for us !
-            this._updateProcess_stream = new Gio.DataInputStream({
-                base_stream: new Gio.UnixInputStream({fd: out_fd})
-            });
+
             // We will process the output at once when it's done
             this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, function() {this._checkUpdatesEnd();}));
             this._updateProcess_pid = pid;
@@ -390,8 +387,6 @@ const AptUpdateIndicator = new Lang.Class({
 
     _checkUpdatesEnd: function() {
         // Free resources
-        this._updateProcess_stream.close(null);
-        this._updateProcess_stream = null;
         GLib.source_remove(this._updateProcess_sourceId);
         this._updateProcess_sourceId = null;
         this._updateProcess_pid = null;
