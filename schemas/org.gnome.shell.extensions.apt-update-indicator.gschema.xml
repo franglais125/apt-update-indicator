@@ -57,7 +57,7 @@
     </key>
 
     <key name="update-cmd" type="s">
-      <default>"apt upgrade"</default>
+      <default>"apt upgrade -y"</default>
       <summary>Command to run to update packages.</summary>
       <description>Command to run to update packages.</description>
     </key>

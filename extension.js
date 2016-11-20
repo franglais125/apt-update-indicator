@@ -41,12 +41,9 @@ const _ = Gettext.gettext;
 /* Options */
 let PREPEND_CMD        = "/usr/bin/pkexec --user root ";
 let STOCK_CHECK_CMD    = "apt update";
+let STOCK_UPDATE_CMD   = "apt upgrade -y";
 let CHECK_CMD          = PREPEND_CMD + STOCK_CHECK_CMD;
-
-let PREPEND_UPDATE_CMD = "gnome-terminal -x sh -c 'echo sudo ";
-let APPEND_UPDATE_CMD  = "; echo Press any key to exit; read line'";
-let STOCK_UPDATE_CMD   = "apt upgrade";
-let UPDATE_CMD         = PREPEND_UPDATE_CMD + STOCK_UPDATE_CMD + "; sudo " + STOCK_UPDATE_CMD + APPEND_UPDATE_CMD;;
+let UPDATE_CMD         = PREPEND_CMD + STOCK_UPDATE_CMD;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
 let UPDATES_PENDING    = -1;
@@ -139,16 +136,11 @@ const AptUpdateIndicator = new Lang.Class({
         Util.spawn([ "gnome-shell-extension-prefs", Me.uuid ]);
     },
 
-    _updateNow: function () {
-        Util.spawnCommandLine(UPDATE_CMD);
-    },
-
     _applySettings: function() {
         if (this._settings.get_string('update-cmd') !== "")
-            UPDATE_CMD = PREPEND_UPDATE_CMD + this._settings.get_string('update-cmd') + "; sudo "
-                         + this._settings.get_string('update-cmd') + APPEND_UPDATE_CMD;
+            UPDATE_CMD = PREPEND_CMD + this._settings.get_string('update-cmd');
         else
-            UPDATE_CMD = PREPEND_UPDATE_CMD + STOCK_UPDATE_CMD + "; sudo " + STOCK_UPDATE_CMD + APPEND_UPDATE_CMD;
+            UPDATE_CMD = PREPEND_CMD + STOCK_UPDATE_CMD;
 
         if (this._settings.get_string('check-cmd') !== "")
             CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd');
@@ -160,10 +152,7 @@ const AptUpdateIndicator = new Lang.Class({
 
         let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
         if (CHECK_INTERVAL)
-            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CHECK_INTERVAL, function () {
-                that._checkUpdates();
-                return true;
-            });
+            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CHECK_INTERVAL, this._checkUpdates);
 
         this._checkShowHide();
     },
@@ -296,6 +285,35 @@ const AptUpdateIndicator = new Lang.Class({
         this.updateNowMenuItem.actor.reactive = enabled;
     },
 
+    _updateNow: function () {
+        this.menu.close();
+        if(this._updateProcess_sourceId) {
+            // A check is running ! Maybe we should kill it and run another one ?
+            return;
+        }
+        try {
+            // Parse check command line
+            let [parseok, argvp] = GLib.shell_parse_argv( UPDATE_CMD );
+            if (!parseok) { throw 'Parse error' };
+            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
+
+            // We will process the output at once when it's done
+            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
+            this._updateProcess_pid = pid;
+        } catch (err) {
+            // TODO log err.message.toString() ?
+        }
+    },
+
+    _updateNowEnd: function() {
+        // Free resources
+        GLib.source_remove(this._updateProcess_sourceId);
+        this._updateProcess_sourceId = null;
+        this._updateProcess_pid = null;
+        // Update indicator
+        this._readUpdates();
+    },
+
     _readUpdates: function() {
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         try {
@@ -369,7 +387,7 @@ const AptUpdateIndicator = new Lang.Class({
             let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
 
             // We will process the output at once when it's done
-            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, function() {this._checkUpdatesEnd();}));
+            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
             this._updateProcess_pid = pid;
         } catch (err) {
             this._showChecking(false);
