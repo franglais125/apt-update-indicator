@@ -13,7 +13,7 @@
         <default>60</default>
         <summary>Interval between updates check (minutes)</summary>
         <description>Time to wait between two automatic checks</description>
-        <range min="1"/>
+        <range min="0"/>
     </key>
 
     <key name="always-visible" type="b">

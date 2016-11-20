@@ -75,7 +75,7 @@
                             <property name="spacing">12</property>
                             <child>
                                 <object class="GtkLabel">
-                                    <property name="label" translatable="yes">Interval between updates check (minutes)</property>
+                                    <property name="label" translatable="yes">Interval between updates check (minutes, 0 to disable)</property>
                                     <property name="hexpand">true</property>
                                     <property name="halign">1</property>
                                 </object>
