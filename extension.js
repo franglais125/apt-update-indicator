@@ -308,7 +308,8 @@ const AptUpdateIndicator = new Lang.Class({
 
     _updateNowEnd: function() {
         // Free resources
-        GLib.source_remove(this._updateProcess_sourceId);
+        if (this._updateProcess_sourceId)
+            GLib.source_remove(this._updateProcess_sourceId);
         this._updateProcess_sourceId = null;
         this._updateProcess_pid = null;
         // Update indicator
@@ -365,7 +366,8 @@ const AptUpdateIndicator = new Lang.Class({
         // Free resources
         this._updateProcess_stream.close(null);
         this._updateProcess_stream = null;
-        GLib.source_remove(this._updateProcess_sourceId);
+        if (this._updateProcess_sourceId)
+            GLib.source_remove(this._updateProcess_sourceId);
         this._updateProcess_sourceId = null;
         this._updateProcess_pid = null;
         // Update indicator
@@ -406,7 +408,8 @@ const AptUpdateIndicator = new Lang.Class({
 
     _checkUpdatesEnd: function() {
         // Free resources
-        GLib.source_remove(this._updateProcess_sourceId);
+        if (this._updateProcess_sourceId)
+            GLib.source_remove(this._updateProcess_sourceId);
         this._updateProcess_sourceId = null;
         this._updateProcess_pid = null;
         // Update indicator
