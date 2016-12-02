@@ -137,6 +137,7 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _applySettings: function() {
+        // Parse the various commands
         if (this._settings.get_string('update-cmd') !== "")
             UPDATE_CMD = PREPEND_CMD + this._settings.get_string('update-cmd');
         else
@@ -147,14 +148,24 @@ const AptUpdateIndicator = new Lang.Class({
         else
             CHECK_CMD = PREPEND_CMD + STOCK_CHECK_CMD;
 
+        if (this._settings.get_boolean('allow-no-passwd'))
+            CHECK_CMD = this._settings.get_string('check-cmd-no-passwd');
+
+        // Remove the periodic check before adding a new one
         if (this._TimeoutId)
             GLib.source_remove(this._TimeoutId);
 
         let that = this;
         let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
         if (CHECK_INTERVAL)
-            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, CHECK_INTERVAL, function(){that._checkUpdates();});
+            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+                                                       CHECK_INTERVAL,
+                                                       function() {
+                                                           that._checkUpdates();
+                                                           return true;
+                                                       });
 
+        // Finalize application of settings
         this._checkShowHide();
     },
 
