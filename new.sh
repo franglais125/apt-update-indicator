@@ -6,15 +6,26 @@
 #                                    #
 ######################################
 
-path=~/.local/share/gnome-shell/extensions/apt-update-indicator@franglais125.gmail.com/tmp/
+ONLY_PRINT=$1
+first_run=false
 
-mkdir -p ${path}
+# Paths and files
+path=~/.local/share/gnome-shell/extensions/apt-update-indicator@franglais125.gmail.com/tmp/
 
 file_all=${path}all-packages.list
 file=${path}new-packages.list
 temporary=${path}temporary.list
 
-first_run=false
+# Create the directory if it doesn't exist
+mkdir -p ${path}
+
+# If only printing, exit immediately after
+if [ "$ONLY_PRINT" -gt 0 ]; then
+  if [ -f ${file} ]; then
+    cat ${file}
+  fi
+  exit 0
+fi
 
 #Prepare
 if [ -f ${file_all} ]; then

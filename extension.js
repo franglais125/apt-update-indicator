@@ -142,6 +142,7 @@ const AptUpdateIndicator = new Lang.Class({
         this._showChecking(false);
 
         // Restore previous state
+        this._initializing = true;
         this._updateList = UPDATES_LIST;
         this._updateStatus(UPDATES_PENDING);
         this._newPackagesList = NEW_PACKAGES_LIST;
@@ -306,7 +307,7 @@ const AptUpdateIndicator = new Lang.Class({
 
     _updateNewPackagesStatus: function() {
         if (this._newPackagesList.length == 0) {
-            this.newPackagesExpander.label.set_text(_("Nothing new in repository"));
+            this.newPackagesExpander.label.set_text(_("Nothing new"));
             this.newPackagesExpander._triangle.visible = false;
             this.newPackagesExpander.actor.reactive = false;
         } else {
@@ -349,11 +350,11 @@ const AptUpdateIndicator = new Lang.Class({
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( UPDATE_CMD );
             if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null,
-                                                                                 argvp,
-                                                                                 null,
-                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                 null);
+            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
+                                                                                argvp,
+                                                                                null,
+                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                null);
 
             // We will process the output at once when it's done
             this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
@@ -388,11 +389,12 @@ const AptUpdateIndicator = new Lang.Class({
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( "/usr/bin/apt list --upgradable" );
             if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null,
-                                                                                 argvp,
-                                                                                 null,
-                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                 null);
+            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
+                                                                                argvp,
+                                                                                null,
+                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                null);
+
             // Let's buffer the command's output - that's a input for us !
             this._updateProcess_stream = new Gio.DataInputStream({
                 base_stream: new Gio.UnixInputStream({fd: out_fd})
@@ -433,7 +435,7 @@ const AptUpdateIndicator = new Lang.Class({
             updateList = updateList.map(function(p) {
                 var chunks = p.split("/",2);
                 var version = chunks[1].split(" ",3)[1];
-                return chunks[0] + "   " + version;
+                return chunks[0] + "\t" + version;
             });
         }
         this._updateList = updateList;
@@ -466,11 +468,11 @@ const AptUpdateIndicator = new Lang.Class({
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
             if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null,
-                                                                                 argvp,
-                                                                                 null,
-                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                 null);
+            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
+                                                                                argvp,
+                                                                                null,
+                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                null);
 
             // We will process the output at once when it's done
             this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
@@ -509,11 +511,14 @@ const AptUpdateIndicator = new Lang.Class({
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         try {
             let path = Me.dir.get_path();
-            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(path,
-                                                                                 [path + '/new.sh'],
-                                                                                 null,
-                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                 null);
+            let bash_input = this._initializing ? '1' : '0';
+            this._initializing = false;
+
+            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(path,
+                                                                                [path + '/new.sh', bash_input],
+                                                                                null,
+                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                null);
 
             // Let's buffer the command's output - that's a input for us !
             this._newPackProcess_stream = new Gio.DataInputStream({
