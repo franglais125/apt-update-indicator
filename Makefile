@@ -1,7 +1,8 @@
 # Basic Makefile
 
 UUID = apt-update-indicator@franglais125.gmail.com
-BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesheet.css utils.js new.sh
+BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesheet.css utils.js
+SCRIPT_MODULES = new.sh obsolete.sh residual.sh
 TOLOCALIZE = extension.js
 MSGSRC = $(wildcard po/*.po)
 INSTALLBASE = ~/.local/share/gnome-shell/extensions
@@ -47,6 +48,8 @@ mergepo: potfile
 install: install-local
 
 install-local: _build
+	mkdir -p $(INSTALLBASE)/$(INSTALLNAME)/tmp
+	cp -r $(INSTALLBASE)/$(INSTALLNAME)/tmp ./_build/.
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
 	mkdir -p $(INSTALLBASE)/$(INSTALLNAME)
 	cp -r ./_build/* $(INSTALLBASE)/$(INSTALLNAME)/
@@ -63,6 +66,7 @@ _build: all
 	-rm -fR ./_build
 	mkdir -p _build
 	cp $(BASE_MODULES) _build
+	cp $(SCRIPT_MODULES) _build
 	mkdir -p _build/schemas
 	cp schemas/*.xml _build/schemas/
 	cp schemas/gschemas.compiled _build/schemas/

@@ -46,9 +46,11 @@ let CHECK_CMD          = PREPEND_CMD + STOCK_CHECK_CMD;
 let UPDATE_CMD         = PREPEND_CMD + STOCK_UPDATE_CMD;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
-let UPDATES_PENDING    = -1;
-let UPDATES_LIST       = [];
-let NEW_PACKAGES_LIST  = [];
+let UPDATES_PENDING        = -1;
+let UPDATES_LIST           = [];
+let NEW_PACKAGES_LIST      = [];
+let OBSOLETE_PACKAGES_LIST = [];
+let RESIDUAL_PACKAGES_LIST = [];
 
 function init() {
     String.prototype.format = Format.format;
@@ -70,6 +72,16 @@ const AptUpdateIndicator = new Lang.Class({
     _newPackProcess_stream: null,
     _newPackProcess_pid: null,
     _newPackagesList: [],
+
+    _obsoletePackProcess_sourceId: null,
+    _obsoletePackProcess_stream: null,
+    _obsoletePackProcess_pid: null,
+    _obsoletePackagesList: [],
+
+    _residualPackProcess_sourceId: null,
+    _residualPackProcess_stream: null,
+    _residualPackProcess_pid: null,
+    _residualPackagesList: [],
 
 
     _init: function() {
@@ -93,10 +105,20 @@ const AptUpdateIndicator = new Lang.Class({
         this.menuExpander.menu.box.add(this.updatesListMenuLabel);
         this.menuExpander.menu.box.style_class = 'apt-update-indicator-list';
 
-        this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem('New packages');
+        this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New packages'));
         this.newPackagesListMenuLabel = new St.Label();
         this.newPackagesExpander.menu.box.add(this.newPackagesListMenuLabel);
         this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+
+        this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
+        this.obsoletePackagesListMenuLabel = new St.Label();
+        this.obsoletePackagesExpander.menu.box.add(this.obsoletePackagesListMenuLabel);
+        this.obsoletePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+
+        this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
+        this.residualPackagesListMenuLabel = new St.Label();
+        this.residualPackagesExpander.menu.box.add(this.residualPackagesListMenuLabel);
+        this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
         // Other standard menu items
         let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
@@ -121,6 +143,8 @@ const AptUpdateIndicator = new Lang.Class({
         this.menu.addMenuItem(this.menuExpander);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.newPackagesExpander);
+        this.menu.addMenuItem(this.obsoletePackagesExpander);
+        this.menu.addMenuItem(this.residualPackagesExpander);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.updateNowMenuItem);
         this.menu.addMenuItem(this.checkingMenuItem);
@@ -143,10 +167,16 @@ const AptUpdateIndicator = new Lang.Class({
 
         // Restore previous state
         this._initializing = true;
-        this._updateList = UPDATES_LIST;
+
+        this._updateList           = UPDATES_LIST;
+        this._newPackagesList      = NEW_PACKAGES_LIST;
+        this._obsoletePackagesList = OBSOLETE_PACKAGES_LIST;
+        this._residualPackagesList = RESIDUAL_PACKAGES_LIST;
+
         this._updateStatus(UPDATES_PENDING);
-        this._newPackagesList = NEW_PACKAGES_LIST;
         this._updateNewPackagesStatus();
+        this._updateResidualPackagesStatus();
+
         this._readUpdates();
     },
 
@@ -208,6 +238,8 @@ const AptUpdateIndicator = new Lang.Class({
      *     _showChecking
      *     _updateStatus
      *     _updateNewPackagesStatus
+     *     _updateObsoletePackagesStatus
+     *     _updateResidualPackagesStatus
      *     _updateMenuExpander
      */
 
@@ -315,7 +347,32 @@ const AptUpdateIndicator = new Lang.Class({
             this.newPackagesExpander.actor.reactive = true;
             this.newPackagesExpander.label.set_text(_("New in repository"));
             this.newPackagesExpander._triangle.visible = true;
-            this.newPackagesExpander.actor.visible = true;
+        }
+    },
+
+    _updateObsoletePackagesStatus: function() {
+        if (this._obsoletePackagesList.length == 0) {
+            this.obsoletePackagesExpander.label.set_text(_(""));
+            this.obsoletePackagesExpander.actor.visible = false;
+            this.obsoletePackagesExpander.actor.reactive = false;
+        } else {
+            this.obsoletePackagesListMenuLabel.set_text( this._obsoletePackagesList.join("\n") );
+            this.obsoletePackagesExpander.actor.reactive = true;
+            this.obsoletePackagesExpander.label.set_text(_("Local/Obsolete packages"));
+            this.obsoletePackagesExpander.actor.visible = true;
+        }
+    },
+
+    _updateResidualPackagesStatus: function() {
+        if (this._residualPackagesList.length == 0) {
+            this.residualPackagesExpander.label.set_text(_(""));
+            this.residualPackagesExpander.actor.visible = false;
+            this.residualPackagesExpander.actor.reactive = false;
+        } else {
+            this.residualPackagesListMenuLabel.set_text( this._residualPackagesList.join("\n") );
+            this.residualPackagesExpander.actor.reactive = true;
+            this.residualPackagesExpander.label.set_text(_("Residual packages"));
+            this.residualPackagesExpander.actor.visible = true;
         }
     },
 
@@ -453,7 +510,12 @@ const AptUpdateIndicator = new Lang.Class({
         // Update indicator
         this._showChecking(false);
         this._updateStatus(this._updateList.length);
-        this._newPackages();
+
+        // Launch other checks
+        this._otherPackages(this._initializing, 'obsolete');
+        this._otherPackages(this._initializing, 'residual');
+        this._otherPackages(this._initializing, 'new');
+        this._initializing = false;
     },
 
     _checkUpdates: function() {
@@ -502,38 +564,9 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     /* New packages functions:
-     *     _newPackages
      *     _newPackagesRead
      *     _newPackagesEnd
      */
-
-    _newPackages: function() {
-        // Run asynchronously, to avoid  shell freeze - even for a 1s check
-        try {
-            let path = Me.dir.get_path();
-            let bash_input = this._initializing ? '1' : '0';
-            this._initializing = false;
-
-            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(path,
-                                                                                [path + '/new.sh', bash_input],
-                                                                                null,
-                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                null);
-
-            // Let's buffer the command's output - that's a input for us !
-            this._newPackProcess_stream = new Gio.DataInputStream({
-                base_stream: new Gio.UnixInputStream({fd: out_fd})
-            });
-
-            // We will process the output at once when it's done
-            this._newPackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._newPackagesRead));
-            this._newPackProcess_pid = pid;
-        } catch (err) {
-            this._showChecking(false);
-            // TODO log err.message.toString() ?
-            this._updateStatus(-2);
-        }
-    },
 
     _newPackagesRead: function() {
         // Reset the new packages list
@@ -556,8 +589,115 @@ const AptUpdateIndicator = new Lang.Class({
         this._newPackProcess_sourceId = null;
         this._newPackProcess_pid = null;
         // Update indicator
-        this._showChecking(false);
         this._updateNewPackagesStatus();
+    },
+
+    /* Obsolete packages functions:
+     *     _obsoletePackagesRead
+     *     _obsoletePackagesEnd
+     */
+
+    _obsoletePackagesRead: function() {
+        // Reset the new packages list
+        this._obsoletePackagesList = [];
+        let out, size;
+        do {
+            [out, size] = this._obsoletePackProcess_stream.read_line_utf8(null);
+            if (out) this._obsoletePackagesList.push(out);
+        } while (out);
+
+        this._obsoletePackagesEnd();
+    },
+
+    _obsoletePackagesEnd: function() {
+        // Free resources
+        this._obsoletePackProcess_stream.close(null);
+        this._obsoletePackProcess_stream = null;
+        if (this._obsoletePackProcess_sourceId)
+            GLib.source_remove(this._obsoletePackProcess_sourceId);
+        this._obsoletePackProcess_sourceId = null;
+        this._obsoletePackProcess_pid = null;
+        // Update indicator
+        this._updateObsoletePackagesStatus();
+    },
+
+    /* Residual packages functions:
+     *     _residualPackagesRead
+     *     _residualPackagesEnd
+     */
+
+    _residualPackagesRead: function() {
+        // Reset the new packages list
+        this._residualPackagesList = [];
+        let out, size;
+        do {
+            [out, size] = this._residualPackProcess_stream.read_line_utf8(null);
+            if (out) this._residualPackagesList.push(out);
+        } while (out);
+
+        this._residualPackagesEnd();
+    },
+
+    _residualPackagesEnd: function() {
+        // Free resources
+        this._residualPackProcess_stream.close(null);
+        this._residualPackProcess_stream = null;
+        if (this._residualPackProcess_sourceId)
+            GLib.source_remove(this._residualPackProcess_sourceId);
+        this._residualPackProcess_sourceId = null;
+        this._residualPackProcess_pid = null;
+        // Update indicator
+        this._updateResidualPackagesStatus();
+    },
+
+    /* Other packages functions:
+     *     _otherPackages
+     */
+
+    _otherPackages: function(initializing, instance) {
+        // Run asynchronously, to avoid  shell freeze - even for a 1s check
+        try {
+            let path = Me.dir.get_path();
+            let bash_input = initializing ? '1' : '0';
+
+            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(path,
+                                                                                [path + '/' + instance + '.sh', bash_input],
+                                                                                null,
+                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                null);
+
+            if (instance == 'obsolete') {
+                // Let's buffer the command's output - that's a input for us !
+                this._obsoletePackProcess_stream = new Gio.DataInputStream({
+                    base_stream: new Gio.UnixInputStream({fd: out_fd})
+                });
+
+                // We will process the output at once when it's done
+                this._obsoletePackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._obsoletePackagesRead));
+                this._obsoletePackProcess_pid = pid;
+            } else if (instance == 'residual') {
+                // Let's buffer the command's output - that's a input for us !
+                this._residualPackProcess_stream = new Gio.DataInputStream({
+                    base_stream: new Gio.UnixInputStream({fd: out_fd})
+                });
+
+                // We will process the output at once when it's done
+                this._residualPackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._residualPackagesRead));
+                this._residualPackProcess_pid = pid;
+            } else if (instance == 'new') {
+                // Let's buffer the command's output - that's a input for us !
+                this._newPackProcess_stream = new Gio.DataInputStream({
+                    base_stream: new Gio.UnixInputStream({fd: out_fd})
+                });
+
+                // We will process the output at once when it's done
+                this._newPackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._newPackagesRead));
+                this._newPackProcess_pid = pid;
+            }
+        } catch (err) {
+            // TODO log err.message.toString() ?
+            this._updateStatus(-2);
+        }
     },
 
     /*
