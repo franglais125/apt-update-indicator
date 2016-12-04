@@ -177,7 +177,7 @@ const AptUpdateIndicator = new Lang.Class({
         this._updateNewPackagesStatus();
         this._updateResidualPackagesStatus();
 
-        this._readUpdates();
+        this._otherPackages(false, 'upgradable');
     },
 
     _openSettings: function () {
@@ -218,11 +218,26 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     destroy: function() {
+        // Remove remaining processes to avoid zombies
         if (this._updateProcess_sourceId) {
-            // We leave the checkupdate process end by itself but undef handles to avoid zombies
             GLib.source_remove(this._updateProcess_sourceId);
             this._updateProcess_sourceId = null;
             this._updateProcess_stream = null;
+        }
+        if (this._newPackProcess_sourceId) {
+            GLib.source_remove(this._newPackProcess_sourceId);
+            this._newPackProcess_sourceId = null;
+            this._newPackProcess_stream = null;
+        }
+        if (this._obsoletePackProcess_sourceId) {
+            GLib.source_remove(this._obsoletePackProcess_sourceId);
+            this._obsoletePackProcess_sourceId = null;
+            this._obsoletePackProcess_stream = null;
+        }
+        if (this._residualPackProcess_sourceId) {
+            GLib.source_remove(this._residualPackProcess_sourceId);
+            this._residualPackProcess_sourceId = null;
+            this._residualPackProcess_stream = null;
         }
         if (this._TimeoutId) {
             GLib.source_remove(this._TimeoutId);
@@ -428,43 +443,16 @@ const AptUpdateIndicator = new Lang.Class({
         this._updateProcess_sourceId = null;
         this._updateProcess_pid = null;
         // Update indicator
-        this._readUpdates();
+        this._otherPackages(false, 'upgradable');
     },
 
     /* Update functions:
-     *     _readUpdates
      *     _listUpgrades
      *     _listUpgradesEnd
      *     _checkUpdates
      *     _cancelCheck
      *     _checkUpdatesEnd
      */
-
-    _readUpdates: function() {
-        // Run asynchronously, to avoid  shell freeze - even for a 1s check
-        try {
-            // Parse check command line
-            let [parseok, argvp] = GLib.shell_parse_argv( "/usr/bin/apt list --upgradable" );
-            if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
-                                                                                argvp,
-                                                                                null,
-                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                null);
-
-            // Let's buffer the command's output - that's a input for us !
-            this._updateProcess_stream = new Gio.DataInputStream({
-                base_stream: new Gio.UnixInputStream({fd: out_fd})
-            });
-            // We will process the output at once when it's done
-            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._listUpgrades));
-            this._updateProcess_pid = pid;
-        } catch (err) {
-            this._showChecking(false);
-            // TODO log err.message.toString() ?
-            this._updateStatus(-2);
-        }
-    },
 
     _listUpgrades: function() {
         // Read the buffered output
@@ -560,7 +548,7 @@ const AptUpdateIndicator = new Lang.Class({
         this._updateProcess_sourceId = null;
         this._updateProcess_pid = null;
         // Update indicator
-        this._readUpdates();
+        this._otherPackages(false, 'upgradable');
     },
 
     /* New packages functions:
@@ -657,11 +645,18 @@ const AptUpdateIndicator = new Lang.Class({
     _otherPackages: function(initializing, instance) {
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         try {
-            let path = Me.dir.get_path();
-            let bash_input = initializing ? '1' : '0';
+            let script = [];
+            let path = null;
+            if (instance == 'upgradable')
+                script = ['/usr/bin/apt', 'list', '--upgradable'];
+            else {
+                path = Me.dir.get_path();
+                script = [path + '/' + instance + '.sh',
+                          initializing ? '1' : '0'];
+            }
 
             let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(path,
-                                                                                [path + '/' + instance + '.sh', bash_input],
+                                                                                script,
                                                                                 null,
                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
                                                                                 null);
@@ -693,10 +688,21 @@ const AptUpdateIndicator = new Lang.Class({
                 // We will process the output at once when it's done
                 this._newPackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._newPackagesRead));
                 this._newPackProcess_pid = pid;
+            } else if (instance == "upgradable") {
+                // Let's buffer the command's output - that's a input for us !
+                this._updateProcess_stream = new Gio.DataInputStream({
+                    base_stream: new Gio.UnixInputStream({fd: out_fd})
+                });
+                // We will process the output at once when it's done
+                this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._listUpgrades));
+                this._updateProcess_pid = pid;
             }
         } catch (err) {
-            // TODO log err.message.toString() ?
-            this._updateStatus(-2);
+            if (instance == "upgradable") {
+                this._showChecking(false);
+                // TODO log err.message.toString() ?
+                this._updateStatus(-2);
+            }
         }
     },
 
