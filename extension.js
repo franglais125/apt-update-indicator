@@ -48,9 +48,6 @@ let UPDATE_CMD         = PREPEND_CMD + STOCK_UPDATE_CMD;
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
 let UPDATES_PENDING        = -1;
 let UPDATES_LIST           = [];
-let NEW_PACKAGES_LIST      = [];
-let OBSOLETE_PACKAGES_LIST = [];
-let RESIDUAL_PACKAGES_LIST = [];
 
 function init() {
     String.prototype.format = Format.format;
@@ -112,11 +109,13 @@ const AptUpdateIndicator = new Lang.Class({
 
         this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
         this.obsoletePackagesListMenuLabel = new St.Label();
+        this.obsoletePackagesExpander.label.set_text(_("Local/Obsolete packages"));
         this.obsoletePackagesExpander.menu.box.add(this.obsoletePackagesListMenuLabel);
         this.obsoletePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
         this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
         this.residualPackagesListMenuLabel = new St.Label();
+        this.residualPackagesExpander.label.set_text(_("Residual packages"));
         this.residualPackagesExpander.menu.box.add(this.residualPackagesListMenuLabel);
         this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
@@ -168,11 +167,7 @@ const AptUpdateIndicator = new Lang.Class({
         // Restore previous state
         this._initializing = true;
 
-        this._updateList           = UPDATES_LIST;
-        this._newPackagesList      = NEW_PACKAGES_LIST;
-        this._obsoletePackagesList = OBSOLETE_PACKAGES_LIST;
-        this._residualPackagesList = RESIDUAL_PACKAGES_LIST;
-
+        this._updateList = UPDATES_LIST;
         this._updateStatus(UPDATES_PENDING);
         this._updateNewPackagesStatus();
         this._updateResidualPackagesStatus();
@@ -366,27 +361,19 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _updateObsoletePackagesStatus: function() {
-        if (this._obsoletePackagesList.length == 0) {
-            this.obsoletePackagesExpander.label.set_text(_(""));
+        if (this._obsoletePackagesList.length == 0)
             this.obsoletePackagesExpander.actor.visible = false;
-            this.obsoletePackagesExpander.actor.reactive = false;
-        } else {
+        else {
             this.obsoletePackagesListMenuLabel.set_text( this._obsoletePackagesList.join("\n") );
-            this.obsoletePackagesExpander.actor.reactive = true;
-            this.obsoletePackagesExpander.label.set_text(_("Local/Obsolete packages"));
             this.obsoletePackagesExpander.actor.visible = true;
         }
     },
 
     _updateResidualPackagesStatus: function() {
-        if (this._residualPackagesList.length == 0) {
-            this.residualPackagesExpander.label.set_text(_(""));
+        if (this._residualPackagesList.length == 0)
             this.residualPackagesExpander.actor.visible = false;
-            this.residualPackagesExpander.actor.reactive = false;
-        } else {
+        else {
             this.residualPackagesListMenuLabel.set_text( this._residualPackagesList.join("\n") );
-            this.residualPackagesExpander.actor.reactive = true;
-            this.residualPackagesExpander.label.set_text(_("Residual packages"));
             this.residualPackagesExpander.actor.visible = true;
         }
     },
