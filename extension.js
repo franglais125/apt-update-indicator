@@ -60,11 +60,17 @@ const AptUpdateIndicator = new Lang.Class({
     Extends: PanelMenu.Button,
 
     _TimeoutId: null,
-    _FirstTimeoutId: null,
+
     _updateProcess_sourceId: null,
     _updateProcess_stream: null,
     _updateProcess_pid: null,
     _updateList: [],
+
+    _newPackProcess_sourceId: null,
+    _newPackProcess_stream: null,
+    _newPackProcess_pid: null,
+    _newPackagesList: [],
+
 
     _init: function() {
         this.parent(0.0, "AptUpdateIndicator");
@@ -138,6 +144,8 @@ const AptUpdateIndicator = new Lang.Class({
         // Restore previous state
         this._updateList = UPDATES_LIST;
         this._updateStatus(UPDATES_PENDING);
+        this._newPackagesList = NEW_PACKAGES_LIST;
+        this._updateNewPackagesStatus();
         this._readUpdates();
     },
 
@@ -185,16 +193,22 @@ const AptUpdateIndicator = new Lang.Class({
             this._updateProcess_sourceId = null;
             this._updateProcess_stream = null;
         }
-        if (this._FirstTimeoutId) {
-            GLib.source_remove(this._FirstTimeoutId);
-            this._FirstTimeoutId = null;
-        }
         if (this._TimeoutId) {
             GLib.source_remove(this._TimeoutId);
             this._TimeoutId = null;
         }
         this.parent();
     },
+
+    /* Menu functions:
+     *     _checkShowHide
+     *     _onMenuOpened
+     *     _checkAutoExpandList
+     *     _showChecking
+     *     _updateStatus
+     *     _updateNewPackagesStatus
+     *     _updateMenuExpander
+     */
 
     _checkShowHide: function() {
         if ( UPDATES_PENDING == -3 )
@@ -290,6 +304,20 @@ const AptUpdateIndicator = new Lang.Class({
         this._checkShowHide();
     },
 
+    _updateNewPackagesStatus: function() {
+        if (this._newPackagesList.length == 0) {
+            this.newPackagesExpander.label.set_text(_("Nothing new in repository"));
+            this.newPackagesExpander._triangle.visible = false;
+            this.newPackagesExpander.actor.reactive = false;
+        } else {
+            this.newPackagesListMenuLabel.set_text( this._newPackagesList.join("\n") );
+            this.newPackagesExpander.actor.reactive = true;
+            this.newPackagesExpander.label.set_text(_("New in repository"));
+            this.newPackagesExpander._triangle.visible = true;
+            this.newPackagesExpander.actor.visible = true;
+        }
+    },
+
     _updateMenuExpander: function(enabled, label) {
         if (label == "") {
             // No text, hide the menuitem
@@ -305,6 +333,11 @@ const AptUpdateIndicator = new Lang.Class({
         // 'Update now' visibility is linked so let's save a few lines and set it here
         this.updateNowMenuItem.actor.reactive = enabled;
     },
+
+    /* Upgrade functions:
+     *     _updateNow
+     *     _updateNowEnd
+     */
 
     _updateNow: function () {
         this.menu.close();
@@ -339,6 +372,15 @@ const AptUpdateIndicator = new Lang.Class({
         // Update indicator
         this._readUpdates();
     },
+
+    /* Update functions:
+     *     _readUpdates
+     *     _listUpgrades
+     *     _listUpgradesEnd
+     *     _checkUpdates
+     *     _cancelCheck
+     *     _checkUpdatesEnd
+     */
 
     _readUpdates: function() {
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
@@ -449,6 +491,12 @@ const AptUpdateIndicator = new Lang.Class({
         this._readUpdates();
     },
 
+    /* New packages functions:
+     *     _newPackages
+     *     _newPackagesRead
+     *     _newPackagesEnd
+     */
+
     _newPackages: function() {
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         try {
@@ -475,16 +523,14 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _newPackagesRead: function() {
-        // Read the buffered output
-        let packageList = [];
+        // Reset the new packages list
+        this._newPackagesList = [];
         let out, size;
         do {
             [out, size] = this._newPackProcess_stream.read_line_utf8(null);
-            if (out) packageList.push(out);
+            if (out) this._newPackagesList.push(out);
         } while (out);
 
-        if (packageList.length > 0)
-            NEW_PACKAGES_LIST = packageList;
         this._newPackagesEnd();
     },
 
@@ -501,19 +547,9 @@ const AptUpdateIndicator = new Lang.Class({
         this._updateNewPackagesStatus();
     },
 
-    _updateNewPackagesStatus: function() {
-        if (NEW_PACKAGES_LIST.length == 0) {
-            this.newPackagesExpander.label.set_text("No new packages");
-            this.newPackagesExpander._triangle.visible = false;
-            this.newPackagesExpander.actor.reactive = false;
-        } else {
-            this.newPackagesListMenuLabel.set_text( NEW_PACKAGES_LIST.join("\n") );
-            this.newPackagesExpander.actor.reactive = true;
-            this.newPackagesExpander.label.set_text("New packages");
-            this.newPackagesExpander._triangle.visible = true;
-            this.newPackagesExpander.actor.visible = true;
-        }
-    },
+    /*
+     * Notifications
+     * */
 
     _showNotification: function(title, message) {
         if (this._notifSource == null) {
