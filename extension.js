@@ -48,6 +48,7 @@ let UPDATE_CMD         = PREPEND_CMD + STOCK_UPDATE_CMD;
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
 let UPDATES_PENDING    = -1;
 let UPDATES_LIST       = [];
+let NEW_PACKAGES_LIST  = [];
 
 function init() {
     String.prototype.format = Format.format;
@@ -86,6 +87,11 @@ const AptUpdateIndicator = new Lang.Class({
         this.menuExpander.menu.box.add(this.updatesListMenuLabel);
         this.menuExpander.menu.box.style_class = 'apt-update-indicator-list';
 
+        this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem('New packages');
+        this.newPackagesListMenuLabel = new St.Label();
+        this.newPackagesExpander.menu.box.add(this.newPackagesListMenuLabel);
+        this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+
         // Other standard menu items
         let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
         this.updateNowMenuItem = new PopupMenu.PopupMenuItem(_('Apply updates'));
@@ -108,9 +114,12 @@ const AptUpdateIndicator = new Lang.Class({
         // Assemble all menu items into the popup menu
         this.menu.addMenuItem(this.menuExpander);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(this.newPackagesExpander);
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.updateNowMenuItem);
         this.menu.addMenuItem(this.checkingMenuItem);
         this.menu.addMenuItem(this.checkNowMenuItem);
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(settingsMenuItem);
 
         // Bind some events
@@ -217,10 +226,10 @@ const AptUpdateIndicator = new Lang.Class({
         if (isChecking == true) {
             this.updateIcon.set_icon_name('emblem-synchronizing');
             this.checkNowMenuItem.actor.visible = false;
-            this.checkingMenuItem.actor.visible = true;;
+            this.checkingMenuItem.actor.visible = true;
         } else {
-            this.checkNowMenuItem.actor.visible = true;;
-            this.checkingMenuItem.actor.visible = false;;
+            this.checkNowMenuItem.actor.visible = true;
+            this.checkingMenuItem.actor.visible = false;
         }
     },
 
@@ -307,7 +316,11 @@ const AptUpdateIndicator = new Lang.Class({
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( UPDATE_CMD );
             if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
+            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null,
+                                                                                 argvp,
+                                                                                 null,
+                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                 null);
 
             // We will process the output at once when it's done
             this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
@@ -333,7 +346,11 @@ const AptUpdateIndicator = new Lang.Class({
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( "/usr/bin/apt list --upgradable" );
             if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
+            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null,
+                                                                                 argvp,
+                                                                                 null,
+                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                 null);
             // Let's buffer the command's output - that's a input for us !
             this._updateProcess_stream = new Gio.DataInputStream({
                 base_stream: new Gio.UnixInputStream({fd: out_fd})
@@ -384,6 +401,7 @@ const AptUpdateIndicator = new Lang.Class({
         // Update indicator
         this._showChecking(false);
         this._updateStatus(this._updateList.length);
+        this._newPackages();
     },
 
     _checkUpdates: function() {
@@ -398,7 +416,11 @@ const AptUpdateIndicator = new Lang.Class({
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
             if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null, argvp, null, GLib.SpawnFlags.DO_NOT_REAP_CHILD, null);
+            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(null,
+                                                                                 argvp,
+                                                                                 null,
+                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                 null);
 
             // We will process the output at once when it's done
             this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
@@ -424,7 +446,73 @@ const AptUpdateIndicator = new Lang.Class({
         this._updateProcess_sourceId = null;
         this._updateProcess_pid = null;
         // Update indicator
-        this._readUpdates()
+        this._readUpdates();
+    },
+
+    _newPackages: function() {
+        // Run asynchronously, to avoid  shell freeze - even for a 1s check
+        try {
+            let path = Me.dir.get_path();
+            let [res, pid, in_fd, out_fd, err_fd]  = GLib.spawn_async_with_pipes(path,
+                                                                                 [path + '/new.sh'],
+                                                                                 null,
+                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                 null);
+
+            // Let's buffer the command's output - that's a input for us !
+            this._newPackProcess_stream = new Gio.DataInputStream({
+                base_stream: new Gio.UnixInputStream({fd: out_fd})
+            });
+
+            // We will process the output at once when it's done
+            this._newPackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._newPackagesRead));
+            this._newPackProcess_pid = pid;
+        } catch (err) {
+            this._showChecking(false);
+            // TODO log err.message.toString() ?
+            this._updateStatus(-2);
+        }
+    },
+
+    _newPackagesRead: function() {
+        // Read the buffered output
+        let packageList = [];
+        let out, size;
+        do {
+            [out, size] = this._newPackProcess_stream.read_line_utf8(null);
+            if (out) packageList.push(out);
+        } while (out);
+
+        if (packageList.length > 0)
+            NEW_PACKAGES_LIST = packageList;
+        this._newPackagesEnd();
+    },
+
+    _newPackagesEnd: function() {
+        // Free resources
+        this._newPackProcess_stream.close(null);
+        this._newPackProcess_stream = null;
+        if (this._newPackProcess_sourceId)
+            GLib.source_remove(this._newPackProcess_sourceId);
+        this._newPackProcess_sourceId = null;
+        this._newPackProcess_pid = null;
+        // Update indicator
+        this._showChecking(false);
+        this._updateNewPackagesStatus();
+    },
+
+    _updateNewPackagesStatus: function() {
+        if (NEW_PACKAGES_LIST.length == 0) {
+            this.newPackagesExpander.label.set_text("No new packages");
+            this.newPackagesExpander._triangle.visible = false;
+            this.newPackagesExpander.actor.reactive = false;
+        } else {
+            this.newPackagesListMenuLabel.set_text( NEW_PACKAGES_LIST.join("\n") );
+            this.newPackagesExpander.actor.reactive = true;
+            this.newPackagesExpander.label.set_text("New packages");
+            this.newPackagesExpander._triangle.visible = true;
+            this.newPackagesExpander.actor.visible = true;
+        }
     },
 
     _showNotification: function(title, message) {

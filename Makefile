@@ -1,7 +1,7 @@
 # Basic Makefile
 
 UUID = apt-update-indicator@franglais125.gmail.com
-BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesheet.css utils.js
+BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesheet.css utils.js new.sh
 TOLOCALIZE = extension.js
 MSGSRC = $(wildcard po/*.po)
 INSTALLBASE = ~/.local/share/gnome-shell/extensions
