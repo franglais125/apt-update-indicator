@@ -39,15 +39,24 @@ const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
 /* Options */
-let PREPEND_CMD        = "/usr/bin/pkexec --user root ";
-let STOCK_CHECK_CMD    = "apt update";
-let STOCK_UPDATE_CMD   = "apt upgrade -y";
+const PREPEND_CMD        = "/usr/bin/pkexec --user root ";
+const STOCK_CHECK_CMD    = "apt update";
+const STOCK_UPDATE_CMD   = "apt upgrade -y";
 let CHECK_CMD          = PREPEND_CMD + STOCK_CHECK_CMD;
 let UPDATE_CMD         = PREPEND_CMD + STOCK_UPDATE_CMD;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
 let UPDATES_PENDING        = -1;
 let UPDATES_LIST           = [];
+
+/* Various packages statuses */
+const SCRIPT_NAMES = ["upgradable", "new", "obsolete", "residual"];
+const PKG_STATUS = {
+    UPGRADABLE: 0,
+    NEW: 1,
+    OBSOLETE: 2,
+    RESIDUAL: 3
+};
 
 function init() {
     String.prototype.format = Format.format;
@@ -60,24 +69,17 @@ const AptUpdateIndicator = new Lang.Class({
 
     _TimeoutId: null,
 
-    _updateProcess_sourceId: null,
-    _updateProcess_stream: null,
-    _updateProcess_pid: null,
+    _upgradeProcess_sourceId: null,
+    _upgradeProcess_stream: null,
+    _upgradeProcess_pid: null,
+
+    _process_sourceId: [null, null, null, null],
+    _process_stream: [null, null, null, null],
+    _process_pid: [null, null, null, null],
+
     _updateList: [],
-
-    _newPackProcess_sourceId: null,
-    _newPackProcess_stream: null,
-    _newPackProcess_pid: null,
     _newPackagesList: [],
-
-    _obsoletePackProcess_sourceId: null,
-    _obsoletePackProcess_stream: null,
-    _obsoletePackProcess_pid: null,
     _obsoletePackagesList: [],
-
-    _residualPackProcess_sourceId: null,
-    _residualPackProcess_stream: null,
-    _residualPackProcess_pid: null,
     _residualPackagesList: [],
 
 
@@ -104,6 +106,7 @@ const AptUpdateIndicator = new Lang.Class({
 
         this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New packages'));
         this.newPackagesListMenuLabel = new St.Label();
+        this.newPackagesExpander.label.set_text(_("New in repository"));
         this.newPackagesExpander.menu.box.add(this.newPackagesListMenuLabel);
         this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
@@ -165,14 +168,13 @@ const AptUpdateIndicator = new Lang.Class({
         this._showChecking(false);
 
         // Restore previous state
-        this._initializing = true;
 
         this._updateList = UPDATES_LIST;
         this._updateStatus(UPDATES_PENDING);
-        this._updateNewPackagesStatus();
-        this._updateResidualPackagesStatus();
 
-        this._otherPackages(false, 'upgradable');
+        // The first run is initialization only: we only read the existing files
+        this._initializing = true;
+        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
     },
 
     _openSettings: function () {
@@ -214,26 +216,17 @@ const AptUpdateIndicator = new Lang.Class({
 
     destroy: function() {
         // Remove remaining processes to avoid zombies
-        if (this._updateProcess_sourceId) {
-            GLib.source_remove(this._updateProcess_sourceId);
-            this._updateProcess_sourceId = null;
-            this._updateProcess_stream = null;
+        if (this._upgradeProcess_sourceId) {
+            GLib.source_remove(this._upgradeProcess_sourceId);
+            this._upgradeProcess_sourceId = null;
+            this._upgradeProcess_stream = null;
         }
-        if (this._newPackProcess_sourceId) {
-            GLib.source_remove(this._newPackProcess_sourceId);
-            this._newPackProcess_sourceId = null;
-            this._newPackProcess_stream = null;
-        }
-        if (this._obsoletePackProcess_sourceId) {
-            GLib.source_remove(this._obsoletePackProcess_sourceId);
-            this._obsoletePackProcess_sourceId = null;
-            this._obsoletePackProcess_stream = null;
-        }
-        if (this._residualPackProcess_sourceId) {
-            GLib.source_remove(this._residualPackProcess_sourceId);
-            this._residualPackProcess_sourceId = null;
-            this._residualPackProcess_stream = null;
-        }
+        for (let i = 0; i < PKG_STATUS.length; i++)
+            if (this._process_sourceId[i]) {
+                GLib.source_remove(this._process_sourceId[i]);
+                this._process_sourceId[i] = null;
+                this._process_stream[i] = null;
+            }
         if (this._TimeoutId) {
             GLib.source_remove(this._TimeoutId);
             this._TimeoutId = null;
@@ -247,6 +240,7 @@ const AptUpdateIndicator = new Lang.Class({
      *     _checkAutoExpandList
      *     _showChecking
      *     _updateStatus
+     *     _updatePackagesStatus
      *     _updateNewPackagesStatus
      *     _updateObsoletePackagesStatus
      *     _updateResidualPackagesStatus
@@ -293,6 +287,7 @@ const AptUpdateIndicator = new Lang.Class({
     _updateStatus: function(updatesCount) {
         updatesCount = typeof updatesCount === 'number' ? updatesCount : UPDATES_PENDING;
         if (updatesCount > 0) {
+            this._cleanUpgradeList();
             // Updates pending
             this.updateIcon.set_icon_name('software-update-available');
             this._updateMenuExpander( true, Gettext.ngettext( "%d update pending", "%d updates pending", updatesCount ).format(updatesCount) );
@@ -347,16 +342,44 @@ const AptUpdateIndicator = new Lang.Class({
         this._checkShowHide();
     },
 
+    _cleanUpgradeList: function() {
+        // This removes the the first line which reads: 'Listing...'
+        this._updateList.shift();
+
+        if (this._settings.get_boolean('strip-versions') == true) {
+            this._updateList = this._updateList.map(function(p) {
+                // example: firefox/jessie 50.0-1 amd64 [upgradable from: 49.0-4]
+                // chunks[0] is the package name
+                // chunks[1] is the remaining part
+                var chunks = p.split("/",2);
+                return chunks[0];
+            });
+        } else {
+            this._updateList = this._updateList.map(function(p) {
+                var chunks = p.split("/",2);
+                var version = chunks[1].split(" ",3)[1];
+                return chunks[0] + "\t" + version;
+            });
+        }
+    },
+
+    _updatePackagesStatus: function(index) {
+        if (index == PKG_STATUS.UPGRADABLE)
+            this._updateStatus(this._updateList.length - 1);
+        else if (index == PKG_STATUS.NEW)
+            this._updateNewPackagesStatus();
+        else if (index == PKG_STATUS.OBSOLETE)
+            this._updateObsoletePackagesStatus();
+        else if (index == PKG_STATUS.RESIDUAL)
+            this._updateResidualPackagesStatus();
+    },
+
     _updateNewPackagesStatus: function() {
         if (this._newPackagesList.length == 0) {
-            this.newPackagesExpander.label.set_text(_("Nothing new"));
-            this.newPackagesExpander._triangle.visible = false;
-            this.newPackagesExpander.actor.reactive = false;
+            this.newPackagesExpander.actor.visible = false;
         } else {
             this.newPackagesListMenuLabel.set_text( this._newPackagesList.join("\n") );
-            this.newPackagesExpander.actor.reactive = true;
-            this.newPackagesExpander.label.set_text(_("New in repository"));
-            this.newPackagesExpander._triangle.visible = true;
+            this.newPackagesExpander.actor.visible = true;
         }
     },
 
@@ -401,7 +424,7 @@ const AptUpdateIndicator = new Lang.Class({
 
     _updateNow: function () {
         this.menu.close();
-        if(this._updateProcess_sourceId) {
+        if(this._upgradeProcess_sourceId) {
             // A check is running ! Maybe we should kill it and run another one ?
             return;
         }
@@ -416,8 +439,8 @@ const AptUpdateIndicator = new Lang.Class({
                                                                                 null);
 
             // We will process the output at once when it's done
-            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
-            this._updateProcess_pid = pid;
+            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
+            this._upgradeProcess_pid = pid;
         } catch (err) {
             // TODO log err.message.toString() ?
         }
@@ -425,77 +448,24 @@ const AptUpdateIndicator = new Lang.Class({
 
     _updateNowEnd: function() {
         // Free resources
-        if (this._updateProcess_sourceId)
-            GLib.source_remove(this._updateProcess_sourceId);
-        this._updateProcess_sourceId = null;
-        this._updateProcess_pid = null;
-        // Update indicator
-        this._otherPackages(false, 'upgradable');
+        if (this._upgradeProcess_sourceId)
+            GLib.source_remove(this._upgradeProcess_sourceId);
+        this._upgradeProcess_sourceId = null;
+        this._upgradeProcess_pid = null;
+
+        // Check if updates are available
+        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
     },
 
     /* Update functions:
-     *     _listUpgrades
-     *     _listUpgradesEnd
      *     _checkUpdates
      *     _cancelCheck
      *     _checkUpdatesEnd
      */
 
-    _listUpgrades: function() {
-        // Read the buffered output
-        let updateList = [];
-        let out, size;
-        let skip_first_line = true;
-        do {
-            [out, size] = this._updateProcess_stream.read_line_utf8(null);
-            if (skip_first_line) {
-                skip_first_line = false;
-                continue;
-            }
-            if (out) updateList.push(out);
-        } while (out);
-        // If version numbers should be stripped, do it
-        if (this._settings.get_boolean('strip-versions') == true) {
-            updateList = updateList.map(function(p) {
-                // example: firefox/jessie 50.0-1 amd64 [upgradable from: 49.0-4]
-                // chunks[0] is the package name
-                // chunks[1] is the remaining part
-                var chunks = p.split("/",2);
-                return chunks[0];
-            });
-        } else {
-            updateList = updateList.map(function(p) {
-                var chunks = p.split("/",2);
-                var version = chunks[1].split(" ",3)[1];
-                return chunks[0] + "\t" + version;
-            });
-        }
-        this._updateList = updateList;
-        this._listUpgradesEnd();
-    },
-
-    _listUpgradesEnd: function() {
-        // Free resources
-        this._updateProcess_stream.close(null);
-        this._updateProcess_stream = null;
-        if (this._updateProcess_sourceId)
-            GLib.source_remove(this._updateProcess_sourceId);
-        this._updateProcess_sourceId = null;
-        this._updateProcess_pid = null;
-        // Update indicator
-        this._showChecking(false);
-        this._updateStatus(this._updateList.length);
-
-        // Launch other checks
-        this._otherPackages(this._initializing, 'obsolete');
-        this._otherPackages(this._initializing, 'residual');
-        this._otherPackages(this._initializing, 'new');
-        this._initializing = false;
-    },
-
     _checkUpdates: function() {
         this.menu.close();
-        if(this._updateProcess_sourceId) {
+        if(this._upgradeProcess_sourceId) {
             // A check is already running ! Maybe we should kill it and run another one ?
             return;
         }
@@ -512,8 +482,8 @@ const AptUpdateIndicator = new Lang.Class({
                                                                                 null);
 
             // We will process the output at once when it's done
-            this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
-            this._updateProcess_pid = pid;
+            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
+            this._upgradeProcess_pid = pid;
         } catch (err) {
             this._showChecking(false);
             // TODO log err.message.toString() ?
@@ -522,123 +492,38 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _cancelCheck: function() {
-        if (this._updateProcess_pid == null) { return; };
-        Util.spawnCommandLine( "kill " + this._updateProcess_pid );
-        this._updateProcess_pid = null; // Prevent double kill
+        if (this._upgradeProcess_pid == null) { return; };
+        Util.spawnCommandLine( "kill " + this._upgradeProcess_pid );
+        this._upgradeProcess_pid = null; // Prevent double kill
         this._checkUpdatesEnd();
     },
 
     _checkUpdatesEnd: function() {
         // Free resources
-        if (this._updateProcess_sourceId)
-            GLib.source_remove(this._updateProcess_sourceId);
-        this._updateProcess_sourceId = null;
-        this._updateProcess_pid = null;
+        if (this._upgradeProcess_sourceId)
+            GLib.source_remove(this._upgradeProcess_sourceId);
+        this._upgradeProcess_sourceId = null;
+        this._upgradeProcess_pid = null;
+
         // Update indicator
-        this._otherPackages(false, 'upgradable');
+        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
     },
 
-    /* New packages functions:
-     *     _newPackagesRead
-     *     _newPackagesEnd
+    /* Extra packages functions:
+     *     _packagesRead
+     *     _packagesEnd
      */
 
-    _newPackagesRead: function() {
-        // Reset the new packages list
-        this._newPackagesList = [];
-        let out, size;
-        do {
-            [out, size] = this._newPackProcess_stream.read_line_utf8(null);
-            if (out) this._newPackagesList.push(out);
-        } while (out);
-
-        this._newPackagesEnd();
-    },
-
-    _newPackagesEnd: function() {
-        // Free resources
-        this._newPackProcess_stream.close(null);
-        this._newPackProcess_stream = null;
-        if (this._newPackProcess_sourceId)
-            GLib.source_remove(this._newPackProcess_sourceId);
-        this._newPackProcess_sourceId = null;
-        this._newPackProcess_pid = null;
-        // Update indicator
-        this._updateNewPackagesStatus();
-    },
-
-    /* Obsolete packages functions:
-     *     _obsoletePackagesRead
-     *     _obsoletePackagesEnd
-     */
-
-    _obsoletePackagesRead: function() {
-        // Reset the new packages list
-        this._obsoletePackagesList = [];
-        let out, size;
-        do {
-            [out, size] = this._obsoletePackProcess_stream.read_line_utf8(null);
-            if (out) this._obsoletePackagesList.push(out);
-        } while (out);
-
-        this._obsoletePackagesEnd();
-    },
-
-    _obsoletePackagesEnd: function() {
-        // Free resources
-        this._obsoletePackProcess_stream.close(null);
-        this._obsoletePackProcess_stream = null;
-        if (this._obsoletePackProcess_sourceId)
-            GLib.source_remove(this._obsoletePackProcess_sourceId);
-        this._obsoletePackProcess_sourceId = null;
-        this._obsoletePackProcess_pid = null;
-        // Update indicator
-        this._updateObsoletePackagesStatus();
-    },
-
-    /* Residual packages functions:
-     *     _residualPackagesRead
-     *     _residualPackagesEnd
-     */
-
-    _residualPackagesRead: function() {
-        // Reset the new packages list
-        this._residualPackagesList = [];
-        let out, size;
-        do {
-            [out, size] = this._residualPackProcess_stream.read_line_utf8(null);
-            if (out) this._residualPackagesList.push(out);
-        } while (out);
-
-        this._residualPackagesEnd();
-    },
-
-    _residualPackagesEnd: function() {
-        // Free resources
-        this._residualPackProcess_stream.close(null);
-        this._residualPackProcess_stream = null;
-        if (this._residualPackProcess_sourceId)
-            GLib.source_remove(this._residualPackProcess_sourceId);
-        this._residualPackProcess_sourceId = null;
-        this._residualPackProcess_pid = null;
-        // Update indicator
-        this._updateResidualPackagesStatus();
-    },
-
-    /* Other packages functions:
-     *     _otherPackages
-     */
-
-    _otherPackages: function(initializing, instance) {
+    _otherPackages: function(initializing, index) {
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         try {
             let script = [];
             let path = null;
-            if (instance == 'upgradable')
+            if (index == PKG_STATUS.UPGRADABLE)
                 script = ['/usr/bin/apt', 'list', '--upgradable'];
             else {
                 path = Me.dir.get_path();
-                script = [path + '/' + instance + '.sh',
+                script = [path + '/' + SCRIPT_NAMES[index] + '.sh',
                           initializing ? '1' : '0'];
             }
 
@@ -648,48 +533,69 @@ const AptUpdateIndicator = new Lang.Class({
                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
                                                                                 null);
 
-            if (instance == 'obsolete') {
-                // Let's buffer the command's output - that's a input for us !
-                this._obsoletePackProcess_stream = new Gio.DataInputStream({
-                    base_stream: new Gio.UnixInputStream({fd: out_fd})
-                });
+            // Let's buffer the command's output - that's a input for us !
+            this._process_stream[index] = new Gio.DataInputStream({
+                base_stream: new Gio.UnixInputStream({fd: out_fd})
+            });
 
-                // We will process the output at once when it's done
-                this._obsoletePackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._obsoletePackagesRead));
-                this._obsoletePackProcess_pid = pid;
-            } else if (instance == 'residual') {
-                // Let's buffer the command's output - that's a input for us !
-                this._residualPackProcess_stream = new Gio.DataInputStream({
-                    base_stream: new Gio.UnixInputStream({fd: out_fd})
-                });
-
-                // We will process the output at once when it's done
-                this._residualPackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._residualPackagesRead));
-                this._residualPackProcess_pid = pid;
-            } else if (instance == 'new') {
-                // Let's buffer the command's output - that's a input for us !
-                this._newPackProcess_stream = new Gio.DataInputStream({
-                    base_stream: new Gio.UnixInputStream({fd: out_fd})
-                });
-
-                // We will process the output at once when it's done
-                this._newPackProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._newPackagesRead));
-                this._newPackProcess_pid = pid;
-            } else if (instance == "upgradable") {
-                // Let's buffer the command's output - that's a input for us !
-                this._updateProcess_stream = new Gio.DataInputStream({
-                    base_stream: new Gio.UnixInputStream({fd: out_fd})
-                });
-                // We will process the output at once when it's done
-                this._updateProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._listUpgrades));
-                this._updateProcess_pid = pid;
-            }
+            // We will process the output at once when it's done
+            this._process_pid[index] = pid;
+            this._process_sourceId[index] = GLib.child_watch_add(0, pid, Lang.bind(this,
+                function() {
+                    this._packagesRead(index);
+                    return true;
+                }));
         } catch (err) {
-            if (instance == "upgradable") {
+            if (index == PKG_STATUS.UPGRADABLE) {
                 this._showChecking(false);
                 // TODO log err.message.toString() ?
                 this._updateStatus(-2);
             }
+        }
+    },
+
+    _packagesRead: function(index) {
+        // Reset the new packages list
+        let packagesList = [];
+        let out, size;
+        do {
+            [out, size] = this._process_stream[index].read_line_utf8(null);
+            if (out) packagesList.push(out);
+        } while (out);
+
+        if (index == PKG_STATUS.UPGRADABLE)
+            this._updateList = packagesList;
+        else if (index == PKG_STATUS.NEW)
+            this._newPackagesList = packagesList;
+        else if (index == PKG_STATUS.OBSOLETE)
+            this._obsoletePackagesList = packagesList;
+        else if (index == PKG_STATUS.RESIDUAL)
+            this._residualPackagesList = packagesList;
+
+        this._packagesEnd(index);
+    },
+
+    _packagesEnd: function(index) {
+        // Free resources
+        this._process_stream  [index].close(null);
+        this._process_stream  [index] = null;
+        if (this._process_sourceId[index])
+            GLib.source_remove(this._process_sourceId[index]);
+        this._process_sourceId[index] = null;
+        this._process_pid     [index] = null;
+
+        // Update indicator
+        this._updatePackagesStatus(index);
+
+        if (index == PKG_STATUS.UPGRADABLE) {
+            // Update indicator
+            this._showChecking(false);
+
+            // Launch other checks
+            this._otherPackages(this._initializing, PKG_STATUS.NEW);
+            this._otherPackages(this._initializing, PKG_STATUS.OBSOLETE);
+            this._otherPackages(this._initializing, PKG_STATUS.RESIDUAL);
+            this._initializing = false;
         }
     },
 

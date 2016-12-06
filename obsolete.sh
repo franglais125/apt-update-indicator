@@ -19,5 +19,9 @@ fi
 
 # Print!
 if [ -f ${file} ]; then
-  cat ${file}
+  num=`cat ${file} | wc -l`
+  if [ "$num" -gt 500 ]; then
+    echo "** Too many! Showing only 500 **"
+  fi
+  head -500 $file
 fi

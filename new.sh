@@ -22,7 +22,11 @@ mkdir -p ${path}
 # If only printing, exit immediately after
 if [ "$ONLY_PRINT" -gt 0 ]; then
   if [ -f ${file} ]; then
-    cat ${file}
+    num=`cat ${file} | wc -l`
+    if [ "$num" -gt 500 ]; then
+      echo "** Too many! Showing only 500 **"
+    fi
+    head -500 $file
   fi
   exit 0
 fi
@@ -56,8 +60,7 @@ done
 #Erase the file if there are new packages
 num=`cat ${file}.test | wc -l`
 
-if [ "$num" -gt 0 ]
-then
+if [ "$num" -gt 0 ]; then
   mv ${file}.test ${file}
 fi
 
@@ -66,4 +69,7 @@ if [ ! -f ${file} ]; then
 fi
 
 # Print!
-cat $file
+if [ "$num" -gt 500 ]; then
+  echo "** Too many! Showing only 500 **"
+fi
+head -500 $file
