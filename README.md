@@ -21,11 +21,19 @@ To install, simply download and execute "make install"
 
 ## Changes
 
-### v1
-- first version released
+### v3
+- Add date and time of the last update to the menu
+- Some bug fixes and a few Synaptic-like features listed below:
+- check for new packages in repository
+- check for local or obsolete packages
+- check for residual config files
+- check for autoremovable packages
 
 ### v2
 - add option to check for updates without password
+
+### v1
+- first version released
 
 
 ## Credits
