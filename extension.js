@@ -105,12 +105,34 @@ const AptUpdateIndicator = new Lang.Class({
         box.add_child(this.label);
         this.actor.add_child(box);
 
+        // Assemble the menu
+        this._assembleMenu();
+
+        // Load settings
+        this._settings = Utils.getSettings();
+        this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._applySettings));
+        this._applySettings();
+
+        // Restore previous state
+        this._updateList = UPDATES_LIST;
+        this._updateStatus(UPDATES_PENDING);
+
+        // The first run is initialization only: we only read the existing files
+        this._initializing = true;
+        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
+    },
+
+    _openSettings: function () {
+        Util.spawn([ "gnome-shell-extension-prefs", Me.uuid ]);
+    },
+
+    _assembleMenu: function() {
         // Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
         // Scrollability will also be taken care of by the popupmenu
-        this.menuExpander = new PopupMenu.PopupSubMenuMenuItem('');
+        this.updatesExpander = new PopupMenu.PopupSubMenuMenuItem('');
         this.updatesListMenuLabel = new St.Label();
-        this.menuExpander.menu.box.add(this.updatesListMenuLabel);
-        this.menuExpander.menu.box.style_class = 'apt-update-indicator-list';
+        this.updatesExpander.menu.box.add(this.updatesListMenuLabel);
+        this.updatesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
         this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
         this.newPackagesListMenuLabel = new St.Label();
@@ -142,7 +164,7 @@ const AptUpdateIndicator = new Lang.Class({
         this.lastCheckMenuItem.actor.reactive = false;
 
         // Assemble all menu items into the popup menu
-        this.menu.addMenuItem(this.menuExpander);
+        this.menu.addMenuItem(this.updatesExpander);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.newPackagesExpander);
         this.menu.addMenuItem(this.obsoletePackagesExpander);
@@ -160,23 +182,6 @@ const AptUpdateIndicator = new Lang.Class({
         this.checkNowMenuItem.connect('activate', Lang.bind(this, this._checkUpdates));
         settingsMenuItem.connect('activate', Lang.bind(this, this._openSettings));
         this.updateNowMenuItem.connect('activate', Lang.bind(this, this._updateNow));
-
-        // Load settings
-        this._settings = Utils.getSettings();
-        this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._applySettings));
-        this._applySettings();
-
-        // Restore previous state
-        this._updateList = UPDATES_LIST;
-        this._updateStatus(UPDATES_PENDING);
-
-        // The first run is initialization only: we only read the existing files
-        this._initializing = true;
-        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
-    },
-
-    _openSettings: function () {
-        Util.spawn([ "gnome-shell-extension-prefs", Me.uuid ]);
     },
 
     _applySettings: function() {
@@ -296,9 +301,9 @@ const AptUpdateIndicator = new Lang.Class({
 
     _checkAutoExpandList: function() {
         if (this.menu.isOpen && UPDATES_PENDING > 0 && UPDATES_PENDING <= this._settings.get_int('auto-expand-list')) {
-            this.menuExpander.setSubmenuShown(true);
+            this.updatesExpander.setSubmenuShown(true);
         } else {
-            this.menuExpander.setSubmenuShown(false);
+            this.updatesExpander.setSubmenuShown(false);
         }
     },
 
@@ -444,13 +449,13 @@ const AptUpdateIndicator = new Lang.Class({
     _updateMenuExpander: function(enabled, label) {
         if (label == "") {
             // No text, hide the menuitem
-            this.menuExpander.actor.visible = false;
+            this.updatesExpander.actor.visible = false;
         } else {
         // We make our expander look like a regular menu label if disabled
-            this.menuExpander.actor.reactive = enabled;
-            this.menuExpander._triangle.visible = enabled;
-            this.menuExpander.label.set_text(label);
-            this.menuExpander.actor.visible = true;
+            this.updatesExpander.actor.reactive = enabled;
+            this.updatesExpander._triangle.visible = enabled;
+            this.updatesExpander.label.set_text(label);
+            this.updatesExpander.actor.visible = true;
         }
 
         // 'Update now' visibility is linked so let's save a few lines and set it here
@@ -503,7 +508,6 @@ const AptUpdateIndicator = new Lang.Class({
      */
 
     _checkUpdates: function() {
-        this.menu.close();
         if(this._upgradeProcess_sourceId) {
             // A check is already running ! Maybe we should kill it and run another one ?
             return;
