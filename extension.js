@@ -39,8 +39,8 @@ const _ = Gettext.gettext;
 const PREPEND_CMD        = '/usr/bin/pkexec --user root ';
 const STOCK_CHECK_CMD    = 'apt update';
 const STOCK_UPDATE_CMD   = 'apt upgrade -y';
-let CHECK_CMD          = PREPEND_CMD + STOCK_CHECK_CMD;
-let UPDATE_CMD         = PREPEND_CMD + STOCK_UPDATE_CMD;
+let CHECK_CMD            = PREPEND_CMD + STOCK_CHECK_CMD;
+let UPDATE_CMD           = PREPEND_CMD + STOCK_UPDATE_CMD;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
 let UPDATES_PENDING        = -1;
@@ -87,6 +87,7 @@ const AptUpdateIndicator = new Lang.Class({
     _residualPackagesList: [],
     _autoremovablePackagesList: [],
 
+    _bindings: [],
 
     _init: function() {
         this.parent(0.0, "AptUpdateIndicator");
@@ -107,12 +108,7 @@ const AptUpdateIndicator = new Lang.Class({
 
         // Load settings
         this._settings = Utils.getSettings();
-        this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._applySettings));
         this._applySettings();
-
-        // Restore previous state
-        this._updateList = UPDATES_LIST;
-        this._updateStatus(UPDATES_PENDING);
 
         // The first run is initialization only: we only read the existing files
         this._initializing = true;
@@ -183,11 +179,23 @@ const AptUpdateIndicator = new Lang.Class({
 
     _applySettings: function() {
         // Parse the various commands
+        this._updateCMD();
+        this._checkCMD();
+
+        // Add a check at intervals
+        this._checkInterval();
+
+        this._bindSettings();
+    },
+
+    _updateCMD: function() {
         if (this._settings.get_string('update-cmd') !== "")
             UPDATE_CMD = PREPEND_CMD + this._settings.get_string('update-cmd');
         else
             UPDATE_CMD = PREPEND_CMD + STOCK_UPDATE_CMD;
+    },
 
+    _checkCMD: function() {
         if (this._settings.get_string('check-cmd') !== "")
             CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd');
         else
@@ -195,7 +203,9 @@ const AptUpdateIndicator = new Lang.Class({
 
         if (this._settings.get_boolean('allow-no-passwd'))
             CHECK_CMD = this._settings.get_string('check-cmd-no-passwd');
+    },
 
+    _checkInterval: function() {
         // Remove the periodic check before adding a new one
         if (this._TimeoutId)
             GLib.source_remove(this._TimeoutId);
@@ -211,8 +221,21 @@ const AptUpdateIndicator = new Lang.Class({
                                                        });
         }
 
-        // Finalize application of settings
-        this._checkShowHide();
+    },
+
+    _bindSettings: function() {
+        this._bindings.push(this._settings.connect('changed::update-cmd',
+                            Lang.bind(this, this._updateCMD)));
+        this._bindings.push(this._settings.connect('changed::check-cmd',
+                            Lang.bind(this, this._checkCMD)));
+        this._bindings.push(this._settings.connect('changed::check-interval',
+                            Lang.bind(this, this._checkInterval)));
+        this._bindings.push(this._settings.connect('changed::allow-no-passwd',
+                            Lang.bind(this, this._checkCMD)));
+        this._bindings.push(this._settings.connect('changed::show-count',
+                            Lang.bind(this, this._checkShowHideIndicator)));
+        this._bindings.push(this._settings.connect('changed::always-visible',
+                            Lang.bind(this, this._checkShowHideIndicator)));
     },
 
     destroy: function() {
@@ -232,12 +255,20 @@ const AptUpdateIndicator = new Lang.Class({
             GLib.source_remove(this._TimeoutId);
             this._TimeoutId = null;
         }
+
+        for (let i = 0; i < this._bindings.length; i++) {
+            this._settings.disconnect(this._bindings[0]);
+            this._bindings[0] = 0;
+            this._bindings.shift();
+        }
+        this._bindings = null;
+
         this.parent();
     },
 
     /* Menu functions:
      *     _lastCheck
-     *     _checkShowHide
+     *     _checkShowHideIndicator
      *     _onMenuOpened
      *     _checkAutoExpandList
      *     _showChecking
@@ -278,12 +309,12 @@ const AptUpdateIndicator = new Lang.Class({
         }
     },
 
-    _checkShowHide: function() {
-        if ( UPDATES_PENDING == -3 )
+    _checkShowHideIndicator: function() {
+        if ( this._upgradeProcess_sourceId )
             // Do not apply visibility change while checking for updates
             return;
 
-        if (!this._settings.get_boolean('always-visible') && UPDATES_PENDING < 1)
+        if (!this._settings.get_boolean('always-visible') && this._updateList.length < 1)
             this.actor.visible = false;
         else
             this.actor.visible = true;
@@ -297,7 +328,8 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _checkAutoExpandList: function() {
-        if (this.menu.isOpen && UPDATES_PENDING > 0 && UPDATES_PENDING <= this._settings.get_int('auto-expand-list')) {
+        let count = this._updateList.length;
+        if (this.menu.isOpen && count > 0 && count <= this._settings.get_int('auto-expand-list')) {
             this.updatesExpander.setSubmenuShown(true);
         } else {
             this.updatesExpander.setSubmenuShown(false);
@@ -316,7 +348,7 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _updateStatus: function(updatesCount) {
-        updatesCount = typeof updatesCount === 'number' ? updatesCount : UPDATES_PENDING;
+        updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
             this._cleanUpgradeList();
             // Updates pending
@@ -370,13 +402,10 @@ const AptUpdateIndicator = new Lang.Class({
         }
         UPDATES_PENDING = updatesCount;
         this._checkAutoExpandList();
-        this._checkShowHide();
+        this._checkShowHideIndicator();
     },
 
     _cleanUpgradeList: function() {
-        // This removes the the first line which reads: 'Listing...'
-        this._updateList.shift();
-
         if (this._settings.get_boolean('strip-versions') == true) {
             this._updateList = this._updateList.map(function(p) {
                 // example: firefox/jessie 50.0-1 amd64 [upgradable from: 49.0-4]
@@ -396,7 +425,7 @@ const AptUpdateIndicator = new Lang.Class({
 
     _updatePackagesStatus: function(index) {
         if (index == PKG_STATUS.UPGRADABLE)
-            this._updateStatus(this._updateList.length - 1);
+            this._updateStatus(this._updateList.length);
         else if (index == PKG_STATUS.NEW)
             this._updateNewPackagesStatus();
         else if (index == PKG_STATUS.OBSOLETE)
@@ -596,8 +625,11 @@ const AptUpdateIndicator = new Lang.Class({
             if (out) packagesList.push(out);
         } while (out);
 
-        if (index == PKG_STATUS.UPGRADABLE)
+        if (index == PKG_STATUS.UPGRADABLE) {
+            // This removes the the first line which reads: 'Listing...'
+            packagesList.shift();
             this._updateList = packagesList;
+        }
         else if (index == PKG_STATUS.NEW)
             this._newPackagesList = packagesList;
         else if (index == PKG_STATUS.OBSOLETE)
