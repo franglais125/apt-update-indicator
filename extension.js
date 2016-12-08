@@ -259,11 +259,11 @@ const AptUpdateIndicator = new Lang.Class({
         // If not just initalizing, update the date string to 'now'
         if (!this._initializing) {
             let now = new Date();
-            date = DAYS[now.getDay()] + ' ' + MONTHS[now.getMonth()] + ' ' +
-                   now.getDate() + ', ';
+            date = DAYS[now.getDay()] + ' ' + now.getDate() + ' ' +
+                   MONTHS[now.getMonth()] + ', ';
 
             // Let's add missing zeroes
-            if (!now.getHours())
+            if (now.getHours() < 10)
                 date += '0';
             date += now.getHours() + ':';
 
