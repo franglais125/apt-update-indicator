@@ -578,11 +578,11 @@ const AptUpdateIndicator = new Lang.Class({
                 script = ['/usr/bin/apt', 'list', '--upgradable'];
             else {
                 path = Me.dir.get_path();
-                script = [path + '/scripts/' + SCRIPT_NAMES[index] + '.sh',
+                script = ['/bin/bash', path + '/scripts/' + SCRIPT_NAMES[index] + '.sh',
                           initializing ? '1' : '0'];
             }
 
-            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(path,
+            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
                                                                                 script,
                                                                                 null,
                                                                                 GLib.SpawnFlags.DO_NOT_REAP_CHILD,
