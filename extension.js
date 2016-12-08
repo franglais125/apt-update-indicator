@@ -50,12 +50,13 @@ let UPDATES_PENDING        = -1;
 let UPDATES_LIST           = [];
 
 /* Various packages statuses */
-const SCRIPT_NAMES = ['upgradable', 'new', 'obsolete', 'residual'];
+const SCRIPT_NAMES = ['upgradable', 'new', 'obsolete', 'residual', 'autoremovable'];
 const PKG_STATUS = {
-    UPGRADABLE: 0,
-    NEW: 1,
-    OBSOLETE: 2,
-    RESIDUAL: 3
+    UPGRADABLE:    0,
+    NEW:           1,
+    OBSOLETE:      2,
+    RESIDUAL:      3,
+    AUTOREMOVABLE: 4
 };
 
 /* Date arrays */
@@ -87,6 +88,7 @@ const AptUpdateIndicator = new Lang.Class({
     _newPackagesList: [],
     _obsoletePackagesList: [],
     _residualPackagesList: [],
+    _autoremovablePackagesList: [],
 
 
     _init: function() {
@@ -125,6 +127,11 @@ const AptUpdateIndicator = new Lang.Class({
         this.residualPackagesExpander.menu.box.add(this.residualPackagesListMenuLabel);
         this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
+        this.autoremovablePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Autoremovable'));
+        this.autoremovablePackagesListMenuLabel = new St.Label();
+        this.autoremovablePackagesExpander.menu.box.add(this.autoremovablePackagesListMenuLabel);
+        this.autoremovablePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+
         // Other standard menu items
         let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
         this.updateNowMenuItem = new PopupMenu.PopupMenuItem(_('Apply updates'));
@@ -153,6 +160,7 @@ const AptUpdateIndicator = new Lang.Class({
         this.menu.addMenuItem(this.newPackagesExpander);
         this.menu.addMenuItem(this.obsoletePackagesExpander);
         this.menu.addMenuItem(this.residualPackagesExpander);
+        this.menu.addMenuItem(this.autoremovablePackagesExpander);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.updateNowMenuItem);
         this.menu.addMenuItem(this.checkingMenuItem);
@@ -241,6 +249,7 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     /* Menu functions:
+     *     _lastCheck
      *     _checkShowHide
      *     _onMenuOpened
      *     _checkAutoExpandList
@@ -250,6 +259,7 @@ const AptUpdateIndicator = new Lang.Class({
      *     _updateNewPackagesStatus
      *     _updateObsoletePackagesStatus
      *     _updateResidualPackagesStatus
+     *     _updateAutoremovablePackagesStatus
      *     _updateMenuExpander
      */
 
@@ -406,6 +416,8 @@ const AptUpdateIndicator = new Lang.Class({
             this._updateObsoletePackagesStatus();
         else if (index == PKG_STATUS.RESIDUAL)
             this._updateResidualPackagesStatus();
+        else if (index == PKG_STATUS.AUTOREMOVABLE)
+            this._updateAutoremovablePackagesStatus();
     },
 
     _updateNewPackagesStatus: function() {
@@ -432,6 +444,15 @@ const AptUpdateIndicator = new Lang.Class({
         else {
             this.residualPackagesListMenuLabel.set_text( this._residualPackagesList.join("\n") );
             this.residualPackagesExpander.actor.visible = true;
+        }
+    },
+
+    _updateAutoremovablePackagesStatus: function() {
+        if (this._autoremovablePackagesList.length == 0)
+            this.autoremovablePackagesExpander.actor.visible = false;
+        else {
+            this.autoremovablePackagesListMenuLabel.set_text( this._autoremovablePackagesList.join("\n") );
+            this.autoremovablePackagesExpander.actor.visible = true;
         }
     },
 
@@ -557,7 +578,7 @@ const AptUpdateIndicator = new Lang.Class({
                 script = ['/usr/bin/apt', 'list', '--upgradable'];
             else {
                 path = Me.dir.get_path();
-                script = [path + '/' + SCRIPT_NAMES[index] + '.sh',
+                script = [path + '/scripts/' + SCRIPT_NAMES[index] + '.sh',
                           initializing ? '1' : '0'];
             }
 
@@ -605,6 +626,8 @@ const AptUpdateIndicator = new Lang.Class({
             this._obsoletePackagesList = packagesList;
         else if (index == PKG_STATUS.RESIDUAL)
             this._residualPackagesList = packagesList;
+        else if (index == PKG_STATUS.AUTOREMOVABLE)
+            this._autoremovablePackagesList = packagesList;
 
         this._packagesEnd(index);
     },
@@ -632,6 +655,7 @@ const AptUpdateIndicator = new Lang.Class({
             this._otherPackages(this._initializing, PKG_STATUS.NEW);
             this._otherPackages(this._initializing, PKG_STATUS.OBSOLETE);
             this._otherPackages(this._initializing, PKG_STATUS.RESIDUAL);
+            this._otherPackages(this._initializing, PKG_STATUS.AUTOREMOVABLE);
             this._initializing = false;
         }
     },

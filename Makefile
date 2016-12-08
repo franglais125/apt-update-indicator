@@ -2,7 +2,7 @@
 
 UUID = apt-update-indicator@franglais125.gmail.com
 BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesheet.css utils.js
-SCRIPT_MODULES = new.sh obsolete.sh residual.sh
+SCRIPT_MODULES = scripts/autoremovable.sh scripts/new.sh scripts/obsolete.sh scripts/residual.sh
 TOLOCALIZE = extension.js
 MSGSRC = $(wildcard po/*.po)
 INSTALLBASE = ~/.local/share/gnome-shell/extensions
@@ -66,7 +66,8 @@ _build: all
 	-rm -fR ./_build
 	mkdir -p _build
 	cp $(BASE_MODULES) _build
-	cp $(SCRIPT_MODULES) _build
+	mkdir -p _build/scripts
+	cp $(SCRIPT_MODULES) _build/scripts/
 	mkdir -p _build/schemas
 	cp schemas/*.xml _build/schemas/
 	cp schemas/gschemas.compiled _build/schemas/
