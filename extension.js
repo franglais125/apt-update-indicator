@@ -136,22 +136,9 @@ const AptUpdateIndicator = new Lang.Class({
         let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
         this.updateNowMenuItem = new PopupMenu.PopupMenuItem(_('Apply updates'));
 
-        // A special "Checking" menu item with a stop button
-        this.checkingMenuItem = new PopupMenu.PopupBaseMenuItem( {reactive:false} );
-        let checkingLabel = new St.Label({ text: _('Checking')});
-        let cancelButton = new St.Button({
-            child: new St.Icon({ icon_name: 'stop' }),
-            style_class: 'system-menu-action apt-update-indicator-menubutton',
-            x_expand: true
-        });
-        cancelButton.set_x_align(Clutter.ActorAlign.END);
-        this.checkingMenuItem.actor.add_actor( checkingLabel );
-        this.checkingMenuItem.actor.add_actor( cancelButton  );
-
-        // A little trick on "check now" menuitem to keep menu opened
+        // "Check now" and "Last Check" menu items
         this.checkNowMenuItem = new PopupMenu.PopupMenuItem( _('Check now') );
         this.lastCheckMenuItem = new PopupMenu.PopupMenuItem( _('') );
-        this.lastCheckMenuItem.actor.visible = false;
         this.lastCheckMenuItem.actor.reactive = false;
 
         // Assemble all menu items into the popup menu
@@ -163,7 +150,6 @@ const AptUpdateIndicator = new Lang.Class({
         this.menu.addMenuItem(this.autoremovablePackagesExpander);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.updateNowMenuItem);
-        this.menu.addMenuItem(this.checkingMenuItem);
         this.menu.addMenuItem(this.checkNowMenuItem);
         this.menu.addMenuItem(this.lastCheckMenuItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -172,7 +158,6 @@ const AptUpdateIndicator = new Lang.Class({
         // Bind some events
         this.menu.connect('open-state-changed', Lang.bind(this, this._onMenuOpened));
         this.checkNowMenuItem.connect('activate', Lang.bind(this, this._checkUpdates));
-        cancelButton.connect('clicked', Lang.bind(this, this._cancelCheck));
         settingsMenuItem.connect('activate', Lang.bind(this, this._openSettings));
         this.updateNowMenuItem.connect('activate', Lang.bind(this, this._updateNow));
 
@@ -180,7 +165,6 @@ const AptUpdateIndicator = new Lang.Class({
         this._settings = Utils.getSettings();
         this._settingsChangedId = this._settings.connect('changed', Lang.bind(this, this._applySettings));
         this._applySettings();
-        this._showChecking(false);
 
         // Restore previous state
         this._updateList = UPDATES_LIST;
@@ -214,15 +198,16 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._TimeoutId)
             GLib.source_remove(this._TimeoutId);
 
-        let that = this;
         let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
-        if (CHECK_INTERVAL)
+        if (CHECK_INTERVAL) {
+            let that = this;
             this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                        CHECK_INTERVAL,
                                                        function() {
                                                            that._checkUpdates();
                                                            return true;
                                                        });
+        }
 
         // Finalize application of settings
         this._checkShowHide();
@@ -320,11 +305,11 @@ const AptUpdateIndicator = new Lang.Class({
     _showChecking: function(isChecking) {
         if (isChecking == true) {
             this.updateIcon.set_icon_name('emblem-synchronizing');
-            this.checkNowMenuItem.actor.visible = false;
-            this.checkingMenuItem.actor.visible = true;
+            this.checkNowMenuItem.actor.reactive = false;
+            this.checkNowMenuItem.label.set_text(_('Checking'));
         } else {
-            this.checkNowMenuItem.actor.visible = true;
-            this.checkingMenuItem.actor.visible = false;
+            this.checkNowMenuItem.actor.reactive = true;
+            this.checkNowMenuItem.label.set_text(_('Check now'));
         }
     },
 
@@ -514,7 +499,6 @@ const AptUpdateIndicator = new Lang.Class({
 
     /* Update functions:
      *     _checkUpdates
-     *     _cancelCheck
      *     _checkUpdatesEnd
      */
 
@@ -544,13 +528,6 @@ const AptUpdateIndicator = new Lang.Class({
             // TODO log err.message.toString() ?
             this._updateStatus(-2);
         }
-    },
-
-    _cancelCheck: function() {
-        if (this._upgradeProcess_pid == null) { return; };
-        Util.spawnCommandLine( "kill " + this._upgradeProcess_pid );
-        this._upgradeProcess_pid = null; // Prevent double kill
-        this._checkUpdatesEnd();
     },
 
     _checkUpdatesEnd: function() {
