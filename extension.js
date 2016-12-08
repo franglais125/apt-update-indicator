@@ -39,9 +39,9 @@ const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
 /* Options */
-const PREPEND_CMD        = "/usr/bin/pkexec --user root ";
-const STOCK_CHECK_CMD    = "apt update";
-const STOCK_UPDATE_CMD   = "apt upgrade -y";
+const PREPEND_CMD        = '/usr/bin/pkexec --user root ';
+const STOCK_CHECK_CMD    = 'apt update';
+const STOCK_UPDATE_CMD   = 'apt upgrade -y';
 let CHECK_CMD          = PREPEND_CMD + STOCK_CHECK_CMD;
 let UPDATE_CMD         = PREPEND_CMD + STOCK_UPDATE_CMD;
 
@@ -50,13 +50,19 @@ let UPDATES_PENDING        = -1;
 let UPDATES_LIST           = [];
 
 /* Various packages statuses */
-const SCRIPT_NAMES = ["upgradable", "new", "obsolete", "residual"];
+const SCRIPT_NAMES = ['upgradable', 'new', 'obsolete', 'residual'];
 const PKG_STATUS = {
     UPGRADABLE: 0,
     NEW: 1,
     OBSOLETE: 2,
     RESIDUAL: 3
 };
+
+/* Date arrays */
+const MONTHS = [_('Jan'), _('Feb'), _('Mar'), _('Apr'), _('May'), _('Jun'),
+                _('Jul'), _('Aug'), _('Sep'), _('Oct'), _('Nov'), _('Dec')];
+const DAYS   = [_('Sun'), _('Mon'), _('Tue'), _('Wed'),
+                _('Thu'), _('Fri'), _('Sat')];
 
 function init() {
     String.prototype.format = Format.format;
@@ -104,21 +110,18 @@ const AptUpdateIndicator = new Lang.Class({
         this.menuExpander.menu.box.add(this.updatesListMenuLabel);
         this.menuExpander.menu.box.style_class = 'apt-update-indicator-list';
 
-        this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New packages'));
+        this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
         this.newPackagesListMenuLabel = new St.Label();
-        this.newPackagesExpander.label.set_text(_("New in repository"));
         this.newPackagesExpander.menu.box.add(this.newPackagesListMenuLabel);
         this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
         this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
         this.obsoletePackagesListMenuLabel = new St.Label();
-        this.obsoletePackagesExpander.label.set_text(_("Local/Obsolete packages"));
         this.obsoletePackagesExpander.menu.box.add(this.obsoletePackagesListMenuLabel);
         this.obsoletePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
         this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
         this.residualPackagesListMenuLabel = new St.Label();
-        this.residualPackagesExpander.label.set_text(_("Residual packages"));
         this.residualPackagesExpander.menu.box.add(this.residualPackagesListMenuLabel);
         this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
 
@@ -140,6 +143,9 @@ const AptUpdateIndicator = new Lang.Class({
 
         // A little trick on "check now" menuitem to keep menu opened
         this.checkNowMenuItem = new PopupMenu.PopupMenuItem( _('Check now') );
+        this.lastCheckMenuItem = new PopupMenu.PopupMenuItem( _('') );
+        this.lastCheckMenuItem.actor.visible = false;
+        this.lastCheckMenuItem.actor.reactive = false;
 
         // Assemble all menu items into the popup menu
         this.menu.addMenuItem(this.menuExpander);
@@ -151,6 +157,7 @@ const AptUpdateIndicator = new Lang.Class({
         this.menu.addMenuItem(this.updateNowMenuItem);
         this.menu.addMenuItem(this.checkingMenuItem);
         this.menu.addMenuItem(this.checkNowMenuItem);
+        this.menu.addMenuItem(this.lastCheckMenuItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(settingsMenuItem);
 
@@ -168,7 +175,6 @@ const AptUpdateIndicator = new Lang.Class({
         this._showChecking(false);
 
         // Restore previous state
-
         this._updateList = UPDATES_LIST;
         this._updateStatus(UPDATES_PENDING);
 
@@ -246,6 +252,34 @@ const AptUpdateIndicator = new Lang.Class({
      *     _updateResidualPackagesStatus
      *     _updateMenuExpander
      */
+
+    _lastCheck: function() {
+        let date = this._settings.get_string('last-check-date');
+
+        // If not just initalizing, update the date string to 'now'
+        if (!this._initializing) {
+            let now = new Date();
+            date = DAYS[now.getDay()] + ' ' + MONTHS[now.getMonth()] + ' ' +
+                   now.getDate() + ', ';
+
+            // Let's add missing zeroes
+            if (!now.getHours())
+                date += '0';
+            date += now.getHours() + ':';
+
+            if (now.getMinutes() < 10)
+                date += '0';
+            date += now.getMinutes();
+
+            // Update the stored value
+            this._settings.set_string('last-check-date', date);
+        }
+
+        if (date != '') {
+            this.lastCheckMenuItem.label.set_text(_('Last check: ') + date);
+            this.lastCheckMenuItem.actor.visible = true;
+        }
+    },
 
     _checkShowHide: function() {
         if ( UPDATES_PENDING == -3 )
@@ -590,6 +624,9 @@ const AptUpdateIndicator = new Lang.Class({
         if (index == PKG_STATUS.UPGRADABLE) {
             // Update indicator
             this._showChecking(false);
+
+            // Update time on menu
+            this._lastCheck();
 
             // Launch other checks
             this._otherPackages(this._initializing, PKG_STATUS.NEW);
