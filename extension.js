@@ -18,13 +18,10 @@ const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
 
 const St = imports.gi.St;
-const GObject = imports.gi.GObject;
 const GLib = imports.gi.GLib;
-const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
 
 const Main = imports.ui.main;
-const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const MessageTray = imports.ui.messageTray;
