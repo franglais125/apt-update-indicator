@@ -329,7 +329,9 @@ const AptUpdateIndicator = new Lang.Class({
 
     _checkAutoExpandList: function() {
         let count = this._updateList.length;
-        if (this.menu.isOpen && count > 0 && count <= this._settings.get_int('auto-expand-list')) {
+        if (this.menu.isOpen &&
+            count > 0 &&
+            count <= this._settings.get_int('auto-expand-list')) {
             this.updatesExpander.setSubmenuShown(true);
         } else {
             this.updatesExpander.setSubmenuShown(false);
@@ -350,43 +352,33 @@ const AptUpdateIndicator = new Lang.Class({
     _updateStatus: function(updatesCount) {
         updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
-            this._cleanUpgradeList();
-            // Updates pending
+            // Update indicator look:
             this.updateIcon.set_icon_name('software-update-available');
-            this._updateMenuExpander( true, Gettext.ngettext( "%d update pending", "%d updates pending", updatesCount ).format(updatesCount) );
-            this.updatesListMenuLabel.set_text( this._updateList.join("\n") );
             this.label.set_text(updatesCount.toString());
-            if (this._settings.get_boolean('notify')
-                && UPDATES_PENDING < updatesCount) {
-                if (this._settings.get_int('verbosity') > 0) {
-                    let updateList = [];
-                    if (this._settings.get_int('verbosity') > 1) {
-                        updateList = this._updateList;
-                    } else {
-                        // Keep only packets that was not in the previous notification
-                        updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
-                    }
-                    if (updateList.length > 0) {
-                        // Show notification only if there's new updates
-                        this._showNotification(
-                            Gettext.ngettext( "New Update", "New Updates", updateList.length ),
-                            updateList.join(', ')
-                        );
-                    }
-                } else {
-                    this._showNotification(
-                        Gettext.ngettext( "New Update", "New Updates", updatesCount ),
-                        Gettext.ngettext( "There is %d update pending", "There are %d updates pending", updatesCount ).format(updatesCount)
-                    );
-                }
-            }
+
+            // Update the menu look:
+            this._cleanUpgradeList();
+            this.updatesListMenuLabel.set_text( this._updateList.join("\n") );
+            this._updateMenuExpander( true, Gettext.ngettext( "%d update pending",
+                                                              "%d updates pending",
+                                                              updatesCount ).format(updatesCount) );
+
+            // Emit a notification if necessary
+            if (this._settings.get_boolean('notify') && UPDATES_PENDING < updatesCount)
+                this._notify(updatesCount);
+
             // Store the new list
             UPDATES_LIST = this._updateList;
         } else {
-            this.updatesListMenuLabel.set_text("");
+            // Update the indicator look:
             this.label.set_text('');
+
+            // Update the menu look:
+            this.updatesListMenuLabel.set_text("");
+
             if (updatesCount == -1) {
-                // Unknown
+                // This is the value of UPDATES_PENDING at initialization.
+                // For some reason, the update process didn't work at all
                 this.updateIcon.set_icon_name('dialog-warning');
                 this._updateMenuExpander( false, '' );
             } else if (updatesCount == -2) {
@@ -400,9 +392,34 @@ const AptUpdateIndicator = new Lang.Class({
                 UPDATES_LIST = []; // Reset stored list
             }
         }
+
         UPDATES_PENDING = updatesCount;
         this._checkAutoExpandList();
         this._checkShowHideIndicator();
+    },
+
+    _notify: function(updatesCount) {
+        if (this._settings.get_int('verbosity') > 0) {
+            let updateList = [];
+            if (this._settings.get_int('verbosity') > 1) {
+                updateList = this._updateList;
+            } else {
+                // Keep only packets that was not in the previous notification
+                updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
+            }
+            if (updateList.length > 0) {
+                // Show notification only if there's new updates
+                this._showNotification(
+                    Gettext.ngettext( "New Update", "New Updates", updateList.length ),
+                    updateList.join(', ')
+                );
+            }
+        } else {
+            this._showNotification(
+                Gettext.ngettext( "New Update", "New Updates", updatesCount ),
+                Gettext.ngettext( "There is %d update pending", "There are %d updates pending", updatesCount ).format(updatesCount)
+            );
+        }
     },
 
     _cleanUpgradeList: function() {
@@ -513,7 +530,6 @@ const AptUpdateIndicator = new Lang.Class({
             this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
             this._upgradeProcess_pid = pid;
         } catch (err) {
-            // TODO log err.message.toString() ?
         }
     },
 
@@ -555,7 +571,6 @@ const AptUpdateIndicator = new Lang.Class({
             this._upgradeProcess_pid = pid;
         } catch (err) {
             this._showChecking(false);
-            // TODO log err.message.toString() ?
             this._updateStatus(-2);
         }
     },
@@ -610,7 +625,6 @@ const AptUpdateIndicator = new Lang.Class({
         } catch (err) {
             if (index == PKG_STATUS.UPGRADABLE) {
                 this._showChecking(false);
-                // TODO log err.message.toString() ?
                 this._updateStatus(-2);
             }
         }
