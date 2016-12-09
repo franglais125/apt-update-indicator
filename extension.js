@@ -235,6 +235,42 @@ const AptUpdateIndicator = new Lang.Class({
 
     },
 
+    _newPackagesBinding: function() {
+        if (this._settings.get_boolean('new-packages')) {
+            this._otherPackages(this._initializing, PKG_STATUS.NEW);
+        } else {
+            this._newPackagesList = [];
+            this._updateNewPackagesStatus();
+        }
+    },
+
+    _obsoletePackagesBinding: function() {
+        if (this._settings.get_boolean('obsolete-packages')) {
+            this._otherPackages(this._initializing, PKG_STATUS.OBSOLETE);
+        } else {
+            this._obsoletePackagesList = [];
+            this._updateObsoletePackagesStatus();
+        }
+    },
+
+    _residualPackagesBinding: function() {
+        if (this._settings.get_boolean('residual-packages')) {
+            this._otherPackages(this._initializing, PKG_STATUS.RESIDUAL);
+        } else {
+            this._residualPackagesList = [];
+            this._updateResidualPackagesStatus();
+        }
+    },
+
+    _autoremovablePackagesBinding: function() {
+        if (this._settings.get_boolean('autoremovable-packages')) {
+            this._otherPackages(this._initializing, PKG_STATUS.AUTOREMOVABLE);
+        } else {
+            this._autoremovablePackagesList = [];
+            this._updateAutoremovablePackagesStatus();
+        }
+    },
+
     _bindSettings: function() {
         this._bindings.push(this._settings.connect('changed::update-cmd',
                             Lang.bind(this, this._updateCMD)));
@@ -248,6 +284,14 @@ const AptUpdateIndicator = new Lang.Class({
                             Lang.bind(this, this._checkShowHideIndicator)));
         this._bindings.push(this._settings.connect('changed::always-visible',
                             Lang.bind(this, this._checkShowHideIndicator)));
+        this._bindings.push(this._settings.connect('changed::new-packages',
+                            Lang.bind(this, this._newPackagesBinding)));
+        this._bindings.push(this._settings.connect('changed::obsolete-packages',
+                            Lang.bind(this, this._obsoletePackagesBinding)));
+        this._bindings.push(this._settings.connect('changed::residual-packages',
+                            Lang.bind(this, this._residualPackagesBinding)));
+        this._bindings.push(this._settings.connect('changed::autoremovable-packages',
+                            Lang.bind(this, this._autoremovablePackagesBinding)));
     },
 
     _checkConnectionState: function() {
@@ -715,10 +759,14 @@ const AptUpdateIndicator = new Lang.Class({
             this._lastCheck();
 
             // Launch other checks
-            this._otherPackages(this._initializing, PKG_STATUS.NEW);
-            this._otherPackages(this._initializing, PKG_STATUS.OBSOLETE);
-            this._otherPackages(this._initializing, PKG_STATUS.RESIDUAL);
-            this._otherPackages(this._initializing, PKG_STATUS.AUTOREMOVABLE);
+            if (this._settings.get_boolean('new-packages'))
+                this._otherPackages(this._initializing, PKG_STATUS.NEW);
+            if (this._settings.get_boolean('obsolete-packages'))
+                this._otherPackages(this._initializing, PKG_STATUS.OBSOLETE);
+            if (this._settings.get_boolean('residual-packages'))
+                this._otherPackages(this._initializing, PKG_STATUS.RESIDUAL);
+            if (this._settings.get_boolean('autoremovable-packages'))
+                this._otherPackages(this._initializing, PKG_STATUS.AUTOREMOVABLE);
             this._initializing = false;
         }
     },

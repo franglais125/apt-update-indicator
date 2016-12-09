@@ -270,9 +270,13 @@
     </child>
 
     <child type="tab">
-        <object class="GtkLabel">
+        <object class="GtkLabel" id="basic_settings_label">
             <property name="label" translatable="yes">Basic settings</property>
         </object>
+        <packing>
+            <property name="position">0</property>
+            <property name="tab_fill">False</property>
+        </packing>
     </child>
 
     <child>
@@ -297,9 +301,7 @@
                     </child>
                     <child>
                         <object class="GtkButton" id="reset_button">
-                            <property name="visible">True</property>
                             <property name="label">Reset</property>
-                            <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                         </object>
                     </child>
@@ -359,8 +361,6 @@
                             <property name="label" translatable="yes">Wiki</property>
                             <property name="hexpand">true</property>
                             <property name="halign">1</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="events"/>
                             <property name="relief">none</property>
@@ -374,8 +374,6 @@
                     <child>
                         <object class="GtkCheckButton" id="checkcmd_no_password_checkbutton">
                             <property name="label" translatable="yes">Enabled</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="draw_indicator">True</property>
                             <property name="margin_top">12</property>
@@ -413,9 +411,319 @@
     </child>
 
     <child type="tab">
-        <object class="GtkLabel">
+        <object class="GtkLabel" id="advanced_settings_label">
             <property name="label" translatable="yes">Advanced settings</property>
         </object>
+        <packing>
+            <property name="position">1</property>
+            <property name="tab_fill">False</property>
+        </packing>
+    </child>
+
+    <child>
+      <object class="GtkBox" id="package_status_box">
+        <property name="margin_left">24</property>
+        <property name="margin_right">24</property>
+        <property name="margin_top">24</property>
+        <property name="margin_bottom">24</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">24</property>
+
+        <child>
+          <object class="GtkFrame" id="new_packages_frame">
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkListBox" id="new_packages_listbox">
+                <property name="selection_mode">none</property>
+                <child>
+                  <object class="GtkListBoxRow" id="new_packages_listboxrow">
+                    <child>
+                      <object class="GtkGrid" id="new_packages_grid">
+                        <property name="margin_left">12</property>
+                        <property name="margin_right">12</property>
+                        <property name="margin_top">12</property>
+                        <property name="margin_bottom">12</property>
+                        <property name="column_spacing">32</property>
+                        <child>
+                          <object class="GtkLabel" id="new_packages_description">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Include an item in the indicator with a list of new packages in the repository.</property>
+                            <property name="use_markup">True</property>
+                            <property name="wrap">True</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="new_packages_label">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">New packages in repository</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSwitch" id="new_packages_switch">
+                            <property name="halign">end</property>
+                            <property name="valign">center</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                            <property name="height">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label_item">
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+
+        <child>
+          <object class="GtkFrame" id="obsolete_packages_frame">
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkListBox" id="obsolete_packages_listbox">
+                <property name="selection_mode">none</property>
+                <child>
+                  <object class="GtkListBoxRow" id="obsolete_packages_listboxrow">
+                    <child>
+                      <object class="GtkGrid" id="obsolete_packages_grid">
+                        <property name="margin_left">12</property>
+                        <property name="margin_right">12</property>
+                        <property name="margin_top">12</property>
+                        <property name="margin_bottom">12</property>
+                        <property name="column_spacing">32</property>
+                        <child>
+                          <object class="GtkLabel" id="obsolete_packages_description">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Include an item in the indicator with a list of obsolete or local packages. Obsolete packages are not available in the repository. Local packages are available, but an unavailable version is installed.</property>
+                            <property name="use_markup">True</property>
+                            <property name="wrap">True</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="obsolete_packages_label">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Local/Obsolete packages</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSwitch" id="obsolete_packages_switch">
+                            <property name="halign">end</property>
+                            <property name="valign">center</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                            <property name="height">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label_item">
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+
+        <child>
+          <object class="GtkFrame" id="residual_packages_frame">
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkListBox" id="residual_packages_listbox">
+                <property name="selection_mode">none</property>
+                <child>
+                  <object class="GtkListBoxRow" id="residual_packages_listboxrow">
+                    <child>
+                      <object class="GtkGrid" id="residual_packages_grid">
+                        <property name="margin_left">12</property>
+                        <property name="margin_right">12</property>
+                        <property name="margin_top">12</property>
+                        <property name="margin_bottom">12</property>
+                        <property name="column_spacing">32</property>
+                        <child>
+                          <object class="GtkLabel" id="residual_packages_description">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Include an item in the indicator with a list of packages that have residual config files. Run "sudo apt purge pkgname" to clean them.</property>
+                            <property name="use_markup">True</property>
+                            <property name="wrap">True</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="residual_packages_label">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Residual packages</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSwitch" id="residual_packages_switch">
+                            <property name="halign">end</property>
+                            <property name="valign">center</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                            <property name="height">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label_item">
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+
+        <child>
+          <object class="GtkFrame" id="autoremovable_packages_frame">
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">in</property>
+            <child>
+              <object class="GtkListBox" id="autoremovable_packages_listbox">
+                <property name="selection_mode">none</property>
+                <child>
+                  <object class="GtkListBoxRow" id="autoremovable_packages_listboxrow">
+                    <child>
+                      <object class="GtkGrid" id="autoremovable_packages_grid">
+                        <property name="margin_left">12</property>
+                        <property name="margin_right">12</property>
+                        <property name="margin_top">12</property>
+                        <property name="margin_bottom">12</property>
+                        <property name="column_spacing">32</property>
+                        <child>
+                          <object class="GtkLabel" id="autoremovable_packages_description">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Include an item in the indicator with a list of autoremovable packages. Run "sudo apt autoremove" to remove them.</property>
+                            <property name="use_markup">True</property>
+                            <property name="wrap">True</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="autoremovable_packages_label">
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Autoremovable packages</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">0</property>
+                            <property name="top_attach">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSwitch" id="autoremovable_packages_switch">
+                            <property name="halign">end</property>
+                            <property name="valign">center</property>
+                          </object>
+                          <packing>
+                            <property name="left_attach">1</property>
+                            <property name="top_attach">0</property>
+                            <property name="height">2</property>
+                          </packing>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child type="label_item">
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+
+      </object>
+    </child>
+
+    <child type="tab">
+      <object class="GtkLabel" id="packages_status_label">
+        <property name="label" translatable="yes">Package status</property>
+      </object>
+        <packing>
+          <property name="position">2</property>
+          <property name="tab_fill">False</property>
+        </packing>
     </child>
 
 </object>

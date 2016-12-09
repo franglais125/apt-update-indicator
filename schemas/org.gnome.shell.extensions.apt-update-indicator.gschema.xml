@@ -93,5 +93,29 @@
       <description>This is stored and used on the next boot.</description>
     </key>
 
+    <key name="new-packages" type="b">
+      <default>true</default>
+        <summary>Show a list of new packages</summary>
+        <description>When a new package is found in the repository, it is added to a list.</description>
+    </key>
+
+    <key name="obsolete-packages" type="b">
+      <default>true</default>
+        <summary>Show a list of obsolete packages</summary>
+        <description>When an obsolete package is found, it is added to a list.</description>
+    </key>
+
+    <key name="residual-packages" type="b">
+      <default>true</default>
+        <summary>Show a list of residual packages</summary>
+        <description>When config files from package are not deleted after removal, the package is added to a list.</description>
+    </key>
+
+    <key name="autoremovable-packages" type="b">
+      <default>true</default>
+        <summary>Show a list of autoremovable packages</summary>
+        <description>When a package is no longer required, it is added to a list.</description>
+    </key>
+
   </schema>
 </schemalist>
