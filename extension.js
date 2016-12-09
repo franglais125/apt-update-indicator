@@ -35,6 +35,13 @@ const Format = imports.format;
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
+/* For error checking */
+const STATUS = {
+    UNKNOWN:     -1,
+    ERROR:       -2,
+    NO_INTERNET: -3
+};
+
 /* Options */
 const PREPEND_CMD        = '/usr/bin/pkexec --user root ';
 const STOCK_CHECK_CMD    = 'apt update';
@@ -43,7 +50,7 @@ let CHECK_CMD            = PREPEND_CMD + STOCK_CHECK_CMD;
 let UPDATE_CMD           = PREPEND_CMD + STOCK_UPDATE_CMD;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
-let UPDATES_PENDING        = -1;
+let UPDATES_PENDING        = STATUS.UNKNOWN;
 let UPDATES_LIST           = [];
 
 /* Various packages statuses */
@@ -113,6 +120,11 @@ const AptUpdateIndicator = new Lang.Class({
         // The first run is initialization only: we only read the existing files
         this._initializing = true;
         this._otherPackages(false, PKG_STATUS.UPGRADABLE);
+
+        // We check for the network status before trying to update apt-cache
+        this._network_monitor = Gio.network_monitor_get_default();
+        this._network_monitor_connection = this._network_monitor.connect('network-changed', Lang.bind(this, this._checkConnectionState));
+        this._checkConnectionState();
     },
 
     _openSettings: function () {
@@ -236,6 +248,23 @@ const AptUpdateIndicator = new Lang.Class({
                             Lang.bind(this, this._checkShowHideIndicator)));
         this._bindings.push(this._settings.connect('changed::always-visible',
                             Lang.bind(this, this._checkShowHideIndicator)));
+    },
+
+    _checkConnectionState: function() {
+        let url = 'http://ftp.debian.org';
+        let address = Gio.NetworkAddress.parse_uri(url, 80);
+        let cancellable = Gio.Cancellable.new();
+        this._connected = false;
+        try {
+            this._network_monitor.can_reach_async(address, cancellable, Lang.bind(this, this._asyncReadyCallback));
+        } catch (err) {
+            let title = _("Can not connect to %s").format(url);
+            log(title + '\n' + err.message);
+        }
+    },
+
+    _asyncReadyCallback: function(nm, res) {
+        this._connected = this._network_monitor.can_reach_finish(res);
     },
 
     destroy: function() {
@@ -385,6 +414,10 @@ const AptUpdateIndicator = new Lang.Class({
                 // Error
                 this.updateIcon.set_icon_name('error');
                 this._updateMenuExpander( false, _('Error') );
+            } else if (updatesCount == -3) {
+                // Error
+                this.updateIcon.set_icon_name('error');
+                this._updateMenuExpander( false, _('No internet') );
             } else {
                 // Up to date
                 this.updateIcon.set_icon_name('system-software-update');
@@ -557,21 +590,27 @@ const AptUpdateIndicator = new Lang.Class({
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         this._showChecking(true);
         try {
-            // Parse check command line
-            let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
-            if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
-                                                                                argvp,
-                                                                                null,
-                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                null);
+            // First, check network access
+            if (this._connected) {
+                // Parse check command line
+                let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
+                if (!parseok) { throw 'Parse error' };
+                let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
+                                                                                    argvp,
+                                                                                    null,
+                                                                                    GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                                    null);
 
-            // We will process the output at once when it's done
-            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
-            this._upgradeProcess_pid = pid;
+                // We will process the output at once when it's done
+                this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
+                this._upgradeProcess_pid = pid;
+            } else {
+                this._showChecking(false);
+                this._updateStatus(STATUS.NO_INTERNET);
+            }
         } catch (err) {
             this._showChecking(false);
-            this._updateStatus(-2);
+            this._updateStatus(STATUS.ERROR);
         }
     },
 
@@ -625,7 +664,7 @@ const AptUpdateIndicator = new Lang.Class({
         } catch (err) {
             if (index == PKG_STATUS.UPGRADABLE) {
                 this._showChecking(false);
-                this._updateStatus(-2);
+                this._updateStatus(STATUS.ERROR);
             }
         }
     },
