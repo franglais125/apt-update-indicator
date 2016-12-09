@@ -38,36 +38,55 @@ function buildPrefsWidget(){
     buildable.add_from_file( Me.dir.get_path() + '/prefs.xml' );
     let box = buildable.get_object('prefs_widget');
 
-    let version_label = buildable.get_object('version_info');
-    version_label.set_text('[Update v' + Me.metadata.version.toString() + ']');
+    buildable.get_object('extension_version').set_text(Me.metadata.version.toString());
 
-    // Bind fields to settings
+    // Basic settings tab:
+    // Check updates
     settings.bind('check-interval',
-                  buildable.get_object('field_interval'),
+                  buildable.get_object('interval'),
                   'value',
                   Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('strip-versions',
+                  buildable.get_object('strip_versions_switch'),
+                  'active',
+                  Gio.SettingsBindFlags.DEFAULT);
+    // Indicator
     settings.bind('always-visible',
-                  buildable.get_object('field_visible'),
+                  buildable.get_object('always_visible'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
     settings.bind('show-count',
-                  buildable.get_object('field_count'),
+                  buildable.get_object('show_count'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('auto-expand-list',
+                  buildable.get_object('auto_expand_list'),
+                 'value',
+                  Gio.SettingsBindFlags.DEFAULT);
+    // Notifications
     settings.bind('notify',
-                  buildable.get_object('field_notify'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('verbosity',
-                  buildable.get_object('field_verbosity'),
+                  buildable.get_object('notifications'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
     settings.bind('transient',
-                  buildable.get_object('field_transient'),
+                  buildable.get_object('transient_notifications'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('strip-versions',
-                  buildable.get_object('field_stripversions'),
+    settings.bind('verbosity',
+                  buildable.get_object('verbosity'),
+                  'active',
+                  Gio.SettingsBindFlags.DEFAULT);
+
+
+    // Advanced settings tab:
+    // Update command
+    settings.bind('update-cmd',
+                  buildable.get_object('field_updatecmd'),
+                  'text',
+                  Gio.SettingsBindFlags.DEFAULT);
+    // Check commands
+    settings.bind('allow-no-passwd',
+                  buildable.get_object('allow_no_passwd_switch'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
     settings.bind('check-cmd',
@@ -79,21 +98,27 @@ function buildPrefsWidget(){
                   'text',
                   Gio.SettingsBindFlags.DEFAULT);
     settings.bind('allow-no-passwd',
-                  buildable.get_object('checkcmd_no_password_checkbutton'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('allow-no-passwd',
                   buildable.get_object('field_checkcmd_no_password'),
                   'sensitive',
                   Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('update-cmd',
-                  buildable.get_object('field_updatecmd'),
-                  'text',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('auto-expand-list',
-                  buildable.get_object('field_autoexpandlist'),
-                 'value',
-                  Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('allow-no-passwd',
+                  buildable.get_object('field_checkcmd'),
+                  'sensitive',
+                  Gio.SettingsBindFlags.INVERT_BOOLEAN);
+    // Reset button
+    buildable.get_object('reset_button').connect('clicked', Lang.bind(this, function() {
+        // restore default settings for the relevant keys
+        let keys = ['update-cmd',
+                    'check-cmd',
+                    'allow-no-passwd',
+                    'check-cmd-no-passwd'];
+        keys.forEach(function(val) {
+            settings.set_value(val, settings.get_default_value(val));
+        }, this);
+    }));
+
+
+    // Package status tab:
     settings.bind('new-packages',
                   buildable.get_object('new_packages_switch'),
                   'active',
@@ -112,17 +137,6 @@ function buildPrefsWidget(){
                   Gio.SettingsBindFlags.DEFAULT);
 
     box.show_all();
-
-    buildable.get_object('reset_button').connect('clicked', Lang.bind(this, function() {
-        // restore default settings for the relevant keys
-        let keys = ['update-cmd',
-                    'check-cmd',
-                    'allow-no-passwd',
-                    'check-cmd-no-passwd'];
-        keys.forEach(function(val) {
-            settings.set_value(val, settings.get_default_value(val));
-        }, this);
-    }));
 
     return box;
 };
