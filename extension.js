@@ -94,8 +94,6 @@ const AptUpdateIndicator = new Lang.Class({
     _residualPackagesList: [],
     _autoremovablePackagesList: [],
 
-    _bindings: [],
-
     _init: function() {
         this.parent(0.0, "AptUpdateIndicator");
 
@@ -110,6 +108,9 @@ const AptUpdateIndicator = new Lang.Class({
         box.add_child(this.label);
         this.actor.add_child(box);
 
+        // Prepare to track connections
+        this._signalsHandler = new Utils.GlobalSignalsHandler();
+
         // Assemble the menu
         this._assembleMenu();
 
@@ -123,7 +124,9 @@ const AptUpdateIndicator = new Lang.Class({
 
         // We check for the network status before trying to update apt-cache
         this._network_monitor = Gio.network_monitor_get_default();
-        this._network_monitor_connection = this._network_monitor.connect('network-changed', Lang.bind(this, this._checkConnectionState));
+        this._signalsHandler.add([this._network_monitor,
+                                 'network-changed',
+                                 Lang.bind(this, this._checkConnectionState)]);
         this._checkConnectionState();
     },
 
@@ -183,10 +186,23 @@ const AptUpdateIndicator = new Lang.Class({
         this.menu.addMenuItem(settingsMenuItem);
 
         // Bind some events
-        this.menu.connect('open-state-changed', Lang.bind(this, this._onMenuOpened));
-        this.checkNowMenuItem.connect('activate', Lang.bind(this, this._checkUpdates));
-        settingsMenuItem.connect('activate', Lang.bind(this, this._openSettings));
-        this.updateNowMenuItem.connect('activate', Lang.bind(this, this._updateNow));
+        this._signalsHandler.add([
+            this.menu,
+            'open-state-changed',
+            Lang.bind(this, this._onMenuOpened)
+        ],[
+            this.checkNowMenuItem,
+            'activate',
+            Lang.bind(this, this._checkUpdates)
+        ],[
+            this.updateNowMenuItem,
+            'activate',
+            Lang.bind(this, this._updateNow)
+        ],[
+            settingsMenuItem,
+            'activate',
+            Lang.bind(this, this._openSettings)
+        ]);
     },
 
     _applySettings: function() {
@@ -272,26 +288,47 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _bindSettings: function() {
-        this._bindings.push(this._settings.connect('changed::update-cmd',
-                            Lang.bind(this, this._updateCMD)));
-        this._bindings.push(this._settings.connect('changed::check-cmd',
-                            Lang.bind(this, this._checkCMD)));
-        this._bindings.push(this._settings.connect('changed::check-interval',
-                            Lang.bind(this, this._checkInterval)));
-        this._bindings.push(this._settings.connect('changed::allow-no-passwd',
-                            Lang.bind(this, this._checkCMD)));
-        this._bindings.push(this._settings.connect('changed::show-count',
-                            Lang.bind(this, this._checkShowHideIndicator)));
-        this._bindings.push(this._settings.connect('changed::always-visible',
-                            Lang.bind(this, this._checkShowHideIndicator)));
-        this._bindings.push(this._settings.connect('changed::new-packages',
-                            Lang.bind(this, this._newPackagesBinding)));
-        this._bindings.push(this._settings.connect('changed::obsolete-packages',
-                            Lang.bind(this, this._obsoletePackagesBinding)));
-        this._bindings.push(this._settings.connect('changed::residual-packages',
-                            Lang.bind(this, this._residualPackagesBinding)));
-        this._bindings.push(this._settings.connect('changed::autoremovable-packages',
-                            Lang.bind(this, this._autoremovablePackagesBinding)));
+        this._signalsHandler.add([
+            this._settings,
+            'changed::update-cmd',
+            Lang.bind(this, this._updateCMD)
+        ],[
+            this._settings,
+            'changed::check-cmd',
+            Lang.bind(this, this._checkCMD)
+        ],[
+            this._settings,
+            'changed::check-interval',
+            Lang.bind(this, this._checkInterval)
+        ],[
+            this._settings,
+            'changed::allow-no-passwd',
+            Lang.bind(this, this._checkCMD)
+        ],[
+            this._settings,
+            'changed::show-count',
+            Lang.bind(this, this._checkShowHideIndicator)
+        ],[
+            this._settings,
+            'changed::always-visible',
+            Lang.bind(this, this._checkShowHideIndicator)
+        ],[
+            this._settings,
+            'changed::new-packages',
+            Lang.bind(this, this._newPackagesBinding)
+        ],[
+            this._settings,
+            'changed::obsolete-packages',
+            Lang.bind(this, this._obsoletePackagesBinding)
+        ],[
+            this._settings,
+            'changed::residual-packages',
+            Lang.bind(this, this._residualPackagesBinding)
+        ],[
+            this._settings,
+            'changed::autoremovable-packages',
+            Lang.bind(this, this._autoremovablePackagesBinding)
+        ]);
     },
 
     _checkConnectionState: function() {
@@ -329,12 +366,8 @@ const AptUpdateIndicator = new Lang.Class({
             this._TimeoutId = null;
         }
 
-        for (let i = 0; i < this._bindings.length; i++) {
-            this._settings.disconnect(this._bindings[0]);
-            this._bindings[0] = 0;
-            this._bindings.shift();
-        }
-        this._bindings = null;
+        // Disconnect global signals
+        this._signalsHandler.destroy();
 
         this.parent();
     },
