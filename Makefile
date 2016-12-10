@@ -2,14 +2,17 @@
 
 UUID = apt-update-indicator@franglais125.gmail.com
 BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesheet.css utils.js
-SCRIPT_MODULES = scripts/autoremovable.sh scripts/new.sh scripts/obsolete.sh scripts/residual.sh
 EXTRA_MEDIA = media/logo.png
 TOLOCALIZE = extension.js
 MSGSRC = $(wildcard po/*.po)
-INSTALLBASE = ~/.local/share/gnome-shell/extensions
+ifeq ($(strip $(DESTDIR)),)
+	INSTALLBASE = $(HOME)/.local/share/gnome-shell/extensions
+else
+	INSTALLBASE = $(DESTDIR)/usr/share/gnome-shell/extensions
+endif
 INSTALLNAME = apt-update-indicator@franglais125.gmail.com
 
-# The command line passed variable VERSION is used to set the version string 
+# The command line passed variable VERSION is used to set the version string
 # in the metadata and in the generated zip-file. If no VERSION is passed, the
 # current commit SHA1 is used as version number in the metadata while the
 # generated zip file has no string attached.
@@ -24,6 +27,7 @@ all: extension
 
 clean:
 	rm -f ./schemas/gschemas.compiled
+	rm -f ./po/*.mo
 
 extension: ./schemas/gschemas.compiled $(MSGSRC:.po=.mo)
 
@@ -68,7 +72,7 @@ _build: all
 	mkdir -p _build
 	cp $(BASE_MODULES) _build
 	mkdir -p _build/scripts
-	cp $(SCRIPT_MODULES) _build/scripts/
+	cp scripts/*.sh _build/scripts/
 	mkdir -p _build/media
 	cp $(EXTRA_MEDIA) _build/media/
 	mkdir -p _build/schemas
