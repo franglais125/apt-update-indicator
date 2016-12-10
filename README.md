@@ -21,6 +21,13 @@ To install, simply download and execute "make install"
 
 ## Changes
 
+### v4
+- Complete redesign of the Settings UI
+- Check for internet connection before looking for new updates
+- Remove the cancel button: process runs as root
+- Improve date display
+- Add a system for proper handling of global signals
+
 ### v3
 - Add date and time of the last update to the menu
 - Some bug fixes and a few Synaptic-like features listed below:
