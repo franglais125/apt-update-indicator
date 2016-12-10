@@ -5,12 +5,14 @@ BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesh
 EXTRA_MEDIA = media/logo.png
 TOLOCALIZE = extension.js
 MSGSRC = $(wildcard po/*.po)
+INSTALLNAME = apt-update-indicator@franglais125.gmail.com
 ifeq ($(strip $(DESTDIR)),)
 	INSTALLBASE = $(HOME)/.local/share/gnome-shell/extensions
+	RMTMP = echo Not deleting tmp as installation is local
 else
 	INSTALLBASE = $(DESTDIR)/usr/share/gnome-shell/extensions
+	RMTMP = rm -rf ./_build/tmp
 endif
-INSTALLNAME = apt-update-indicator@franglais125.gmail.com
 
 # The command line passed variable VERSION is used to set the version string
 # in the metadata and in the generated zip-file. If no VERSION is passed, the
@@ -55,6 +57,7 @@ install: install-local
 install-local: _build
 	mkdir -p $(INSTALLBASE)/$(INSTALLNAME)/tmp
 	cp -r $(INSTALLBASE)/$(INSTALLNAME)/tmp ./_build/.
+	$(RMTMP)
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
 	mkdir -p $(INSTALLBASE)/$(INSTALLNAME)
 	cp -r ./_build/* $(INSTALLBASE)/$(INSTALLNAME)/
