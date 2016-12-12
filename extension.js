@@ -146,21 +146,25 @@ const AptUpdateIndicator = new Lang.Class({
         this.newPackagesListMenuLabel = new St.Label();
         this.newPackagesExpander.menu.box.add(this.newPackagesListMenuLabel);
         this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+        this.newPackagesExpander.actor.visible = false;
 
         this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
         this.obsoletePackagesListMenuLabel = new St.Label();
         this.obsoletePackagesExpander.menu.box.add(this.obsoletePackagesListMenuLabel);
         this.obsoletePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+        this.obsoletePackagesExpander.actor.visible = false;
 
         this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
         this.residualPackagesListMenuLabel = new St.Label();
         this.residualPackagesExpander.menu.box.add(this.residualPackagesListMenuLabel);
         this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+        this.residualPackagesExpander.actor.visible = false;
 
         this.autoremovablePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Autoremovable'));
         this.autoremovablePackagesListMenuLabel = new St.Label();
         this.autoremovablePackagesExpander.menu.box.add(this.autoremovablePackagesListMenuLabel);
         this.autoremovablePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
+        this.autoremovablePackagesExpander.actor.visible = false;
 
         // Other standard menu items
         let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
