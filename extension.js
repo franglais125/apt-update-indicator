@@ -172,8 +172,9 @@ const AptUpdateIndicator = new Lang.Class({
 
         // "Check now" and "Last Check" menu items
         this.checkNowMenuItem = new PopupMenu.PopupMenuItem( _('Check now') );
-        this.lastCheckMenuItem = new PopupMenu.PopupMenuItem( _('') );
+        this.lastCheckMenuItem = new PopupMenu.PopupMenuItem( '' );
         this.lastCheckMenuItem.actor.reactive = false;
+        this.lastCheckMenuItem.actor.visible = false;
 
         // Assemble all menu items into the popup menu
         this.menu.addMenuItem(this.updatesExpander);
