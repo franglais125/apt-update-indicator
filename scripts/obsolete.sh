@@ -24,6 +24,9 @@ ONLY_PRINT=$1
 # Paths and files
 path=~/.local/share/gnome-shell/extensions/apt-update-indicator@franglais125.gmail.com/tmp/
 
+# Create the directory if it doesn't exist
+mkdir -p ${path}
+
 file=${path}obsolete.list
 
 # Check for local or obsolete packages

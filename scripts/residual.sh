@@ -23,6 +23,9 @@
 ONLY_PRINT=$1
 path=~/.local/share/gnome-shell/extensions/apt-update-indicator@franglais125.gmail.com/tmp/
 
+# Create the directory if it doesn't exist
+mkdir -p ${path}
+
 file=${path}residual-config.list
 if [ "$ONLY_PRINT" -lt 1 ]; then
   dpkg -l | grep '^rc'| awk '{print $2}' > ${file}
