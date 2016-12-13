@@ -36,18 +36,18 @@ extension: ./schemas/gschemas.compiled $(MSGSRC:.po=.mo)
 ./schemas/gschemas.compiled: ./schemas/org.gnome.shell.extensions.apt-update-indicator.gschema.xml
 	glib-compile-schemas ./schemas/
 
-potfile: ./po/aptupdateindicator.pot
+potfile: ./po/apt-update-indicator.pot
 
 mergepo: potfile
 	for l in $(MSGSRC); do \
-		msgmerge -U $$l ./po/aptupdateindicator.pot; \
+		msgmerge -U $$l ./po/apt-update-indicator.pot; \
 	done;
 
-./po/aptupdateindicator.pot: $(TOLOCALIZE) prefs.xml
+./po/apt-update-indicator.pot: $(TOLOCALIZE) prefs.xml
 	mkdir -p po
-	xgettext -k_ -kN_ -o po/aptupdateindicator.pot --package-name "Apt Update Indicator" $(TOLOCALIZE)
+	xgettext -k_ -kN_ -o po/apt-update-indicator.pot --package-name "Apt Update Indicator" $(TOLOCALIZE)
 	intltool-extract --type=gettext/glade prefs.xml
-	xgettext -k_ -kN_ --join-existing -o po/aptupdateindicator.pot prefs.xml.h
+	xgettext -k_ -kN_ --join-existing -o po/apt-update-indicator.pot prefs.xml.h
 
 ./po/%.mo: ./po/%.po
 	msgfmt -c $< -o $@
