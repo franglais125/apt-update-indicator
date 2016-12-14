@@ -6,11 +6,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-20 22:16+0200\n"
+"POT-Creation-Date: 2016-12-14 01:38-0500\n"
 "PO-Revision-Date: 2016-01-04 04:53+0200\n"
 "Last-Translator: Sorin-Mihai Vârgolici <sorin-mihai@vargolici.com>\n"
+"Language-Team: \n"
 "Language: ro_RO\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -18,144 +19,358 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: extension.js:101
+#: extension.js:139
+msgid "New in repository"
+msgstr ""
+
+#: extension.js:145 prefs.xml.h:27
+msgid "Local/Obsolete packages"
+msgstr ""
+
+#: extension.js:151
+msgid "Residual config files"
+msgstr ""
+
+#: extension.js:157
+msgid "Autoremovable"
+msgstr ""
+
+#: extension.js:164
 msgid "Settings"
 msgstr "Setări"
 
-#: extension.js:102 extension.js:374
-msgid "Update now"
-msgstr "Actualizează acum"
+#: extension.js:165
+#, fuzzy
+msgid "Apply updates"
+msgstr "Numele tuturor actualizărilor"
 
-#: extension.js:105
+#: extension.js:168 extension.js:459
 msgid "Check now"
 msgstr "Verifică acum"
 
-#: extension.js:126
-msgid "Waiting first check"
-msgstr "Așteaptă prima verificare"
+#: extension.js:173
+msgid "Jan"
+msgstr ""
 
-#: extension.js:245
+#: extension.js:173
+msgid "Feb"
+msgstr ""
+
+#: extension.js:173
+msgid "Mar"
+msgstr ""
+
+#: extension.js:173
+msgid "Apr"
+msgstr ""
+
+#: extension.js:173
+msgid "May"
+msgstr ""
+
+#: extension.js:173
+msgid "Jun"
+msgstr ""
+
+#: extension.js:174
+msgid "Jul"
+msgstr ""
+
+#: extension.js:174
+msgid "Aug"
+msgstr ""
+
+#: extension.js:174
+msgid "Sep"
+msgstr ""
+
+#: extension.js:174
+msgid "Oct"
+msgstr ""
+
+#: extension.js:174
+msgid "Nov"
+msgstr ""
+
+#: extension.js:174
+msgid "Dec"
+msgstr ""
+
+#: extension.js:175
+msgid "Sun"
+msgstr ""
+
+#: extension.js:175
+msgid "Mon"
+msgstr ""
+
+#: extension.js:175
+msgid "Tue"
+msgstr ""
+
+#: extension.js:175
+msgid "Wed"
+msgstr ""
+
+#: extension.js:176
+msgid "Thu"
+msgstr ""
+
+#: extension.js:176
+msgid "Fri"
+msgstr ""
+
+#: extension.js:176
+msgid "Sat"
+msgstr ""
+
+#: extension.js:347
+#, javascript-format
+msgid "Can not connect to %s"
+msgstr ""
+
+#: extension.js:418
+msgid "Last check: "
+msgstr ""
+
+#: extension.js:456
+msgid "Checking"
+msgstr "Se verifică"
+
+#: extension.js:473
 #, fuzzy, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "actualizări în așteptare"
 msgstr[1] "actualizări în așteptare"
 
-#: extension.js:258 extension.js:263
-#, fuzzy
-msgid "New Arch Linux Update"
-msgid_plural "New Arch Linux Updates"
-msgstr[0] "Actualizări noi pentru Arch Linux"
-msgstr[1] "Actualizări noi pentru Arch Linux"
+#: extension.js:498
+msgid "Error"
+msgstr "Eroare"
 
-#: extension.js:264
+#: extension.js:502
+msgid "No internet"
+msgstr ""
+
+#: extension.js:506
+msgid "Up to date :)"
+msgstr "Actualizat :)"
+
+#: extension.js:528 extension.js:534
+#, fuzzy
+msgid "New Update"
+msgid_plural "New Updates"
+msgstr[0] "Nunele noilor actualizări"
+msgstr[1] "Nunele noilor actualizări"
+
+#: extension.js:535
 #, fuzzy, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "actualizări în așteptare"
 msgstr[1] "actualizări în așteptare"
 
-#: extension.js:280
-msgid "Error"
-msgstr "Eroare"
+#: extension.js:832
+msgid "Update now"
+msgstr "Actualizează acum"
 
-#: extension.js:284
-msgid "Checking"
-msgstr "Se verifică"
-
-#: extension.js:288
-msgid "Up to date :)"
-msgstr "Actualizat :)"
-
-#: prefs.xml:57
+#: prefs.xml.h:1
 #, fuzzy
-msgid "Checking for updates"
-msgstr "Comandă pentru actualizarea pachetelor"
-
-#: prefs.xml:81
-msgid "Time to wait before first check (seconds)"
-msgstr "Timp de așteptare înainte de prima verificare (secunde)"
-
-#: prefs.xml:100
-msgid "Interval between updates check (minutes)"
+msgid "Interval between updates check (minutes, 0 to disable)"
 msgstr "Interval între verificări de actualizare (minute)"
 
-#: prefs.xml:119
-msgid "Strip out versions numbers"
+#: prefs.xml.h:2
+#, fuzzy
+msgid "Check for updates automatically"
+msgstr "Comandă pentru actualizarea pachetelor"
+
+#: prefs.xml.h:3
+msgid "Strip out version numbers"
 msgstr ""
 
-#: prefs.xml:141
-#, fuzzy
-msgid "Indicator"
-msgstr "<b>Indicator</b>"
+#: prefs.xml.h:4
+msgid "Always show the indicator"
+msgstr ""
 
-#: prefs.xml:156
-msgid "Always visible"
-msgstr "Întotdeauna vizibil"
-
-#: prefs.xml:175
+#: prefs.xml.h:5
 msgid "Show updates count on indicator"
 msgstr "Arată numărul actualizărilor în indicator"
 
-#: prefs.xml:195
+#: prefs.xml.h:6
 msgid ""
-"Auto-expand updates list if updates count is less than this number (0 to "
-"disable)"
+"Auto-expand the list if updates count is less than this number (0 to disable)"
 msgstr ""
 
-#: prefs.xml:218
-#, fuzzy
-msgid "Notification"
-msgstr "<b>Notificare</b>"
+#: prefs.xml.h:7
+msgid "Auto-expand updates list"
+msgstr ""
 
-#: prefs.xml:233
-msgid "Send a notification when new updates are available"
+#: prefs.xml.h:8
+#, fuzzy
+msgid "Send a notification when new updates are available."
 msgstr "Trimite notificare când noi actualizări sunt disponibile"
 
-#: prefs.xml:252
+#: prefs.xml.h:9
+#, fuzzy
+msgid "Notifications"
+msgstr "<b>Notificare</b>"
+
+#: prefs.xml.h:10
 msgid "Use transient notifications (auto dismiss)"
 msgstr "Folosește notificări tranzitorii (auto închidere)"
 
-#: prefs.xml:271
+#: prefs.xml.h:11
 msgid "How much information to show on notifications"
 msgstr "Cât de multă informație să fie arătată în notificări"
 
-#: prefs.xml:279
+#: prefs.xml.h:12
 msgid "Count only"
 msgstr "Doar număr"
 
-#: prefs.xml:280
+#: prefs.xml.h:13
 msgid "New updates names"
 msgstr "Nunele noilor actualizări"
 
-#: prefs.xml:281
+#: prefs.xml.h:14
 msgid "All updates names"
 msgstr "Numele tuturor actualizărilor"
 
-#: prefs.xml:296
+#: prefs.xml.h:15
 #, fuzzy
 msgid "Basic settings"
 msgstr "Setări"
 
-#: prefs.xml:312
-#, fuzzy
-msgid "Command to check for package updates"
-msgstr "Comandă pentru actualizarea pachetelor"
+#: prefs.xml.h:16
+msgid "Reset values for all commands"
+msgstr ""
 
-#: prefs.xml:329
+#: prefs.xml.h:17
+msgid "Reset"
+msgstr ""
+
+#: prefs.xml.h:18
 msgid "Command to update packages"
 msgstr "Comandă pentru actualizarea pachetelor"
 
-#: prefs.xml:346
-msgid "Pacman local directory path - To detect when new packages are installed"
+#: prefs.xml.h:19
+msgid ""
+" Please read the wiki for instructions: <a href=\"https://github.com/"
+"franglais125/apt-update-indicator/wiki/Check-for-updates-without-entering-"
+"the-password\">Wiki on github</a>"
 msgstr ""
-"Calea locală a dosarului Pacman - Pentru a detecta când noi pachete sunt "
-"instalate"
 
-#: prefs.xml:363
+#: prefs.xml.h:20
+#, fuzzy
+msgid "Check for updates without a password"
+msgstr "Comandă pentru actualizarea pachetelor"
+
+#: prefs.xml.h:21
+#, fuzzy
+msgid "Command to check for updates"
+msgstr "Comandă pentru actualizarea pachetelor"
+
+#: prefs.xml.h:22
+#, fuzzy
+msgid "Command to check for updates (no password)"
+msgstr "Comandă pentru actualizarea pachetelor"
+
+#: prefs.xml.h:23
 #, fuzzy
 msgid "Advanced settings"
 msgstr "<b>Setări avansate</b>"
+
+#: prefs.xml.h:24
+msgid ""
+"Include an item in the indicator with a list of new packages in the "
+"repository."
+msgstr ""
+
+#: prefs.xml.h:25
+msgid "New packages in repository"
+msgstr ""
+
+#: prefs.xml.h:26
+msgid ""
+"Include an item in the indicator with a list of obsolete or local packages. "
+"Obsolete packages are not available in the repository. Local packages are "
+"available, but an unavailable version is installed."
+msgstr ""
+
+#: prefs.xml.h:28
+msgid ""
+"Include an item in the indicator with a list of packages that have residual "
+"config files. Run \"sudo apt purge pkgname\" to clean them."
+msgstr ""
+
+#: prefs.xml.h:29
+msgid "Residual packages"
+msgstr ""
+
+#: prefs.xml.h:30
+msgid ""
+"Include an item in the indicator with a list of autoremovable packages. Run "
+"\"sudo apt autoremove\" to remove them."
+msgstr ""
+
+#: prefs.xml.h:31
+msgid "Autoremovable packages"
+msgstr ""
+
+#: prefs.xml.h:32
+msgid "Package status"
+msgstr ""
+
+#: prefs.xml.h:33
+msgid "version: "
+msgstr ""
+
+#: prefs.xml.h:34
+msgid "Adds an indicator to the top panel that allows to check for updates"
+msgstr ""
+
+#: prefs.xml.h:35
+msgid "Maintained by"
+msgstr ""
+
+#: prefs.xml.h:36
+msgid "Webpage"
+msgstr ""
+
+#: prefs.xml.h:37
+msgid ""
+"<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
+"Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
+"General Public License, version 2 or later</a> for details.</span>"
+msgstr ""
+
+#: prefs.xml.h:39
+msgid "About"
+msgstr ""
+
+#~ msgid "Waiting first check"
+#~ msgstr "Așteaptă prima verificare"
+
+#, fuzzy
+#~ msgid "New Arch Linux Update"
+#~ msgid_plural "New Arch Linux Updates"
+#~ msgstr[0] "Actualizări noi pentru Arch Linux"
+#~ msgstr[1] "Actualizări noi pentru Arch Linux"
+
+#~ msgid "Time to wait before first check (seconds)"
+#~ msgstr "Timp de așteptare înainte de prima verificare (secunde)"
+
+#, fuzzy
+#~ msgid "Indicator"
+#~ msgstr "<b>Indicator</b>"
+
+#~ msgid "Always visible"
+#~ msgstr "Întotdeauna vizibil"
+
+#~ msgid ""
+#~ "Pacman local directory path - To detect when new packages are installed"
+#~ msgstr ""
+#~ "Calea locală a dosarului Pacman - Pentru a detecta când noi pachete sunt "
+#~ "instalate"
 
 #~ msgid "<b>Timers</b>"
 #~ msgstr "<b>Cronometre</b>"

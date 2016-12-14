@@ -5,9 +5,9 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Arch-Update\n"
+"Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-19 20:01-0500\n"
+"POT-Creation-Date: 2016-12-14 01:38-0500\n"
 "PO-Revision-Date: 2016-10-20 22:19+0200\n"
 "Last-Translator: Fran Glais <franglais125@gmail.com>\n"
 "Language-Team: \n"
@@ -18,99 +18,198 @@ msgstr ""
 "X-Generator: Poedit 1.8.9\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
 
-#: extension.js:76
+#: extension.js:139
+msgid "New in repository"
+msgstr "Nouveaux paquets dans les dépôts"
+
+#: extension.js:145 prefs.xml.h:27
+msgid "Local/Obsolete packages"
+msgstr "Paquets locaux ou obsolètes"
+
+#: extension.js:151
+msgid "Residual config files"
+msgstr "Résidus de configuration"
+
+#: extension.js:157
+msgid "Autoremovable"
+msgstr "Automatiquement supprimable"
+
+#: extension.js:164
 msgid "Settings"
 msgstr "Paramètres"
 
-#: extension.js:77
-#, fuzzy
+#: extension.js:165
 msgid "Apply updates"
-msgstr "Noms de toutes les mises à jour"
+msgstr "Mettre à jour maintenant"
 
-#: extension.js:81
-msgid "Checking"
-msgstr "Vérification en cours"
-
-#: extension.js:92
+#: extension.js:168 extension.js:459
 msgid "Check now"
 msgstr "Vérifier maintenant"
 
-#: extension.js:118
-msgid "Waiting first check"
-msgstr ""
+#: extension.js:173
+msgid "Jan"
+msgstr "janv."
 
-#: extension.js:214
+#: extension.js:173
+msgid "Feb"
+msgstr "févr."
+
+#: extension.js:173
+msgid "Mar"
+msgstr "mars"
+
+#: extension.js:173
+msgid "Apr"
+msgstr "avril"
+
+#: extension.js:173
+msgid "May"
+msgstr "mai"
+
+#: extension.js:173
+msgid "Jun"
+msgstr "juin"
+
+#: extension.js:174
+msgid "Jul"
+msgstr "juil."
+
+#: extension.js:174
+msgid "Aug"
+msgstr "août"
+
+#: extension.js:174
+msgid "Sep"
+msgstr "sept."
+
+#: extension.js:174
+msgid "Oct"
+msgstr "oct."
+
+#: extension.js:174
+msgid "Nov"
+msgstr "nov."
+
+#: extension.js:174
+msgid "Dec"
+msgstr "déc."
+
+#: extension.js:175
+msgid "Sun"
+msgstr "dim."
+
+#: extension.js:175
+msgid "Mon"
+msgstr "lun."
+
+#: extension.js:175
+msgid "Tue"
+msgstr "mar."
+
+#: extension.js:175
+msgid "Wed"
+msgstr "mer."
+
+#: extension.js:176
+msgid "Thu"
+msgstr "jeu."
+
+#: extension.js:176
+msgid "Fri"
+msgstr "ven."
+
+#: extension.js:176
+msgid "Sat"
+msgstr "sam."
+
+#: extension.js:347
+#, javascript-format
+msgid "Can not connect to %s"
+msgstr "Impossible d'ouvrir %s"
+
+#: extension.js:418
+msgid "Last check: "
+msgstr "Dernière vérification: "
+
+#: extension.js:456
+msgid "Checking"
+msgstr "Vérification en cours"
+
+#: extension.js:473
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "%d mise à jour en attente"
 msgstr[1] "%d mises à jour en attente"
 
-#: extension.js:230 extension.js:236
+#: extension.js:498
+msgid "Error"
+msgstr "Erreur"
+
+#: extension.js:502
+msgid "No internet"
+msgstr "Sans connexion"
+
+#: extension.js:506
+msgid "Up to date :)"
+msgstr "Tout est à jour :)"
+
+#: extension.js:528 extension.js:534
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nouvelle mise à jour"
 msgstr[1] "Nouvelles mises à jour"
 
-#: extension.js:237
+#: extension.js:535
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "Il y a %d mise à jour en attente"
 msgstr[1] "Il y a %d mises à jour en attente"
 
-#: extension.js:253
-msgid "Error"
-msgstr "Erreur"
-
-#: extension.js:257
-msgid "Up to date :)"
-msgstr "Tout est à jour :)"
-
-#: extension.js:401
+#: extension.js:832
 msgid "Update now"
 msgstr "Mettre à jour maintenant"
 
 #: prefs.xml.h:1
-msgid "Checking for updates"
-msgstr "Vérification des mises à jour"
+msgid "Interval between updates check (minutes, 0 to disable)"
+msgstr "Intervalle entre les vérifications (minutes, 0 pour désactiver)"
 
 #: prefs.xml.h:2
-msgid "Interval between updates check (minutes)"
-msgstr "Intervalle entre les vérifications (minutes)"
+msgid "Check for updates automatically"
+msgstr "Vérification automatique"
 
 #: prefs.xml.h:3
-msgid "Strip out versions numbers"
+msgid "Strip out version numbers"
 msgstr "Retirer les numéros de version"
 
 #: prefs.xml.h:4
-msgid "Indicator"
-msgstr "Indicateur"
+msgid "Always show the indicator"
+msgstr "Toujours montrer l'indicateur"
 
 #: prefs.xml.h:5
-msgid "Always visible"
-msgstr "Toujours visible"
-
-#: prefs.xml.h:6
 msgid "Show updates count on indicator"
 msgstr "Afficher le nombre de mises à jour"
 
-#: prefs.xml.h:7
+#: prefs.xml.h:6
 msgid ""
-"Auto-expand updates list if updates count is less than this number (0 to "
-"disable)"
+"Auto-expand the list if updates count is less than this number (0 to disable)"
 msgstr ""
 "Étendre automatiquement la liste des mises à jour s'il y en a moins que ce "
 "nombre (0 pour désactiver)"
 
-#: prefs.xml.h:8
-msgid "Notification"
-msgstr "Notification"
+#: prefs.xml.h:7
+msgid "Auto-expand updates list"
+msgstr "Étendre la liste automatiquement"
 
-#: prefs.xml.h:9
-msgid "Send a notification when new updates are available"
+#: prefs.xml.h:8
+msgid "Send a notification when new updates are available."
 msgstr ""
 "Afficher une notification quand de nouvelles mises à jour sont disponibles"
+
+#: prefs.xml.h:9
+msgid "Notifications"
+msgstr "Notifications"
 
 #: prefs.xml.h:10
 msgid "Use transient notifications (auto dismiss)"
@@ -137,16 +236,118 @@ msgid "Basic settings"
 msgstr "Paramètres simples"
 
 #: prefs.xml.h:16
-msgid "Command to check for package updates"
-msgstr "Commande pour rechercher les mises à jour de paquets"
+msgid "Reset values for all commands"
+msgstr "Réinitialiser toutes les commandes"
 
 #: prefs.xml.h:17
+msgid "Reset"
+msgstr "Restaurer"
+
+#: prefs.xml.h:18
 msgid "Command to update packages"
 msgstr "Commande pour mettre à jour les paquets"
 
-#: prefs.xml.h:18
+#: prefs.xml.h:19
+msgid ""
+" Please read the wiki for instructions: <a href=\"https://github.com/"
+"franglais125/apt-update-indicator/wiki/Check-for-updates-without-entering-"
+"the-password\">Wiki on github</a>"
+msgstr ""
+
+#: prefs.xml.h:20
+msgid "Check for updates without a password"
+msgstr "Vérification des mises à jour sans mot de passe"
+
+#: prefs.xml.h:21
+msgid "Command to check for updates"
+msgstr "Commande pour rechercher les mises à jour de paquets"
+
+#: prefs.xml.h:22
+msgid "Command to check for updates (no password)"
+msgstr "Commande pour rechercher les mises à jour de paquets (sans mot de passe)"
+
+#: prefs.xml.h:23
 msgid "Advanced settings"
 msgstr "Réglages avancés"
 
-#~ msgid "Time to wait before first check (seconds)"
-#~ msgstr "Temps d'attente avant le premier test (secondes)"
+#: prefs.xml.h:24
+msgid ""
+"Include an item in the indicator with a list of new packages in the "
+"repository."
+msgstr ""
+"Inclure an item dans l'indicateur avec une liste de nouveaux "
+"paquets dans les dépôts."
+
+#: prefs.xml.h:25
+msgid "New packages in repository"
+msgstr "Nouveaux paquets"
+
+#: prefs.xml.h:26
+msgid ""
+"Include an item in the indicator with a list of obsolete or local packages. "
+"Obsolete packages are not available in the repository. Local packages are "
+"available, but an unavailable version is installed."
+msgstr ""
+"Inclure an item dans l'indicateur avec une liste de paquets locaux ou "
+"obsolètes. Les paquets obsolètes ne sont plus disponibles. Les paquets locaux "
+"sont disponibles, mais pas dans la version installée."
+
+#: prefs.xml.h:28
+msgid ""
+"Include an item in the indicator with a list of packages that have residual "
+"config files. Run \"sudo apt purge pkgname\" to clean them."
+msgstr ""
+"Inclure an item dans l'indicateur avec une liste de paquets qui ont des "
+"résidus de configuration. Exécutez \"sudo apt purge pkgname\" pour les purger."
+
+#: prefs.xml.h:29
+msgid "Residual packages"
+msgstr "Résidus de configuration"
+
+#: prefs.xml.h:30
+msgid ""
+"Include an item in the indicator with a list of autoremovable packages. Run "
+"\"sudo apt autoremove\" to remove them."
+msgstr ""
+"Inclure an item dans l'indicateur avec une liste de paquets qui ne sont plus "
+"nécessaires. Exécutez \"sudo apt autoremove\" pour les désinstaller."
+
+#: prefs.xml.h:31
+msgid "Autoremovable packages"
+msgstr "Paquets n'étant plus nécessaires"
+
+#: prefs.xml.h:32
+msgid "Package status"
+msgstr "État des paquets"
+
+#: prefs.xml.h:33
+msgid "version: "
+msgstr "version: "
+
+#: prefs.xml.h:34
+msgid "Adds an indicator to the top panel that allows to check for updates"
+msgstr "Ajoute un indicateur au panneau supérieur pour vérifier les mises "
+"à jour"
+
+#: prefs.xml.h:35
+msgid "Maintained by"
+msgstr "Maintenu par"
+
+#: prefs.xml.h:36
+msgid "Webpage"
+msgstr "Page web"
+
+#: prefs.xml.h:37
+msgid ""
+"<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
+"Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
+"General Public License, version 2 or later</a> for details.</span>"
+msgstr ""
+"<span size=\"small\">Ce programme est distribué SANS AUCUNE GARANTIE.\n"
+"Consultez la <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html"
+"\">Licence Générale Publique GNU version 2 ou plus récente</a> pour plus "
+"d'informations.</span>"
+
+#: prefs.xml.h:39
+msgid "About"
+msgstr "À propos"
