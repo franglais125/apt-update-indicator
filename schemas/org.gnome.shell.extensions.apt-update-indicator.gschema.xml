@@ -63,7 +63,7 @@
     </key>
 
     <key name="check-cmd-no-passwd" type="s">
-      <default>"/usr/bin/sudo /usr/local/bin/updater"</default>
+      <default>"/usr/local/bin/updater"</default>
       <summary>Command to run to check for updates without password.</summary>
       <description>Command to run to check for updates without passowrd.</description>
     </key>

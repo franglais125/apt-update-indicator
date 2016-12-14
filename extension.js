@@ -234,8 +234,9 @@ const AptUpdateIndicator = new Lang.Class({
         else
             CHECK_CMD = PREPEND_CMD + STOCK_CHECK_CMD;
 
-        if (this._settings.get_boolean('allow-no-passwd'))
-            CHECK_CMD = this._settings.get_string('check-cmd-no-passwd');
+        if (this._settings.get_boolean('allow-no-passwd') &&
+            this._settings.get_string('check-cmd-no-passwd') !== "")
+            CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd-no-passwd');
     },
 
     _checkInterval: function() {

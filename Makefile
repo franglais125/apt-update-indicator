@@ -89,3 +89,8 @@ _build: all
 		cp $$l $$lf/LC_MESSAGES/apt-update-indicator.mo; \
 	done;
 	sed -i 's/"version": -1/"version": "$(VERSION)"/'  _build/metadata.json;
+
+install-policy:
+	sudo cp policy/updater /usr/local/bin/
+	sudo chmod 0755 /usr/local/bin/updater
+	sudo cp policy/org.gnome.shell.extensions.apt-update-indicator.policy /usr/share/polkit-1/actions/
