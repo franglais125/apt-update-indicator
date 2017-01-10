@@ -80,9 +80,21 @@ function buildPrefsWidget(){
 
     // Advanced settings tab:
     // Update command
+    settings.bind('output-on-terminal',
+                  buildable.get_object('output_on_terminal_switch'),
+                  'active',
+                  Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('terminal',
+                  buildable.get_object('terminal_entry'),
+                  'text',
+                  Gio.SettingsBindFlags.DEFAULT);
     settings.bind('update-cmd',
                   buildable.get_object('field_updatecmd'),
                   'text',
+                  Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('output-on-terminal',
+                  buildable.get_object('terminal_entry'),
+                  'sensitive',
                   Gio.SettingsBindFlags.DEFAULT);
     // Check commands
     settings.bind('allow-no-passwd',
@@ -108,7 +120,9 @@ function buildPrefsWidget(){
     // Reset button
     buildable.get_object('reset_button').connect('clicked', Lang.bind(this, function() {
         // restore default settings for the relevant keys
-        let keys = ['update-cmd',
+        let keys = ['terminal',
+                    'output-on-terminal',
+                    'update-cmd',
                     'check-cmd',
                     'allow-no-passwd',
                     'check-cmd-no-passwd'];

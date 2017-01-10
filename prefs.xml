@@ -454,6 +454,66 @@
             <object class="GtkListBox" id="update_command_listbox">
               <property name="selection_mode">none</property>
               <child>
+                <object class="GtkListBoxRow" id="output_on_terminal_list">
+                  <child>
+                    <object class="GtkGrid" id="output_on_terminal_grid">
+                      <property name="margin_left">12</property>
+                      <property name="margin_right">12</property>
+                      <property name="margin_top">12</property>
+                      <property name="margin_bottom">12</property>
+                      <property name="column_spacing">32</property>
+                      <child>
+                        <object class="GtkLabel" id="output_on_terminal_label">
+                          <property name="hexpand">True</property>
+                          <property name="xalign">0</property>
+                          <property name="label" translatable="yes">Show output on terminal</property>
+                        </object>
+                        <packing>
+                          <property name="left_attach">0</property>
+                          <property name="top_attach">0</property>
+                        </packing>
+                      </child>
+                      <child>
+                        <object class="GtkSwitch" id="output_on_terminal_switch">
+                          <property name="halign">end</property>
+                          <property name="valign">center</property>
+                        </object>
+                        <packing>
+                          <property name="left_attach">1</property>
+                          <property name="top_attach">0</property>
+                          <property name="height">2</property>
+                        </packing>
+                      </child>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkListBoxRow" id="terminal_listboxrow">
+                  <child>
+                    <object class="GtkGrid" id="terminal_grid">
+                      <property name="margin_left">12</property>
+                      <property name="margin_right">12</property>
+                      <property name="margin_top">12</property>
+                      <property name="margin_bottom">12</property>
+                      <property name="column_spacing">12</property>
+                      <child>
+                        <object class="GtkLabel">
+                          <property name="label" translatable="yes">Terminal to use</property>
+                          <property name="hexpand">True</property>
+                          <property name="xalign">0</property>
+                        </object>
+                      </child>
+                      <child>
+                        <object class="GtkEntry" id="terminal_entry">
+                          <property name="width-chars">30</property>
+                        </object>
+                      </child>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
                 <object class="GtkListBoxRow" id="update_command_listboxrow">
                   <child>
                     <object class="GtkGrid" id="update_command_grid">

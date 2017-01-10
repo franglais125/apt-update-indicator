@@ -224,6 +224,14 @@ const AptUpdateIndicator = new Lang.Class({
             UPDATE_CMD = PREPEND_CMD + this._settings.get_string('update-cmd');
         else
             UPDATE_CMD = PREPEND_CMD + STOCK_UPDATE_CMD;
+
+        if (this._settings.get_boolean('output-on-terminal') &&
+            this._settings.get_string('update-cmd') !== "")
+            UPDATE_CMD = '/usr/bin/' + this._settings.get_string('terminal') +
+                         ' "echo sudo ' + this._settings.get_string('update-cmd') +
+                         '; sudo ' + this._settings.get_string('update-cmd') +
+                         '; echo Press any key to continue' +
+                         '; read -n1 key "';
     },
 
     _checkCMD: function() {
@@ -293,6 +301,14 @@ const AptUpdateIndicator = new Lang.Class({
 
     _bindSettings: function() {
         this._signalsHandler.add([
+            this._settings,
+            'changed::terminal',
+            Lang.bind(this, this._updateCMD)
+        ],[
+            this._settings,
+            'changed::output-on-terminal',
+            Lang.bind(this, this._updateCMD)
+        ],[
             this._settings,
             'changed::update-cmd',
             Lang.bind(this, this._updateCMD)

@@ -74,6 +74,18 @@
       <description>Command to run to update packages.</description>
     </key>
 
+    <key name="output-on-terminal" type="b">
+      <default>false</default>
+        <summary>Show the output of the upgrade process on a terminal window</summary>
+        <description>This is a safer way of upgrading packages.</description>
+    </key>
+
+    <key name="terminal" type="s">
+      <default>"gnome-terminal -x bash -c"</default>
+      <summary>Terminal and options to use</summary>
+      <description>Terminal and options to execute a shell for the upgrade process</description>
+    </key>
+
     <key name="strip-versions" type="b">
       <default>true</default>
         <summary>Remove version numbers from checkupdates output</summary>
