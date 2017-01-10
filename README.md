@@ -21,6 +21,12 @@ To install, simply download and execute "make install"
 
 ## Changes
 
+### Coming up:
+- Use policykit instead of sudo for password-less checks
+- Add option to show update process on a terminal
+- Small fixes for scripts
+- Update Spanish and French translations
+
 ### v4
 - Complete redesign of the Settings UI
 - Check for internet connection before looking for new updates

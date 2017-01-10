@@ -76,11 +76,9 @@ const AptUpdateIndicator = new Lang.Class({
 
     _upgradeProcess_sourceId: null,
     _upgradeProcess_stream: null,
-    _upgradeProcess_pid: null,
 
     _process_sourceId: [null, null, null, null],
     _process_stream: [null, null, null, null],
-    _process_pid: [null, null, null, null],
 
     _updateList: [],
     _newPackagesList: [],
@@ -627,7 +625,6 @@ const AptUpdateIndicator = new Lang.Class({
      */
 
     _updateNow: function () {
-        this.menu.close();
         if(this._upgradeProcess_sourceId) {
             // A check is running ! Maybe we should kill it and run another one ?
             return;
@@ -636,15 +633,14 @@ const AptUpdateIndicator = new Lang.Class({
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( UPDATE_CMD );
             if (!parseok) { throw 'Parse error' };
-            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
-                                                                                argvp,
-                                                                                null,
-                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                null);
+            let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
+                                                            argvp,
+                                                            null,
+                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                            null);
 
             // We will process the output at once when it's done
             this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
-            this._upgradeProcess_pid = pid;
         } catch (err) {
         }
     },
@@ -654,7 +650,6 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._upgradeProcess_sourceId)
             GLib.source_remove(this._upgradeProcess_sourceId);
         this._upgradeProcess_sourceId = null;
-        this._upgradeProcess_pid = null;
 
         // Check if updates are available
         this._otherPackages(false, PKG_STATUS.UPGRADABLE);
@@ -678,15 +673,14 @@ const AptUpdateIndicator = new Lang.Class({
                 // Parse check command line
                 let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
                 if (!parseok) { throw 'Parse error' };
-                let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
-                                                                                    argvp,
-                                                                                    null,
-                                                                                    GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                    null);
+                let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
+                                                                argvp,
+                                                                null,
+                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                null);
 
                 // We will process the output at once when it's done
                 this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
-                this._upgradeProcess_pid = pid;
             } else {
                 this._showChecking(false);
                 this._updateStatus(STATUS.NO_INTERNET);
@@ -702,7 +696,6 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._upgradeProcess_sourceId)
             GLib.source_remove(this._upgradeProcess_sourceId);
         this._upgradeProcess_sourceId = null;
-        this._upgradeProcess_pid = null;
 
         // Update indicator
         this._otherPackages(false, PKG_STATUS.UPGRADABLE);
@@ -726,11 +719,11 @@ const AptUpdateIndicator = new Lang.Class({
                           initializing ? '1' : '0'];
             }
 
-            let [res, pid, in_fd, out_fd, err_fd] = GLib.spawn_async_with_pipes(null,
-                                                                                script,
-                                                                                null,
-                                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                                null);
+            let [, pid, , out_fd, ] = GLib.spawn_async_with_pipes(null,
+                                                                  script,
+                                                                  null,
+                                                                  GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                  null);
 
             // Let's buffer the command's output - that's a input for us !
             this._process_stream[index] = new Gio.DataInputStream({
@@ -738,7 +731,6 @@ const AptUpdateIndicator = new Lang.Class({
             });
 
             // We will process the output at once when it's done
-            this._process_pid[index] = pid;
             this._process_sourceId[index] = GLib.child_watch_add(0, pid, Lang.bind(this,
                 function() {
                     this._packagesRead(index);
@@ -785,7 +777,6 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._process_sourceId[index])
             GLib.source_remove(this._process_sourceId[index]);
         this._process_sourceId[index] = null;
-        this._process_pid     [index] = null;
 
         // Update indicator
         this._updatePackagesStatus(index);
