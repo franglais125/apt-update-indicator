@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-14 01:38-0500\n"
+"POT-Creation-Date: 2017-01-11 21:54-0500\n"
 "PO-Revision-Date: 2016-10-20 22:19+0200\n"
 "Last-Translator: Fran Glais <franglais125@gmail.com>\n"
 "Language-Team: \n"
@@ -18,156 +18,156 @@ msgstr ""
 "X-Generator: Poedit 1.8.9\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
 
-#: extension.js:139
+#: extension.js:137
 msgid "New in repository"
 msgstr "Nouveaux paquets dans les dépôts"
 
-#: extension.js:145 prefs.xml.h:27
+#: extension.js:143 prefs.xml.h:29
 msgid "Local/Obsolete packages"
 msgstr "Paquets locaux ou obsolètes"
 
-#: extension.js:151
+#: extension.js:149
 msgid "Residual config files"
 msgstr "Résidus de configuration"
 
-#: extension.js:157
+#: extension.js:155
 msgid "Autoremovable"
 msgstr "Automatiquement supprimable"
 
-#: extension.js:164
+#: extension.js:162
 msgid "Settings"
 msgstr "Paramètres"
 
-#: extension.js:165
+#: extension.js:163
 msgid "Apply updates"
 msgstr "Mettre à jour maintenant"
 
-#: extension.js:168 extension.js:459
+#: extension.js:166 extension.js:474
 msgid "Check now"
 msgstr "Vérifier maintenant"
 
-#: extension.js:173
+#: extension.js:171
 msgid "Jan"
 msgstr "janv."
 
-#: extension.js:173
+#: extension.js:171
 msgid "Feb"
 msgstr "févr."
 
-#: extension.js:173
+#: extension.js:171
 msgid "Mar"
 msgstr "mars"
 
-#: extension.js:173
+#: extension.js:171
 msgid "Apr"
 msgstr "avril"
 
-#: extension.js:173
+#: extension.js:171
 msgid "May"
 msgstr "mai"
 
-#: extension.js:173
+#: extension.js:171
 msgid "Jun"
 msgstr "juin"
 
-#: extension.js:174
+#: extension.js:172
 msgid "Jul"
 msgstr "juil."
 
-#: extension.js:174
+#: extension.js:172
 msgid "Aug"
 msgstr "août"
 
-#: extension.js:174
+#: extension.js:172
 msgid "Sep"
 msgstr "sept."
 
-#: extension.js:174
+#: extension.js:172
 msgid "Oct"
 msgstr "oct."
 
-#: extension.js:174
+#: extension.js:172
 msgid "Nov"
 msgstr "nov."
 
-#: extension.js:174
+#: extension.js:172
 msgid "Dec"
 msgstr "déc."
 
-#: extension.js:175
+#: extension.js:173
 msgid "Sun"
 msgstr "dim."
 
-#: extension.js:175
+#: extension.js:173
 msgid "Mon"
 msgstr "lun."
 
-#: extension.js:175
+#: extension.js:173
 msgid "Tue"
 msgstr "mar."
 
-#: extension.js:175
+#: extension.js:173
 msgid "Wed"
 msgstr "mer."
 
-#: extension.js:176
+#: extension.js:174
 msgid "Thu"
 msgstr "jeu."
 
-#: extension.js:176
+#: extension.js:174
 msgid "Fri"
 msgstr "ven."
 
-#: extension.js:176
+#: extension.js:174
 msgid "Sat"
 msgstr "sam."
 
-#: extension.js:347
+#: extension.js:362
 #, javascript-format
 msgid "Can not connect to %s"
 msgstr "Impossible d'ouvrir %s"
 
-#: extension.js:418
+#: extension.js:433
 msgid "Last check: "
 msgstr "Dernière vérification: "
 
-#: extension.js:456
+#: extension.js:471
 msgid "Checking"
 msgstr "Vérification en cours"
 
-#: extension.js:473
+#: extension.js:488
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "%d mise à jour en attente"
 msgstr[1] "%d mises à jour en attente"
 
-#: extension.js:498
+#: extension.js:513
 msgid "Error"
 msgstr "Erreur"
 
-#: extension.js:502
+#: extension.js:517
 msgid "No internet"
 msgstr "Sans connexion"
 
-#: extension.js:506
+#: extension.js:521
 msgid "Up to date :)"
 msgstr "Tout est à jour :)"
 
-#: extension.js:528 extension.js:534
+#: extension.js:543 extension.js:549
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nouvelle mise à jour"
 msgstr[1] "Nouvelles mises à jour"
 
-#: extension.js:535
+#: extension.js:550
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "Il y a %d mise à jour en attente"
 msgstr[1] "Il y a %d mises à jour en attente"
 
-#: extension.js:832
+#: extension.js:840
 msgid "Update now"
 msgstr "Mettre à jour maintenant"
 
@@ -244,67 +244,77 @@ msgid "Reset"
 msgstr "Restaurer"
 
 #: prefs.xml.h:18
+msgid "Show output on terminal"
+msgstr "Afficher la progression sur un terminal"
+
+#: prefs.xml.h:19
+msgid "Terminal to use"
+msgstr "Terminal à utiliser"
+
+#: prefs.xml.h:20
 msgid "Command to update packages"
 msgstr "Commande pour mettre à jour les paquets"
 
-#: prefs.xml.h:19
+#: prefs.xml.h:21
 msgid ""
 " Please read the wiki for instructions: <a href=\"https://github.com/"
 "franglais125/apt-update-indicator/wiki/Check-for-updates-without-entering-"
 "the-password\">Wiki on github</a>"
 msgstr ""
 
-#: prefs.xml.h:20
+#: prefs.xml.h:22
 msgid "Check for updates without a password"
 msgstr "Vérification des mises à jour sans mot de passe"
 
-#: prefs.xml.h:21
+#: prefs.xml.h:23
 msgid "Command to check for updates"
 msgstr "Commande pour rechercher les mises à jour de paquets"
 
-#: prefs.xml.h:22
+#: prefs.xml.h:24
 msgid "Command to check for updates (no password)"
-msgstr "Commande pour rechercher les mises à jour de paquets (sans mot de passe)"
+msgstr ""
+"Commande pour rechercher les mises à jour de paquets (sans mot de passe)"
 
-#: prefs.xml.h:23
+#: prefs.xml.h:25
 msgid "Advanced settings"
 msgstr "Réglages avancés"
 
-#: prefs.xml.h:24
+#: prefs.xml.h:26
 msgid ""
 "Include an item in the indicator with a list of new packages in the "
 "repository."
 msgstr ""
-"Inclure an item dans l'indicateur avec une liste de nouveaux "
-"paquets dans les dépôts."
+"Inclure an item dans l'indicateur avec une liste de nouveaux paquets dans "
+"les dépôts."
 
-#: prefs.xml.h:25
+#: prefs.xml.h:27
 msgid "New packages in repository"
 msgstr "Nouveaux paquets"
 
-#: prefs.xml.h:26
+#: prefs.xml.h:28
 msgid ""
 "Include an item in the indicator with a list of obsolete or local packages. "
 "Obsolete packages are not available in the repository. Local packages are "
 "available, but an unavailable version is installed."
 msgstr ""
 "Inclure an item dans l'indicateur avec une liste de paquets locaux ou "
-"obsolètes. Les paquets obsolètes ne sont plus disponibles. Les paquets locaux "
-"sont disponibles, mais pas dans la version installée."
+"obsolètes. Les paquets obsolètes ne sont plus disponibles. Les paquets "
+"locaux sont disponibles, mais pas dans la version installée."
 
-#: prefs.xml.h:28
+#: prefs.xml.h:30
 msgid ""
 "Include an item in the indicator with a list of packages that have residual "
 "config files. Run \"sudo apt purge pkgname\" to clean them."
 msgstr ""
 "Inclure an item dans l'indicateur avec une liste de paquets qui ont des "
-"résidus de configuration. Exécutez \"sudo apt purge pkgname\" pour les purger."
+"résidus de configuration. Exécutez \"sudo apt purge pkgname\" pour les "
+"purger."
 
-#: prefs.xml.h:29
+#: prefs.xml.h:31
 msgid "Residual packages"
 msgstr "Résidus de configuration"
 
-#: prefs.xml.h:30
+#: prefs.xml.h:32
 msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
@@ -312,32 +322,32 @@ msgstr ""
 "Inclure an item dans l'indicateur avec une liste de paquets qui ne sont plus "
 "nécessaires. Exécutez \"sudo apt autoremove\" pour les désinstaller."
 
-#: prefs.xml.h:31
+#: prefs.xml.h:33
 msgid "Autoremovable packages"
 msgstr "Paquets n'étant plus nécessaires"
 
-#: prefs.xml.h:32
+#: prefs.xml.h:34
 msgid "Package status"
 msgstr "État des paquets"
 
-#: prefs.xml.h:33
+#: prefs.xml.h:35
 msgid "version: "
 msgstr "version: "
 
-#: prefs.xml.h:34
+#: prefs.xml.h:36
 msgid "Adds an indicator to the top panel that allows to check for updates"
-msgstr "Ajoute un indicateur au panneau supérieur pour vérifier les mises "
-"à jour"
+msgstr ""
+"Ajoute un indicateur au panneau supérieur pour vérifier les mises à jour"
 
-#: prefs.xml.h:35
+#: prefs.xml.h:37
 msgid "Maintained by"
 msgstr "Maintenu par"
 
-#: prefs.xml.h:36
+#: prefs.xml.h:38
 msgid "Webpage"
 msgstr "Page web"
 
-#: prefs.xml.h:37
+#: prefs.xml.h:39
 msgid ""
 "<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
@@ -348,6 +358,6 @@ msgstr ""
 "\">Licence Générale Publique GNU version 2 ou plus récente</a> pour plus "
 "d'informations.</span>"
 
-#: prefs.xml.h:39
+#: prefs.xml.h:41
 msgid "About"
 msgstr "À propos"

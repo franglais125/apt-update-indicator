@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-12-14 01:38-0500\n"
+"POT-Creation-Date: 2017-01-11 21:54-0500\n"
 "PO-Revision-Date: 2016-10-30 14:02+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -18,158 +18,158 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.8.9\n"
 
-#: extension.js:139
+#: extension.js:137
 msgid "New in repository"
 msgstr ""
 
-#: extension.js:145 prefs.xml.h:27
+#: extension.js:143 prefs.xml.h:29
 msgid "Local/Obsolete packages"
 msgstr ""
 
-#: extension.js:151
+#: extension.js:149
 msgid "Residual config files"
 msgstr ""
 
-#: extension.js:157
+#: extension.js:155
 msgid "Autoremovable"
 msgstr ""
 
-#: extension.js:164
+#: extension.js:162
 msgid "Settings"
 msgstr "Opcions"
 
-#: extension.js:165
+#: extension.js:163
 #, fuzzy
 msgid "Apply updates"
 msgstr "Tots els noms de les actualitzacions"
 
-#: extension.js:168 extension.js:459
+#: extension.js:166 extension.js:474
 msgid "Check now"
 msgstr "Comprova ara"
 
-#: extension.js:173
+#: extension.js:171
 msgid "Jan"
 msgstr ""
 
-#: extension.js:173
+#: extension.js:171
 msgid "Feb"
 msgstr ""
 
-#: extension.js:173
+#: extension.js:171
 msgid "Mar"
 msgstr ""
 
-#: extension.js:173
+#: extension.js:171
 msgid "Apr"
 msgstr ""
 
-#: extension.js:173
+#: extension.js:171
 msgid "May"
 msgstr ""
 
-#: extension.js:173
+#: extension.js:171
 msgid "Jun"
 msgstr ""
 
-#: extension.js:174
+#: extension.js:172
 msgid "Jul"
 msgstr ""
 
-#: extension.js:174
+#: extension.js:172
 msgid "Aug"
 msgstr ""
 
-#: extension.js:174
+#: extension.js:172
 msgid "Sep"
 msgstr ""
 
-#: extension.js:174
+#: extension.js:172
 msgid "Oct"
 msgstr ""
 
-#: extension.js:174
+#: extension.js:172
 msgid "Nov"
 msgstr ""
 
-#: extension.js:174
+#: extension.js:172
 msgid "Dec"
 msgstr ""
 
-#: extension.js:175
+#: extension.js:173
 msgid "Sun"
 msgstr ""
 
-#: extension.js:175
+#: extension.js:173
 msgid "Mon"
 msgstr ""
 
-#: extension.js:175
+#: extension.js:173
 msgid "Tue"
 msgstr ""
 
-#: extension.js:175
+#: extension.js:173
 msgid "Wed"
 msgstr ""
 
-#: extension.js:176
+#: extension.js:174
 msgid "Thu"
 msgstr ""
 
-#: extension.js:176
+#: extension.js:174
 msgid "Fri"
 msgstr ""
 
-#: extension.js:176
+#: extension.js:174
 msgid "Sat"
 msgstr ""
 
-#: extension.js:347
+#: extension.js:362
 #, javascript-format
 msgid "Can not connect to %s"
 msgstr ""
 
-#: extension.js:418
+#: extension.js:433
 msgid "Last check: "
 msgstr ""
 
-#: extension.js:456
+#: extension.js:471
 msgid "Checking"
 msgstr "Comprovant"
 
-#: extension.js:473
+#: extension.js:488
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "%d actualització pendent"
 msgstr[1] "%d actualitzacions pendents"
 
-#: extension.js:498
+#: extension.js:513
 msgid "Error"
 msgstr "Error"
 
-#: extension.js:502
+#: extension.js:517
 msgid "No internet"
 msgstr ""
 
-#: extension.js:506
+#: extension.js:521
 msgid "Up to date :)"
 msgstr "Actualitzat :)"
 
-#: extension.js:528 extension.js:534
+#: extension.js:543 extension.js:549
 #, fuzzy
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Noms de les noves actualitzacions"
 msgstr[1] "Noms de les noves actualitzacions"
 
-#: extension.js:535
+#: extension.js:550
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "Hi ha %d nova actualització pendent"
 msgstr[1] "Hi ha %d noves actualitzacions pendents"
 
-#: extension.js:832
+#: extension.js:840
 msgid "Update now"
 msgstr "Actualitza ara"
 
@@ -251,100 +251,108 @@ msgid "Reset"
 msgstr ""
 
 #: prefs.xml.h:18
+msgid "Show output on terminal"
+msgstr ""
+
+#: prefs.xml.h:19
+msgid "Terminal to use"
+msgstr ""
+
+#: prefs.xml.h:20
 msgid "Command to update packages"
 msgstr "Comandament per actualitzar"
 
-#: prefs.xml.h:19
+#: prefs.xml.h:21
 msgid ""
 " Please read the wiki for instructions: <a href=\"https://github.com/"
 "franglais125/apt-update-indicator/wiki/Check-for-updates-without-entering-"
 "the-password\">Wiki on github</a>"
 msgstr ""
 
-#: prefs.xml.h:20
+#: prefs.xml.h:22
 #, fuzzy
 msgid "Check for updates without a password"
 msgstr "Comprovant actualitzacions"
 
-#: prefs.xml.h:21
+#: prefs.xml.h:23
 #, fuzzy
 msgid "Command to check for updates"
 msgstr "Comandament per comprovar les actualitzacions"
 
-#: prefs.xml.h:22
+#: prefs.xml.h:24
 #, fuzzy
 msgid "Command to check for updates (no password)"
 msgstr "Comandament per comprovar les actualitzacions"
 
-#: prefs.xml.h:23
+#: prefs.xml.h:25
 msgid "Advanced settings"
 msgstr "Preferències avançades"
 
-#: prefs.xml.h:24
+#: prefs.xml.h:26
 msgid ""
 "Include an item in the indicator with a list of new packages in the "
 "repository."
 msgstr ""
 
-#: prefs.xml.h:25
+#: prefs.xml.h:27
 msgid "New packages in repository"
 msgstr ""
 
-#: prefs.xml.h:26
+#: prefs.xml.h:28
 msgid ""
 "Include an item in the indicator with a list of obsolete or local packages. "
 "Obsolete packages are not available in the repository. Local packages are "
 "available, but an unavailable version is installed."
 msgstr ""
 
-#: prefs.xml.h:28
+#: prefs.xml.h:30
 msgid ""
 "Include an item in the indicator with a list of packages that have residual "
 "config files. Run \"sudo apt purge pkgname\" to clean them."
 msgstr ""
 
-#: prefs.xml.h:29
+#: prefs.xml.h:31
 msgid "Residual packages"
 msgstr ""
 
-#: prefs.xml.h:30
+#: prefs.xml.h:32
 msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
 msgstr ""
 
-#: prefs.xml.h:31
+#: prefs.xml.h:33
 msgid "Autoremovable packages"
 msgstr ""
 
-#: prefs.xml.h:32
+#: prefs.xml.h:34
 msgid "Package status"
 msgstr ""
 
-#: prefs.xml.h:33
+#: prefs.xml.h:35
 msgid "version: "
 msgstr ""
 
-#: prefs.xml.h:34
+#: prefs.xml.h:36
 msgid "Adds an indicator to the top panel that allows to check for updates"
 msgstr ""
 
-#: prefs.xml.h:35
+#: prefs.xml.h:37
 msgid "Maintained by"
 msgstr ""
 
-#: prefs.xml.h:36
+#: prefs.xml.h:38
 msgid "Webpage"
 msgstr ""
 
-#: prefs.xml.h:37
+#: prefs.xml.h:39
 msgid ""
 "<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
 "General Public License, version 2 or later</a> for details.</span>"
 msgstr ""
 
-#: prefs.xml.h:39
+#: prefs.xml.h:41
 msgid "About"
 msgstr ""
 

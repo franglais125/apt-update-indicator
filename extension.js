@@ -10,7 +10,7 @@
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
     along with Apt Update Indicator.  If not, see <http://www.gnu.org/licenses/>.
-    Copyright 2016 Raphaël Rochet
+    Copyright 2016 Raphael Rochet
     Copyright 2016 Fran Glais
 */
 
