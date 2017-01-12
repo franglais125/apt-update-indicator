@@ -21,7 +21,7 @@ To install, simply download and execute "make install"
 
 ## Changes
 
-### Coming up:
+### v5
 - Use policykit instead of sudo for password-less checks
 - Add option to show update process on a terminal
 - Small fixes for scripts
