@@ -167,12 +167,6 @@ const AptUpdateIndicator = new Lang.Class({
         this.lastCheckMenuItem = new PopupMenu.PopupMenuItem( '' );
         this.lastCheckMenuItem.actor.reactive = false;
         this.lastCheckMenuItem.actor.visible = false;
-        /* Date arrays */
-        this.months = [_('Jan'), _('Feb'), _('Mar'), _('Apr'), _('May'), _('Jun'),
-                       _('Jul'), _('Aug'), _('Sep'), _('Oct'), _('Nov'), _('Dec')];
-        this.days   = [_('Sun'), _('Mon'), _('Tue'), _('Wed'),
-                       _('Thu'), _('Fri'), _('Sat')];
-
 
         // Assemble all menu items into the popup menu
         this.menu.addMenuItem(this.updatesExpander);
@@ -413,19 +407,7 @@ const AptUpdateIndicator = new Lang.Class({
         // If not just initalizing, update the date string to 'now'
         if (!this._initializing) {
             let now = new Date();
-            date = this.days[now.getDay()] + ' ' + now.getDate() + ' ' +
-                   this.months[now.getMonth()] + ', ';
-
-            // Let's add missing zeroes
-            if (now.getHours() < 10)
-                date += '0';
-            date += now.getHours() + ':';
-
-            if (now.getMinutes() < 10)
-                date += '0';
-            date += now.getMinutes();
-
-            // Update the stored value
+            date = now.toLocaleFormat("%a %b %d, %H:%M");
             this._settings.set_string('last-check-date', date);
         }
 
