@@ -240,6 +240,8 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _initializeInterval: function() {
+        this._isAutomaticCheck = false;
+
         // Remove the periodic check before adding a new one
         if (this._TimeoutId)
             GLib.source_remove(this._TimeoutId);
@@ -249,16 +251,18 @@ const AptUpdateIndicator = new Lang.Class({
         if (CHECK_INTERVAL) {
             // This has to be relative to the last check!
             // Date is in milliseconds, convert to seconds
-            let last_check = this._settings.get_double('last-check-date-double');
+            let last_check = this._settings.get_double('last-check-date-automatic-double');
             let now = new Date();
             let elapsed = (now - last_check)/1000; // In seconds
 
             CHECK_INTERVAL -= elapsed;
             if (CHECK_INTERVAL < 0) {
                 if (this._initializing)
-                    CHECK_INTERVAL = 60;
+                    // Wait 2 minutes if just initialized, i.e. after boot or
+                    // unlock screen
+                    CHECK_INTERVAL = 120;
                 else
-                    CHECK_INTERVAL = 1;
+                    CHECK_INTERVAL = 10;
             }
 
 
@@ -266,6 +270,7 @@ const AptUpdateIndicator = new Lang.Class({
             this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                        CHECK_INTERVAL,
                                                        function() {
+                                                           that._isAutomaticCheck = true;
                                                            that._checkUpdates();
                                                            that._checkInterval();
                                                            return false;
@@ -284,6 +289,7 @@ const AptUpdateIndicator = new Lang.Class({
             this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                        CHECK_INTERVAL,
                                                        function() {
+                                                           that._isAutomaticCheck = true;
                                                            that._checkUpdates();
                                                            return true;
                                                        });
@@ -445,6 +451,10 @@ const AptUpdateIndicator = new Lang.Class({
             let now = new Date();
             date = now.toLocaleFormat("%a %b %d, %H:%M").toString();
             this._settings.set_double('last-check-date-double', now);
+            if (this._isAutomaticCheck) {
+                this._settings.set_double('last-check-date-automatic-double', now);
+                this._isAutomaticCheck = false;
+            }
         }
 
         if (date != '') {

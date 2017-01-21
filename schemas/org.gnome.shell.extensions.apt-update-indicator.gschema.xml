@@ -105,6 +105,12 @@
       <description>This is stored and used on the next boot.</description>
     </key>
 
+    <key name="last-check-date-automatic-double" type="d">
+      <default>0</default>
+      <summary>Date and time of the last time a check for updates was run automatically.</summary>
+      <description>This is stored and used on the next boot. Used for calculating when the next check should take place.</description>
+    </key>
+
     <key name="new-packages" type="b">
       <default>true</default>
         <summary>Show a list of new packages</summary>
