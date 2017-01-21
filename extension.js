@@ -208,7 +208,7 @@ const AptUpdateIndicator = new Lang.Class({
         this._checkCMD();
 
         // Add a check at intervals
-        this._checkInterval();
+        this._initializeInterval();
 
         this._bindSettings();
     },
@@ -237,6 +237,40 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._settings.get_boolean('allow-no-passwd') &&
             this._settings.get_string('check-cmd-no-passwd') !== "")
             CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd-no-passwd');
+    },
+
+    _initializeInterval: function() {
+        // Remove the periodic check before adding a new one
+        if (this._TimeoutId)
+            GLib.source_remove(this._TimeoutId);
+
+        // Interval in seconds from settings
+        let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
+        if (CHECK_INTERVAL) {
+            // This has to be relative to the last check!
+            // Date is in milliseconds, convert to seconds
+            let last_check = this._settings.get_double('last-check-date-double');
+            let now = new Date();
+            let elapsed = (now - last_check)/1000; // In seconds
+
+            CHECK_INTERVAL -= elapsed;
+            if (CHECK_INTERVAL < 0) {
+                if (this._initializing)
+                    CHECK_INTERVAL = 60;
+                else
+                    CHECK_INTERVAL = 1;
+            }
+
+
+            let that = this;
+            this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+                                                       CHECK_INTERVAL,
+                                                       function() {
+                                                           that._checkUpdates();
+                                                           that._checkInterval();
+                                                           return false;
+                                                       });
+        }
     },
 
     _checkInterval: function() {
@@ -313,7 +347,7 @@ const AptUpdateIndicator = new Lang.Class({
         ],[
             this._settings,
             'changed::check-interval',
-            Lang.bind(this, this._checkInterval)
+            Lang.bind(this, this._initializeInterval)
         ],[
             this._settings,
             'changed::allow-no-passwd',
@@ -402,13 +436,15 @@ const AptUpdateIndicator = new Lang.Class({
      */
 
     _lastCheck: function() {
-        let date = this._settings.get_string('last-check-date');
+        let date;
 
-        // If not just initalizing, update the date string to 'now'
-        if (!this._initializing) {
+        if (this._initializing) {
+            let last_check = new Date(this._settings.get_double('last-check-date-double'));
+            date = last_check.toLocaleFormat("%a %b %d, %H:%M").toString();
+        } else {
             let now = new Date();
-            date = now.toLocaleFormat("%a %b %d, %H:%M");
-            this._settings.set_string('last-check-date', date);
+            date = now.toLocaleFormat("%a %b %d, %H:%M").toString();
+            this._settings.set_double('last-check-date-double', now);
         }
 
         if (date != '') {

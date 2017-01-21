@@ -99,8 +99,8 @@
         <range min="0" max="100"/>
     </key>
 
-    <key name="last-check-date" type="s">
-      <default>""</default>
+    <key name="last-check-date-double" type="d">
+      <default>0</default>
       <summary>Date and time of the last time a check for updates was run.</summary>
       <description>This is stored and used on the next boot.</description>
     </key>
