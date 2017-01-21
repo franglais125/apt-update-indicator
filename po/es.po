@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-11 21:54-0500\n"
+"POT-Creation-Date: 2017-01-21 12:43-0500\n"
 "PO-Revision-Date: 2016-10-29 14:53+0200\n"
 "Last-Translator: Fran Glais <franglais125@gmail.com>\n"
 "Language-Team: \n"
@@ -42,132 +42,56 @@ msgstr "Ajustes"
 msgid "Apply updates"
 msgstr "Efectuar actualizaciones"
 
-#: extension.js:166 extension.js:474
+#: extension.js:166 extension.js:502
 msgid "Check now"
 msgstr "Comprobar ahora"
 
-#: extension.js:171
-msgid "Jan"
-msgstr "Ene"
-
-#: extension.js:171
-msgid "Feb"
-msgstr "Feb"
-
-#: extension.js:171
-msgid "Mar"
-msgstr "Mar"
-
-#: extension.js:171
-msgid "Apr"
-msgstr "Abr"
-
-#: extension.js:171
-msgid "May"
-msgstr "May"
-
-#: extension.js:171
-msgid "Jun"
-msgstr "Jun"
-
-#: extension.js:172
-msgid "Jul"
-msgstr "Jul"
-
-#: extension.js:172
-msgid "Aug"
-msgstr "Ago"
-
-#: extension.js:172
-msgid "Sep"
-msgstr "Sep"
-
-#: extension.js:172
-msgid "Oct"
-msgstr "Oct"
-
-#: extension.js:172
-msgid "Nov"
-msgstr "Nov"
-
-#: extension.js:172
-msgid "Dec"
-msgstr "Dic"
-
-#: extension.js:173
-msgid "Sun"
-msgstr "Dom"
-
-#: extension.js:173
-msgid "Mon"
-msgstr "Lun"
-
-#: extension.js:173
-msgid "Tue"
-msgstr "Mar"
-
-#: extension.js:173
-msgid "Wed"
-msgstr "Mié"
-
-#: extension.js:174
-msgid "Thu"
-msgstr "Jue"
-
-#: extension.js:174
-msgid "Fri"
-msgstr "Vie"
-
-#: extension.js:174
-msgid "Sat"
-msgstr "Sáb"
-
-#: extension.js:362
+#: extension.js:396
 #, javascript-format
 msgid "Can not connect to %s"
 msgstr "No se pudo conectar con %s"
 
-#: extension.js:433
+#: extension.js:461
 msgid "Last check: "
 msgstr "Última comprobación: "
 
-#: extension.js:471
+#: extension.js:499
 msgid "Checking"
 msgstr "Comprobando"
 
-#: extension.js:488
+#: extension.js:516
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "%d actualización pendiente"
 msgstr[1] "%d actualizaciones pendientes"
 
-#: extension.js:513
+#: extension.js:541
 msgid "Error"
 msgstr "Error"
 
-#: extension.js:517
+#: extension.js:545
 msgid "No internet"
 msgstr "Sin conexión"
 
-#: extension.js:521
+#: extension.js:549
 msgid "Up to date :)"
 msgstr "Actualizado :)"
 
-#: extension.js:543 extension.js:549
+#: extension.js:571 extension.js:577
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nueva Actualización"
 msgstr[1] "Nuevas actualizaciones"
 
-#: extension.js:550
+#: extension.js:578
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "Hay %d actualización pendiente"
 msgstr[1] "Hay %d actualizaciones pendientes"
 
-#: extension.js:840
+#: extension.js:868
 msgid "Update now"
 msgstr "Actualizar ahora"
 
@@ -361,3 +285,4 @@ msgstr ""
 #: prefs.xml.h:41
 msgid "About"
 msgstr "Acerca de"
+

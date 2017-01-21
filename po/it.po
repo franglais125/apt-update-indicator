@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-11 21:54-0500\n"
+"POT-Creation-Date: 2017-01-21 12:43-0500\n"
 "PO-Revision-Date: 2015-12-19 17:51+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -43,133 +43,57 @@ msgstr "Impostazioni"
 msgid "Apply updates"
 msgstr "Nomi di tutti gli aggiornamenti"
 
-#: extension.js:166 extension.js:474
+#: extension.js:166 extension.js:502
 msgid "Check now"
 msgstr "Verifica ora"
 
-#: extension.js:171
-msgid "Jan"
-msgstr ""
-
-#: extension.js:171
-msgid "Feb"
-msgstr ""
-
-#: extension.js:171
-msgid "Mar"
-msgstr ""
-
-#: extension.js:171
-msgid "Apr"
-msgstr ""
-
-#: extension.js:171
-msgid "May"
-msgstr ""
-
-#: extension.js:171
-msgid "Jun"
-msgstr ""
-
-#: extension.js:172
-msgid "Jul"
-msgstr ""
-
-#: extension.js:172
-msgid "Aug"
-msgstr ""
-
-#: extension.js:172
-msgid "Sep"
-msgstr ""
-
-#: extension.js:172
-msgid "Oct"
-msgstr ""
-
-#: extension.js:172
-msgid "Nov"
-msgstr ""
-
-#: extension.js:172
-msgid "Dec"
-msgstr ""
-
-#: extension.js:173
-msgid "Sun"
-msgstr ""
-
-#: extension.js:173
-msgid "Mon"
-msgstr ""
-
-#: extension.js:173
-msgid "Tue"
-msgstr ""
-
-#: extension.js:173
-msgid "Wed"
-msgstr ""
-
-#: extension.js:174
-msgid "Thu"
-msgstr ""
-
-#: extension.js:174
-msgid "Fri"
-msgstr ""
-
-#: extension.js:174
-msgid "Sat"
-msgstr ""
-
-#: extension.js:362
+#: extension.js:396
 #, javascript-format
 msgid "Can not connect to %s"
 msgstr ""
 
-#: extension.js:433
+#: extension.js:461
 msgid "Last check: "
 msgstr ""
 
-#: extension.js:471
+#: extension.js:499
 msgid "Checking"
 msgstr "Verificando"
 
-#: extension.js:488
+#: extension.js:516
 #, fuzzy, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "aggiornamenti disponibili"
 msgstr[1] "aggiornamenti disponibili"
 
-#: extension.js:513
+#: extension.js:541
 msgid "Error"
 msgstr "Errore"
 
-#: extension.js:517
+#: extension.js:545
 msgid "No internet"
 msgstr ""
 
-#: extension.js:521
+#: extension.js:549
 msgid "Up to date :)"
 msgstr "Aggiornato :)"
 
-#: extension.js:543 extension.js:549
+#: extension.js:571 extension.js:577
 #, fuzzy
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nomi dei nuovi aggiornamenti"
 msgstr[1] "Nomi dei nuovi aggiornamenti"
 
-#: extension.js:550
+#: extension.js:578
 #, fuzzy, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "aggiornamenti disponibili"
 msgstr[1] "aggiornamenti disponibili"
 
-#: extension.js:840
+#: extension.js:868
 msgid "Update now"
 msgstr "Aggiorna ora"
 
@@ -354,30 +278,3 @@ msgstr ""
 msgid "About"
 msgstr ""
 
-#~ msgid "Waiting first check"
-#~ msgstr "Attendi il primo controllo"
-
-#, fuzzy
-#~ msgid "New Arch Linux Update"
-#~ msgid_plural "New Arch Linux Updates"
-#~ msgstr[0] "Nuovi aggiornamenti di Arch Linux"
-#~ msgstr[1] "Nuovi aggiornamenti di Arch Linux"
-
-#~ msgid "Time to wait before first check (seconds)"
-#~ msgstr "Tempo di attesa prima del primo controllo (secondi)"
-
-#, fuzzy
-#~ msgid "Indicator"
-#~ msgstr "<b>Indicatore</b>"
-
-#~ msgid "Always visible"
-#~ msgstr "Sempre visibile"
-
-#~ msgid ""
-#~ "Pacman local directory path - To detect when new packages are installed"
-#~ msgstr ""
-#~ "Percorso locale di pacman - Per rilevare quando vengono installati nuovi "
-#~ "pacchetti"
-
-#~ msgid "<b>Timers</b>"
-#~ msgstr "Timers"
