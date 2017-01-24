@@ -58,7 +58,7 @@
                         <object class="GtkLabel" id="interval_description">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Interval between updates check (minutes, 0 to disable)</property>
+                          <property name="label" translatable="yes">Interval between updates checks (hours, 0 to disable)</property>
                           <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>

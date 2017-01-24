@@ -247,7 +247,7 @@ const AptUpdateIndicator = new Lang.Class({
             GLib.source_remove(this._TimeoutId);
 
         // Interval in seconds from settings
-        let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
+        let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60 * 60;
         if (CHECK_INTERVAL) {
             // This has to be relative to the last check!
             // Date is in milliseconds, convert to seconds

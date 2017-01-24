@@ -2,16 +2,9 @@
   <schema id="org.gnome.shell.extensions.apt-update-indicator"
       path="/org/gnome/shell/extensions/apt-update-indicator/">
 
-    <key type="i" name="boot-wait">
-        <default>15</default>
-        <summary>Time to wait before first check (seconds)</summary>
-        <description>A first check is made this number of seconds after startup</description>
-        <range min="5" max="5000"/>
-    </key>
-
     <key type="i" name="check-interval">
-        <default>60</default>
-        <summary>Interval between updates check (minutes)</summary>
+        <default>12</default>
+        <summary>Interval between updates check (hours)</summary>
         <description>Time to wait between two automatic checks</description>
         <range min="0"/>
     </key>
