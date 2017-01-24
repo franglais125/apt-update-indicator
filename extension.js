@@ -89,7 +89,7 @@ const AptUpdateIndicator = new Lang.Class({
     _init: function() {
         this.parent(0.0, "AptUpdateIndicator");
 
-        this.updateIcon = new St.Icon({icon_name: 'system-software-update', style_class: 'system-status-icon'});
+        this.updateIcon = new St.Icon({icon_name: 'system-software-install-symbolic', style_class: 'system-status-icon'});
 
         let box = new St.BoxLayout({ vertical: false, style_class: 'panel-status-menu-box' });
         this.label = new St.Label({ text: '',
@@ -494,7 +494,7 @@ const AptUpdateIndicator = new Lang.Class({
 
     _showChecking: function(isChecking) {
         if (isChecking == true) {
-            this.updateIcon.set_icon_name('emblem-synchronizing');
+            this.updateIcon.set_icon_name('emblem-synchronizing-symbolic');
             this.checkNowMenuItem.actor.reactive = false;
             this.checkNowMenuItem.label.set_text(_('Checking'));
         } else {
@@ -530,22 +530,22 @@ const AptUpdateIndicator = new Lang.Class({
             // Update the menu look:
             this.updatesListMenuLabel.set_text("");
 
-            if (updatesCount == -1) {
+            if (updatesCount == STATUS.UNKNOWN) {
                 // This is the value of UPDATES_PENDING at initialization.
                 // For some reason, the update process didn't work at all
-                this.updateIcon.set_icon_name('dialog-warning');
+                this.updateIcon.set_icon_name('dialog-warning-symbolic');
                 this._updateMenuExpander( false, '' );
-            } else if (updatesCount == -2) {
+            } else if (updatesCount == STATUS.ERROR) {
                 // Error
-                this.updateIcon.set_icon_name('error');
+                this.updateIcon.set_icon_name('dialog-warning-symbolic');
                 this._updateMenuExpander( false, _('Error') );
-            } else if (updatesCount == -3) {
+            } else if (updatesCount == STATUS.NO_INTERNET) {
                 // Error
-                this.updateIcon.set_icon_name('error');
+                this.updateIcon.set_icon_name('dialog-warning-symbolic');
                 this._updateMenuExpander( false, _('No internet') );
             } else {
                 // Up to date
-                this.updateIcon.set_icon_name('system-software-update');
+                this.updateIcon.set_icon_name('system-software-install-symbolic');
                 this._updateMenuExpander( false, _('Up to date :)') );
                 UPDATES_LIST = []; // Reset stored list
             }
@@ -854,7 +854,7 @@ const AptUpdateIndicator = new Lang.Class({
             // We have to prepare this only once
             this._notifSource = new MessageTray.SystemNotificationSource();
             this._notifSource.createIcon = function() {
-                return new St.Icon({ icon_name: 'system-software-update' });
+                return new St.Icon({ icon_name: 'system-software-install-symbolic' });
             };
             // Take care of note leaving unneeded sources
             this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
