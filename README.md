@@ -21,6 +21,12 @@ To install, simply download and execute "make install"
 
 ## Changes
 
+### v6
+- Use standard date formatting tools
+- Automatic checks are now compatible across sessions
+- Use hours instead of minutes in settings
+- Make use of symbolic icons to follow GNOME HIG.
+
 ### v5
 - Use policykit instead of sudo for password-less checks
 - Add option to show update process on a terminal
@@ -36,17 +42,14 @@ To install, simply download and execute "make install"
 
 ### v3
 - Add date and time of the last update to the menu
-- Some bug fixes and a few Synaptic-like features listed below:
-- check for new packages in repository
-- check for local or obsolete packages
-- check for residual config files
-- check for autoremovable packages
+- Bug fixes
+- Synaptic-like features: check for new packages in repository, local or obsolete packages, residual config files and autoremovable packages
 
 ### v2
-- add option to check for updates without password
+- Add option to check for updates without password
 
 ### v1
-- first version released
+- First version
 
 
 ## Credits
