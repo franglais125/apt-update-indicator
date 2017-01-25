@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-21 12:43-0500\n"
+"POT-Creation-Date: 2017-01-25 10:13-0500\n"
 "PO-Revision-Date: 2016-02-08 12:26+0100\n"
 "Last-Translator: Karol Babioch <karol@babioch.de>\n"
 "Language-Team: \n"
@@ -99,7 +99,7 @@ msgstr "Jetzt aktualisieren"
 
 #: prefs.xml.h:1
 #, fuzzy
-msgid "Interval between updates check (minutes, 0 to disable)"
+msgid "Interval between updates checks (hours, 0 to disable)"
 msgstr "Intervall zwischen Überprüfungen (Minuten)"
 
 #: prefs.xml.h:2
@@ -278,4 +278,3 @@ msgstr ""
 #: prefs.xml.h:41
 msgid "About"
 msgstr ""
-
