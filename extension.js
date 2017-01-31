@@ -352,6 +352,10 @@ const AptUpdateIndicator = new Lang.Class({
             Lang.bind(this, this._checkCMD)
         ],[
             this._settings,
+            'changed::check-cmd-no-passwd',
+            Lang.bind(this, this._checkCMD)
+        ],[
+            this._settings,
             'changed::check-interval',
             Lang.bind(this, this._initializeInterval)
         ],[
