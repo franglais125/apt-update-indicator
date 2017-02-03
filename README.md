@@ -21,6 +21,10 @@ To install, simply download and execute "make install"
 
 ## Changes
 
+### v7
+- Change the default terminal to xterm
+- Use `pkcon refresh` as the default command to check for updates
+
 ### v6
 - Use standard date formatting tools
 - Automatic checks are now compatible across sessions
