@@ -43,20 +43,14 @@
         <description></description>
     </key>
 
-    <key name="check-cmd" type="s">
-      <default>"apt update"</default>
-      <summary>Command to run to check for updated packages.</summary>
-      <description>Command to run to check for updated packages.</description>
-    </key>
-
-    <key name="allow-no-passwd" type="b">
+    <key name="use-custom-cmd" type="b">
       <default>false</default>
         <summary>Allow checks for updates without a passwrd</summary>
         <description></description>
     </key>
 
-    <key name="check-cmd-no-passwd" type="s">
-      <default>"/usr/local/bin/updater"</default>
+    <key name="check-cmd-custom" type="s">
+      <default>"apt update"</default>
       <summary>Command to run to check for updates without password.</summary>
       <description>Command to run to check for updates without passowrd.</description>
     </key>

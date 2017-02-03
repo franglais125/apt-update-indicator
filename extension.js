@@ -44,9 +44,9 @@ const STATUS = {
 
 /* Options */
 const PREPEND_CMD        = '/usr/bin/pkexec --user root ';
-const STOCK_CHECK_CMD    = 'apt update';
+const STOCK_CHECK_CMD    = '/usr/bin/pkcon refresh';
 const STOCK_UPDATE_CMD   = 'apt upgrade -y';
-let CHECK_CMD            = PREPEND_CMD + STOCK_CHECK_CMD;
+let CHECK_CMD            = STOCK_CHECK_CMD;
 let UPDATE_CMD           = PREPEND_CMD + STOCK_UPDATE_CMD;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
@@ -229,14 +229,11 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _checkCMD: function() {
-        if (this._settings.get_string('check-cmd') !== "")
-            CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd');
+        if (this._settings.get_boolean('use-custom-cmd') &&
+            this._settings.get_string('check-cmd-custom') !== "")
+            CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd-custom');
         else
-            CHECK_CMD = PREPEND_CMD + STOCK_CHECK_CMD;
-
-        if (this._settings.get_boolean('allow-no-passwd') &&
-            this._settings.get_string('check-cmd-no-passwd') !== "")
-            CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd-no-passwd');
+            CHECK_CMD = STOCK_CHECK_CMD;
     },
 
     _initializeInterval: function() {
@@ -348,11 +345,7 @@ const AptUpdateIndicator = new Lang.Class({
             Lang.bind(this, this._updateCMD)
         ],[
             this._settings,
-            'changed::check-cmd',
-            Lang.bind(this, this._checkCMD)
-        ],[
-            this._settings,
-            'changed::check-cmd-no-passwd',
+            'changed::check-cmd-custom',
             Lang.bind(this, this._checkCMD)
         ],[
             this._settings,
@@ -360,7 +353,7 @@ const AptUpdateIndicator = new Lang.Class({
             Lang.bind(this, this._initializeInterval)
         ],[
             this._settings,
-            'changed::allow-no-passwd',
+            'changed::use-custom-cmd',
             Lang.bind(this, this._checkCMD)
         ],[
             this._settings,

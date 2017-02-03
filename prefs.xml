@@ -555,19 +555,19 @@
             <object class="GtkListBox" id="check_command_listbox">
               <property name="selection_mode">none</property>
               <child>
-                <object class="GtkListBoxRow" id="allow_no_passwd_listboxrow">
+                <object class="GtkListBoxRow" id="use_custom_cmd_listboxrow">
                   <child>
-                    <object class="GtkGrid" id="allow_no_passwd_grid">
+                    <object class="GtkGrid" id="use_custom_cmd_grid">
                       <property name="margin_left">12</property>
                       <property name="margin_right">12</property>
                       <property name="margin_top">12</property>
                       <property name="margin_bottom">12</property>
                       <property name="column_spacing">32</property>
                       <child>
-                        <object class="GtkLabel" id="allow_no_passwd_description">
+                        <object class="GtkLabel" id="use_custom_cmd_description">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes"> Please read the wiki for instructions: &lt;a href="https://github.com/franglais125/apt-update-indicator/wiki/Check-for-updates-without-entering-the-password"&gt;Wiki on github&lt;/a&gt;</property>
+                          <property name="label" translatable="yes">The default command is "pkcon refresh", which uses packagekit with the apt backend. You can define a custom command below. The extension will use pkexec to execute it.</property>
                           <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
@@ -580,10 +580,10 @@
                         </packing>
                       </child>
                       <child>
-                        <object class="GtkLabel" id="allow_no_passwd_label">
+                        <object class="GtkLabel" id="use_custom_cmd_label">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Check for updates without a password</property>
+                          <property name="label" translatable="yes">Use a custom command to check for updates</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
@@ -591,7 +591,7 @@
                         </packing>
                       </child>
                       <child>
-                        <object class="GtkSwitch" id="allow_no_passwd_switch">
+                        <object class="GtkSwitch" id="use_custom_cmd_switch">
                           <property name="halign">end</property>
                           <property name="valign">center</property>
                         </object>
@@ -606,9 +606,9 @@
                 </object>
               </child>
               <child>
-                <object class="GtkListBoxRow" id="check_command_listboxrow">
+                <object class="GtkListBoxRow" id="check_command_custom_listboxrow">
                   <child>
-                    <object class="GtkGrid" id="check_command_grid">
+                    <object class="GtkGrid" id="check_command_custom_grid">
                       <property name="margin_left">12</property>
                       <property name="margin_right">12</property>
                       <property name="margin_top">12</property>
@@ -616,38 +616,13 @@
                       <property name="column_spacing">12</property>
                       <child>
                         <object class="GtkLabel">
-                          <property name="label" translatable="yes">Command to check for updates</property>
+                          <property name="label" translatable="yes">Custom command to check for updates</property>
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                         </object>
                       </child>
                       <child>
-                        <object class="GtkEntry" id="field_checkcmd">
-                          <property name="width-chars">30</property>
-                        </object>
-                      </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="GtkListBoxRow" id="check_command_no_password_listboxrow">
-                  <child>
-                    <object class="GtkGrid" id="check_command_no_password_grid">
-                      <property name="margin_left">12</property>
-                      <property name="margin_right">12</property>
-                      <property name="margin_top">12</property>
-                      <property name="margin_bottom">12</property>
-                      <property name="column_spacing">12</property>
-                      <child>
-                        <object class="GtkLabel">
-                          <property name="label" translatable="yes">Command to check for updates (no password)</property>
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkEntry" id="field_checkcmd_no_password">
+                        <object class="GtkEntry" id="field_checkcmd_custom">
                           <property name="width-chars">30</property>
                         </object>
                       </child>

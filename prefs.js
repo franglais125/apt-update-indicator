@@ -97,35 +97,27 @@ function buildPrefsWidget(){
                   'sensitive',
                   Gio.SettingsBindFlags.DEFAULT);
     // Check commands
-    settings.bind('allow-no-passwd',
-                  buildable.get_object('allow_no_passwd_switch'),
+    settings.bind('use-custom-cmd',
+                  buildable.get_object('use_custom_cmd_switch'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('check-cmd',
-                  buildable.get_object('field_checkcmd'),
+    settings.bind('check-cmd-custom',
+                  buildable.get_object('field_checkcmd_custom'),
                   'text',
                   Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('check-cmd-no-passwd',
-                  buildable.get_object('field_checkcmd_no_password'),
-                  'text',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('allow-no-passwd',
-                  buildable.get_object('field_checkcmd_no_password'),
+    settings.bind('use-custom-cmd',
+                  buildable.get_object('field_checkcmd_custom'),
                   'sensitive',
                   Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('allow-no-passwd',
-                  buildable.get_object('field_checkcmd'),
-                  'sensitive',
-                  Gio.SettingsBindFlags.INVERT_BOOLEAN);
+
     // Reset button
     buildable.get_object('reset_button').connect('clicked', Lang.bind(this, function() {
         // restore default settings for the relevant keys
         let keys = ['terminal',
                     'output-on-terminal',
                     'update-cmd',
-                    'check-cmd',
-                    'allow-no-passwd',
-                    'check-cmd-no-passwd'];
+                    'use-custom-cmd',
+                    'check-cmd-custom'];
         keys.forEach(function(val) {
             settings.set_value(val, settings.get_default_value(val));
         }, this);
