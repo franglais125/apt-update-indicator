@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-25 10:13-0500\n"
+"POT-Creation-Date: 2017-02-04 00:09-0500\n"
 "PO-Revision-Date: 2015-12-19 17:51+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -18,262 +18,281 @@ msgstr ""
 "X-Generator: Poedit 1.8.6\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: extension.js:137
+#: extension.js:136
 msgid "New in repository"
 msgstr ""
 
-#: extension.js:143 prefs.xml.h:29
+#: extension.js:142 prefs.xml.h:34
 msgid "Local/Obsolete packages"
 msgstr ""
 
-#: extension.js:149
+#: extension.js:148
 msgid "Residual config files"
 msgstr ""
 
-#: extension.js:155
+#: extension.js:154
 msgid "Autoremovable"
 msgstr ""
 
-#: extension.js:162
+#: extension.js:161
 msgid "Settings"
 msgstr "Impostazioni"
 
-#: extension.js:163
+#: extension.js:162
 #, fuzzy
 msgid "Apply updates"
 msgstr "Nomi di tutti gli aggiornamenti"
 
-#: extension.js:166 extension.js:502
+#: extension.js:165 extension.js:510
 msgid "Check now"
 msgstr "Verifica ora"
 
-#: extension.js:396
+#: extension.js:404
 #, javascript-format
 msgid "Can not connect to %s"
 msgstr ""
 
-#: extension.js:461
+#: extension.js:469
 msgid "Last check: "
 msgstr ""
 
-#: extension.js:499
+#: extension.js:507
 msgid "Checking"
 msgstr "Verificando"
 
-#: extension.js:516
+#: extension.js:524
 #, fuzzy, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "aggiornamenti disponibili"
 msgstr[1] "aggiornamenti disponibili"
 
-#: extension.js:541
+#: extension.js:549
 msgid "Error"
 msgstr "Errore"
 
-#: extension.js:545
+#: extension.js:553
 msgid "No internet"
 msgstr ""
 
-#: extension.js:549
+#: extension.js:557
 msgid "Up to date :)"
 msgstr "Aggiornato :)"
 
-#: extension.js:571 extension.js:577
+#: extension.js:579 extension.js:585
 #, fuzzy
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nomi dei nuovi aggiornamenti"
 msgstr[1] "Nomi dei nuovi aggiornamenti"
 
-#: extension.js:578
+#: extension.js:586
 #, fuzzy, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "aggiornamenti disponibili"
 msgstr[1] "aggiornamenti disponibili"
 
-#: extension.js:868
+#: extension.js:876
 msgid "Update now"
 msgstr "Aggiorna ora"
 
 #: prefs.xml.h:1
+msgid "Command to update packages"
+msgstr "Comando per aggiornare i pacchetti"
+
+#: prefs.xml.h:2
+msgid "The command will be executed this using pkexec."
+msgstr ""
+
+#: prefs.xml.h:3
+msgid "Show output on terminal"
+msgstr ""
+
+#: prefs.xml.h:4
+msgid "Terminal to use"
+msgstr ""
+
+#: prefs.xml.h:5
 #, fuzzy
 msgid "Interval between updates checks (hours, 0 to disable)"
 msgstr "Intervallo tra il controllo degli aggiornamenti (minuti)"
 
-#: prefs.xml.h:2
+#: prefs.xml.h:6
 #, fuzzy
 msgid "Check for updates automatically"
 msgstr "Comando per aggiornare i pacchetti"
 
-#: prefs.xml.h:3
+#: prefs.xml.h:7
 msgid "Strip out version numbers"
 msgstr ""
 
-#: prefs.xml.h:4
+#: prefs.xml.h:8
 msgid "Always show the indicator"
 msgstr ""
 
-#: prefs.xml.h:5
+#: prefs.xml.h:9
 msgid "Show updates count on indicator"
 msgstr "Mostra il numero degli aggiornamenti sull'indicatore"
 
-#: prefs.xml.h:6
+#: prefs.xml.h:10
 msgid ""
 "Auto-expand the list if updates count is less than this number (0 to disable)"
 msgstr ""
 
-#: prefs.xml.h:7
+#: prefs.xml.h:11
 msgid "Auto-expand updates list"
 msgstr ""
 
-#: prefs.xml.h:8
+#: prefs.xml.h:12
 #, fuzzy
 msgid "Send a notification when new updates are available."
 msgstr "Inviare una notifica quando sono disponibili nuovi aggiornamenti"
 
-#: prefs.xml.h:9
+#: prefs.xml.h:13
 #, fuzzy
 msgid "Notifications"
 msgstr "<b>Notifiche</b>"
 
-#: prefs.xml.h:10
+#: prefs.xml.h:14
 msgid "Use transient notifications (auto dismiss)"
 msgstr "Utilizzare notifiche transitorie (chiusura automatica)"
 
-#: prefs.xml.h:11
+#: prefs.xml.h:15
 msgid "How much information to show on notifications"
 msgstr "Quante informazioni mostrare nelle notifiche"
 
-#: prefs.xml.h:12
+#: prefs.xml.h:16
 msgid "Count only"
 msgstr "Solo il numero"
 
-#: prefs.xml.h:13
+#: prefs.xml.h:17
 msgid "New updates names"
 msgstr "Nomi dei nuovi aggiornamenti"
 
-#: prefs.xml.h:14
+#: prefs.xml.h:18
 msgid "All updates names"
 msgstr "Nomi di tutti gli aggiornamenti"
 
-#: prefs.xml.h:15
+#: prefs.xml.h:19
 #, fuzzy
 msgid "Basic settings"
 msgstr "Impostazioni"
 
-#: prefs.xml.h:16
+#: prefs.xml.h:20
 msgid "Reset values for all commands"
 msgstr ""
 
-#: prefs.xml.h:17
-msgid "Reset"
-msgstr ""
-
-#: prefs.xml.h:18
-msgid "Show output on terminal"
-msgstr ""
-
-#: prefs.xml.h:19
-msgid "Terminal to use"
-msgstr ""
-
-#: prefs.xml.h:20
-msgid "Command to update packages"
-msgstr "Comando per aggiornare i pacchetti"
-
 #: prefs.xml.h:21
-msgid ""
-" Please read the wiki for instructions: <a href=\"https://github.com/"
-"franglais125/apt-update-indicator/wiki/Check-for-updates-without-entering-"
-"the-password\">Wiki on github</a>"
+msgid "Reset"
 msgstr ""
 
 #: prefs.xml.h:22
 #, fuzzy
-msgid "Check for updates without a password"
-msgstr "Comando per aggiornare i pacchetti"
+msgid "Update method"
+msgstr "Aggiorna ora"
 
 #: prefs.xml.h:23
-#, fuzzy
-msgid "Command to check for updates"
-msgstr "Comando per aggiornare i pacchetti"
+msgid "Method to use to apply the updates."
+msgstr ""
 
 #: prefs.xml.h:24
-#, fuzzy
-msgid "Command to check for updates (no password)"
-msgstr "Comando per aggiornare i pacchetti"
+msgid "Launch gnome-software"
+msgstr ""
 
 #: prefs.xml.h:25
+msgid "Update-manager (Ubuntu only)"
+msgstr ""
+
+#: prefs.xml.h:26
+msgid "Custom"
+msgstr ""
+
+#: prefs.xml.h:27
+msgid ""
+"The default command is \"pkcon refresh\", which uses packagekit with the apt "
+"backend. You can define a custom command below, to be executes using pkexec."
+msgstr ""
+
+#: prefs.xml.h:28
+#, fuzzy
+msgid "Use a custom command to check for updates"
+msgstr "Comando per aggiornare i pacchetti"
+
+#: prefs.xml.h:29
+#, fuzzy
+msgid "Custom command to check for updates"
+msgstr "Comando per aggiornare i pacchetti"
+
+#: prefs.xml.h:30
 #, fuzzy
 msgid "Advanced settings"
 msgstr "<b>Impostazioni avanzate</b>"
 
-#: prefs.xml.h:26
+#: prefs.xml.h:31
 msgid ""
 "Include an item in the indicator with a list of new packages in the "
 "repository."
 msgstr ""
 
-#: prefs.xml.h:27
+#: prefs.xml.h:32
 msgid "New packages in repository"
 msgstr ""
 
-#: prefs.xml.h:28
+#: prefs.xml.h:33
 msgid ""
 "Include an item in the indicator with a list of obsolete or local packages. "
 "Obsolete packages are not available in the repository. Local packages are "
 "available, but an unavailable version is installed."
 msgstr ""
 
-#: prefs.xml.h:30
+#: prefs.xml.h:35
 msgid ""
 "Include an item in the indicator with a list of packages that have residual "
 "config files. Run \"sudo apt purge pkgname\" to clean them."
 msgstr ""
 
-#: prefs.xml.h:31
+#: prefs.xml.h:36
 msgid "Residual packages"
 msgstr ""
 
-#: prefs.xml.h:32
+#: prefs.xml.h:37
 msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
 msgstr ""
 
-#: prefs.xml.h:33
+#: prefs.xml.h:38
 msgid "Autoremovable packages"
 msgstr ""
 
-#: prefs.xml.h:34
+#: prefs.xml.h:39
 msgid "Package status"
 msgstr ""
 
-#: prefs.xml.h:35
+#: prefs.xml.h:40
 msgid "version: "
 msgstr ""
 
-#: prefs.xml.h:36
+#: prefs.xml.h:41
 msgid "Adds an indicator to the top panel that allows to check for updates"
 msgstr ""
 
-#: prefs.xml.h:37
+#: prefs.xml.h:42
 msgid "Maintained by"
 msgstr ""
 
-#: prefs.xml.h:38
+#: prefs.xml.h:43
 msgid "Webpage"
 msgstr ""
 
-#: prefs.xml.h:39
+#: prefs.xml.h:44
 msgid ""
 "<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
 "General Public License, version 2 or later</a> for details.</span>"
 msgstr ""
 
-#: prefs.xml.h:41
+#: prefs.xml.h:46
 msgid "About"
 msgstr ""
