@@ -21,6 +21,9 @@ To install, simply download and execute "make install"
 
 ## Changes
 
+### v8
+- Use gnome-software or update-manager to apply updates
+
 ### v7
 - Change the default terminal to xterm
 - Use `pkcon refresh` as the default command to check for updates
