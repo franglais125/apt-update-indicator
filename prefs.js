@@ -77,25 +77,74 @@ function buildPrefsWidget(){
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
 
-
-    // Advanced settings tab:
-    // Update command
-    settings.bind('output-on-terminal',
-                  buildable.get_object('output_on_terminal_switch'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('terminal',
-                  buildable.get_object('terminal_entry'),
-                  'text',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('update-cmd',
-                  buildable.get_object('field_updatecmd'),
-                  'text',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('output-on-terminal',
-                  buildable.get_object('terminal_entry'),
+    settings.bind('notify',
+                  buildable.get_object('transient_notifications'),
                   'sensitive',
                   Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('notify',
+                  buildable.get_object('verbosity'),
+                  'sensitive',
+                  Gio.SettingsBindFlags.DEFAULT);
+
+    // Advanced settings tab:
+    // Update method
+    buildable.get_object('update_cmd_options').connect('changed', function(widget) {
+        settings.set_enum('update-cmd-options', widget.get_active());
+    });
+
+    buildable.get_object('update_cmd_options').set_active(settings.get_enum('update-cmd-options'));
+    if (settings.get_enum('update-cmd-options') != 2) {
+        buildable.get_object('update_cmd_button').set_sensitive(false);
+    }
+
+    settings.connect('changed::update-cmd-options', function() {
+        if (settings.get_enum('update-cmd-options') == 2)
+            buildable.get_object('update_cmd_button').set_sensitive(true);
+        else
+            buildable.get_object('update_cmd_button').set_sensitive(false);
+    });
+
+
+    // Create dialog for custom command for updating
+    buildable.get_object('update_cmd_button').connect('clicked', function() {
+
+        let dialog = new Gtk.Dialog({ title: _('Custom command for updates'),
+                                      transient_for: box.get_toplevel(),
+                                      use_header_bar: true,
+                                      modal: true });
+
+        let sub_box = buildable.get_object('custom_command_dialog');
+        dialog.get_content_area().add(sub_box);
+
+        settings.bind('output-on-terminal',
+                      buildable.get_object('output_on_terminal_switch'),
+                      'active',
+                      Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('terminal',
+                      buildable.get_object('terminal_entry'),
+                      'text',
+                      Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('update-cmd',
+                      buildable.get_object('field_updatecmd'),
+                      'text',
+                      Gio.SettingsBindFlags.DEFAULT);
+
+        settings.bind('output-on-terminal',
+                      buildable.get_object('terminal_entry'),
+                      'sensitive',
+                      Gio.SettingsBindFlags.GET);
+
+        dialog.connect('response', Lang.bind(this, function(dialog, id) {
+            // remove the settings box so it doesn't get destroyed;
+            dialog.get_content_area().remove(sub_box);
+            dialog.destroy();
+            return;
+        }));
+
+        dialog.show_all();
+
+    });
+
     // Check commands
     settings.bind('use-custom-cmd',
                   buildable.get_object('use_custom_cmd_switch'),
@@ -116,11 +165,14 @@ function buildPrefsWidget(){
         let keys = ['terminal',
                     'output-on-terminal',
                     'update-cmd',
+                    'update-cmd-options',
                     'use-custom-cmd',
                     'check-cmd-custom'];
         keys.forEach(function(val) {
             settings.set_value(val, settings.get_default_value(val));
         }, this);
+        // This one needs to be refreshed manually
+        buildable.get_object('update_cmd_options').set_active(settings.get_enum('update-cmd-options'));
     }));
 
 

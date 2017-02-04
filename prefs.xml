@@ -27,6 +27,146 @@
   <property name="step_increment">1</property>
 </object>
 
+<object class="GtkBox" id="custom_command_dialog">
+  <property name="visible">True</property>
+  <property name="can_focus">False</property>
+  <property name="margin_left">12</property>
+  <property name="margin_right">12</property>
+  <property name="margin_top">12</property>
+  <property name="margin_bottom">12</property>
+  <property name="orientation">vertical</property>
+  <child>
+    <object class="GtkFrame" id="frame_custom_command">
+      <property name="visible">True</property>
+      <property name="can_focus">False</property>
+      <property name="label_xalign">0</property>
+      <property name="shadow_type">in</property>
+      <child>
+        <object class="GtkListBox" id="listbox_custom_command">
+          <property name="visible">True</property>
+          <property name="can_focus">False</property>
+          <property name="selection_mode">none</property>
+          <child>
+            <object class="GtkListBoxRow" id="update_command_listboxrow">
+              <child>
+                <object class="GtkGrid" id="update_command_grid">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">12</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Command to update packages</property>
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkLabel" id="update_command_description">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">The command will be executed this using pkexec.</property>
+                      <property name="use_markup">True</property>
+                      <property name="wrap">True</property>
+                      <property name="max-width-chars">25</property>
+                      <style>
+                        <class name="dim-label"/>
+                      </style>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">1</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkEntry" id="field_updatecmd">
+                      <property name="valign">center</property>
+                      <property name="width-chars">30</property>
+                    </object>
+                    <packing>
+                       <property name="height">2</property>
+                    </packing>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBoxRow" id="output_on_terminal_listboxrow">
+              <child>
+                <object class="GtkGrid" id="output_on_terminal_grid">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">12</property>
+                  <child>
+                    <object class="GtkLabel" id="output_on_terminal_label">
+                      <property name="label" translatable="yes">Show output on terminal</property>
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">0</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkSwitch" id="output_on_terminal_switch">
+                      <property name="halign">end</property>
+                      <property name="valign">center</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">1</property>
+                      <property name="top_attach">0</property>
+                      <property name="height">2</property>
+                    </packing>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBoxRow" id="terminal_listboxrow">
+              <child>
+                <object class="GtkGrid" id="terminal_grid">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">12</property>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Terminal to use</property>
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                    </object>
+                  </child>
+                  <child>
+                    <object class="GtkEntry" id="terminal_entry">
+                      <property name="width-chars">30</property>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child type="label_item">
+        <placeholder/>
+      </child>
+    </object>
+    <packing>
+      <property name="expand">False</property>
+      <property name="fill">True</property>
+      <property name="position">0</property>
+    </packing>
+  </child>
+</object>
+
+
 <object class="GtkNotebook" id="prefs_widget">
   <property name="expand">true</property>
 
@@ -454,19 +594,19 @@
             <object class="GtkListBox" id="update_command_listbox">
               <property name="selection_mode">none</property>
               <child>
-                <object class="GtkListBoxRow" id="output_on_terminal_list">
+                <object class="GtkListBoxRow" id="update_cmd_options_list">
                   <child>
-                    <object class="GtkGrid" id="output_on_terminal_grid">
+                    <object class="GtkGrid" id="update_cmd_options_grid">
                       <property name="margin_left">12</property>
                       <property name="margin_right">12</property>
                       <property name="margin_top">12</property>
                       <property name="margin_bottom">12</property>
                       <property name="column_spacing">32</property>
                       <child>
-                        <object class="GtkLabel" id="output_on_terminal_label">
+                        <object class="GtkLabel" id="update_cmd_options_label">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Show output on terminal</property>
+                          <property name="label" translatable="yes">Update method</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
@@ -474,65 +614,61 @@
                         </packing>
                       </child>
                       <child>
-                        <object class="GtkSwitch" id="output_on_terminal_switch">
-                          <property name="halign">end</property>
-                          <property name="valign">center</property>
+                        <object class="GtkLabel" id="update_cmd_options_description">
+                          <property name="hexpand">True</property>
+                          <property name="xalign">0</property>
+                          <property name="label" translatable="yes">Method to use to apply the updates.</property>
+                          <property name="use_markup">True</property>
+                          <property name="wrap">True</property>
+                          <style>
+                            <class name="dim-label"/>
+                          </style>
                         </object>
                         <packing>
-                          <property name="left_attach">1</property>
-                          <property name="top_attach">0</property>
-                          <property name="height">2</property>
+                          <property name="left_attach">0</property>
+                          <property name="top_attach">1</property>
                         </packing>
                       </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="GtkListBoxRow" id="terminal_listboxrow">
-                  <child>
-                    <object class="GtkGrid" id="terminal_grid">
-                      <property name="margin_left">12</property>
-                      <property name="margin_right">12</property>
-                      <property name="margin_top">12</property>
-                      <property name="margin_bottom">12</property>
-                      <property name="column_spacing">12</property>
                       <child>
-                        <object class="GtkLabel">
-                          <property name="label" translatable="yes">Terminal to use</property>
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
+                        <object class="GtkBox" id="click_box">
+                          <property name="visible">True</property>
+                          <property name="can_focus">False</property>
+                          <property name="spacing">6</property>
+                          <child>
+                            <object class="GtkButton" id="update_cmd_button">
+                              <property name="visible">True</property>
+                              <property name="can_focus">True</property>
+                              <property name="receives_default">True</property>
+                              <property name="halign">center</property>
+                              <property name="valign">center</property>
+                              <child>
+                                <object class="GtkImage" id="update_cmd_image">
+                                  <property name="visible">True</property>
+                                  <property name="can_focus">False</property>
+                                  <property name="icon_name">emblem-system-symbolic</property>
+                                </object>
+                              </child>
+                              <style>
+                                <class name="circular"/>
+                              </style>
+                            </object>
+                          </child>
+                          <child>
+                            <object class="GtkComboBoxText" id="update_cmd_options">
+                              <property name="visible">True</property>
+                              <property name="can_focus">False</property>
+                              <property name="valign">center</property>
+                              <items>
+                                <item translatable="yes" id="0">Launch gnome-software</item>
+                                <item translatable="yes" id="2">Update-manager (Ubuntu only)</item>
+                                <item translatable="yes" id="3">Custom</item>
+                              </items>
+                            </object>
+                          </child>
                         </object>
-                      </child>
-                      <child>
-                        <object class="GtkEntry" id="terminal_entry">
-                          <property name="width-chars">30</property>
-                        </object>
-                      </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="GtkListBoxRow" id="update_command_listboxrow">
-                  <child>
-                    <object class="GtkGrid" id="update_command_grid">
-                      <property name="margin_left">12</property>
-                      <property name="margin_right">12</property>
-                      <property name="margin_top">12</property>
-                      <property name="margin_bottom">12</property>
-                      <property name="column_spacing">12</property>
-                      <child>
-                        <object class="GtkLabel">
-                          <property name="label" translatable="yes">Command to update packages</property>
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                        </object>
-                      </child>
-                      <child>
-                        <object class="GtkEntry" id="field_updatecmd">
-                          <property name="width-chars">30</property>
-                        </object>
+                        <packing>
+                          <property name="height">2</property>
+                        </packing>
                       </child>
                     </object>
                   </child>
@@ -567,7 +703,7 @@
                         <object class="GtkLabel" id="use_custom_cmd_description">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes">The default command is "pkcon refresh", which uses packagekit with the apt backend. You can define a custom command below. The extension will use pkexec to execute it.</property>
+                          <property name="label" translatable="yes">The default command is "pkcon refresh", which uses packagekit with the apt backend. You can define a custom command below, to be executes using pkexec.</property>
                           <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
@@ -623,7 +759,7 @@
                       </child>
                       <child>
                         <object class="GtkEntry" id="field_checkcmd_custom">
-                          <property name="width-chars">30</property>
+                          <property name="width-chars">20</property>
                         </object>
                       </child>
                     </object>

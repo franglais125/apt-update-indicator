@@ -43,11 +43,10 @@ const STATUS = {
 };
 
 /* Options */
-const PREPEND_CMD        = '/usr/bin/pkexec --user root ';
 const STOCK_CHECK_CMD    = '/usr/bin/pkcon refresh';
-const STOCK_UPDATE_CMD   = 'apt upgrade -y';
+const STOCK_UPDATE_CMD   = '/usr/bin/gnome-software --mode updates';
 let CHECK_CMD            = STOCK_CHECK_CMD;
-let UPDATE_CMD           = PREPEND_CMD + STOCK_UPDATE_CMD;
+let UPDATE_CMD           = STOCK_UPDATE_CMD;
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
 let UPDATES_PENDING        = STATUS.UNKNOWN;
@@ -214,12 +213,16 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _updateCMD: function() {
-        if (this._settings.get_string('update-cmd') !== "")
-            UPDATE_CMD = PREPEND_CMD + this._settings.get_string('update-cmd');
+        if (this._settings.get_enum('update-cmd-options') == 1)
+            UPDATE_CMD = '/usr/bin/update-manager';
+        else if (this._settings.get_enum('update-cmd-options') == 2
+              && this._settings.get_string('update-cmd') !== "")
+            UPDATE_CMD = '/usr/bin/pkexec ' + this._settings.get_string('update-cmd');
         else
-            UPDATE_CMD = PREPEND_CMD + STOCK_UPDATE_CMD;
+            UPDATE_CMD = STOCK_UPDATE_CMD;
 
         if (this._settings.get_boolean('output-on-terminal') &&
+            this._settings.get_enum('update-cmd-options') == 2 &&
             this._settings.get_string('update-cmd') !== "")
             UPDATE_CMD = '/usr/bin/' + this._settings.get_string('terminal') +
                          ' "echo sudo ' + this._settings.get_string('update-cmd') +
@@ -231,7 +234,7 @@ const AptUpdateIndicator = new Lang.Class({
     _checkCMD: function() {
         if (this._settings.get_boolean('use-custom-cmd') &&
             this._settings.get_string('check-cmd-custom') !== "")
-            CHECK_CMD = PREPEND_CMD + this._settings.get_string('check-cmd-custom');
+            CHECK_CMD = '/usr/bin/pkexec ' + this._settings.get_string('check-cmd-custom');
         else
             CHECK_CMD = STOCK_CHECK_CMD;
     },
@@ -332,6 +335,11 @@ const AptUpdateIndicator = new Lang.Class({
 
     _bindSettings: function() {
         this._signalsHandler.add([
+        // Apply updates
+            this._settings,
+            'changed::update-cmd-options',
+            Lang.bind(this, this._updateCMD)
+        ],[
             this._settings,
             'changed::terminal',
             Lang.bind(this, this._updateCMD)
@@ -344,17 +352,19 @@ const AptUpdateIndicator = new Lang.Class({
             'changed::update-cmd',
             Lang.bind(this, this._updateCMD)
         ],[
+        // Checking for updates
             this._settings,
             'changed::check-cmd-custom',
             Lang.bind(this, this._checkCMD)
         ],[
             this._settings,
-            'changed::check-interval',
-            Lang.bind(this, this._initializeInterval)
-        ],[
-            this._settings,
             'changed::use-custom-cmd',
             Lang.bind(this, this._checkCMD)
+        ],[
+        // Basic settings
+            this._settings,
+            'changed::check-interval',
+            Lang.bind(this, this._initializeInterval)
         ],[
             this._settings,
             'changed::show-count',
@@ -364,6 +374,7 @@ const AptUpdateIndicator = new Lang.Class({
             'changed::always-visible',
             Lang.bind(this, this._checkShowHideIndicator)
         ],[
+        // Synaptic features
             this._settings,
             'changed::new-packages',
             Lang.bind(this, this._newPackagesBinding)

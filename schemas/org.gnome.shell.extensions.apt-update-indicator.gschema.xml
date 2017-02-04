@@ -1,4 +1,10 @@
 <schemalist gettext-domain="gnome-shell-extensions">
+  <enum id='org.gnome.shell.extensions.apt-update-indicator.update-method'>
+      <value value='0' nick='gnome-software'/>
+      <value value='1' nick='update-manager'/>
+      <value value='2' nick='custom'/>
+  </enum>
+
   <schema id="org.gnome.shell.extensions.apt-update-indicator"
       path="/org/gnome/shell/extensions/apt-update-indicator/">
 
@@ -51,8 +57,14 @@
 
     <key name="check-cmd-custom" type="s">
       <default>"apt update"</default>
-      <summary>Command to run to check for updates without password.</summary>
-      <description>Command to run to check for updates without passowrd.</description>
+      <summary>Custom command to run to check for updates</summary>
+      <description>Command to run to check for updates.</description>
+    </key>
+
+    <key name="update-cmd-options" enum="org.gnome.shell.extensions.apt-update-indicator.update-method">
+      <default>"gnome-software"</default>
+        <summary>Application to use to update, or custom command</summary>
+        <description>0:gnome-software, 1:update-manager, 2: custom command</description>
     </key>
 
     <key name="update-cmd" type="s">
