@@ -854,6 +854,20 @@
       <property name="orientation">vertical</property>
       <property name="spacing">12</property>
       <child>
+        <object class="GtkLabel" id="synaptic_description">
+          <property name="hexpand">True</property>
+          <property name="halign">center</property>
+          <property name="label" translatable="yes">&lt;b&gt;These features are only available on apt-based distributions.&lt;/b&gt;</property>
+          <property name="use_markup">True</property>
+          <property name="wrap">True</property>
+        </object>
+        <packing>
+          <property name="expand">False</property>
+          <property name="fill">True</property>
+          <property name="position">0</property>
+        </packing>
+      </child>
+      <child>
         <object class="GtkFrame" id="new_packages_frame">
           <property name="label_xalign">0</property>
           <property name="shadow_type">in</property>
@@ -1070,7 +1084,7 @@
         <packing>
           <property name="expand">False</property>
           <property name="fill">True</property>
-          <property name="position">0</property>
+          <property name="position">1</property>
         </packing>
       </child>
     </object>
