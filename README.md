@@ -1,13 +1,13 @@
 # apt-update-indicator
-Update indicator for apt-based distributions.
+Update indicator using pkcon to get updates.
 
 
 ## Features
-- Uses "apt update" by default
-- Uses "apt upgrade -y" by default to upgrade
+- Uses "pkcon refresh" by default
+- Uses gnome-software by default to upgrade, or you can specify a command
 - Optional update count display on panel
 - Optional notification on new updates (defaults to off)
-- Comes in English, French and Spanish so far
+- Available in English, French and Spanish so far
 
 
 ## One-click install

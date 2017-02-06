@@ -1,17 +1,17 @@
 /*
-    This file is part of Apt Update Indicator
-    Apt Update Indicator is free software: you can redistribute it and/or modify
+    This file is part of Update Indicator
+    Update Indicator is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-    Apt Update Indicator is distributed in the hope that it will be useful,
+    Update Indicator is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
-    along with Apt Update Indicator.  If not, see <http://www.gnu.org/licenses/>.
+    along with Update Indicator.  If not, see <http://www.gnu.org/licenses/>.
     Copyright 2016 Raphael Rochet
-    Copyright 2016 Fran Glais
+    Copyright 2016, 2017 Fran Glais
 */
 
 const Clutter = imports.gi.Clutter;
@@ -113,7 +113,7 @@ const AptUpdateIndicator = new Lang.Class({
         this._initializing = true;
         this._otherPackages(false, PKG_STATUS.UPGRADABLE);
 
-        // We check for the network status before trying to update apt-cache
+        // We check for the network status before trying to update the cache
         this._network_monitor = Gio.network_monitor_get_default();
         this._signalsHandler.add([this._network_monitor,
                                  'network-changed',

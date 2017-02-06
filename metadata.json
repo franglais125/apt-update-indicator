@@ -1,6 +1,6 @@
 {
-  "description": "Update indicator for Apt based distributions.\n\n* Check for updates from an indicator\n\n* It shows also the following package status (as in Synaptic):\n  - Available updates\n  - New packages in repository\n  - Local/Obsolete packages\n  - Residual config files\n  - Autoremovable packages\n\n* Forked from https://extensions.gnome.org/extension/1010/archlinux-updates-indicator/",
-  "name": "Apt Update Indicator",
+  "description": "Update indicator for using pkcon to get information on updates.\n\n* Check for updates from an indicator\n\n* It shows also the following package status (if using a Debian-based distro):\n  - Available updates\n  - New packages in repository\n  - Local/Obsolete packages\n  - Residual config files\n  - Autoremovable packages\n\n* Forked from https://extensions.gnome.org/extension/1010/archlinux-updates-indicator/",
+  "name": "Update Indicator",
   "shell-version": [
     "3.14",
     "3.16",
