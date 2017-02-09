@@ -577,7 +577,7 @@ const AptUpdateIndicator = new Lang.Class({
                 // Show notification only if there's new updates
                 this._showNotification(
                     Gettext.ngettext( "New Update", "New Updates", updateList.length ),
-                    updateList.join(', ')
+                    updateList.join('\n')
                 );
             }
         } else {
