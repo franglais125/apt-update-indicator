@@ -703,7 +703,7 @@
                         <object class="GtkLabel" id="use_custom_cmd_description">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes">The default command is "pkcon refresh", which uses packagekit with the apt backend. You can define a custom command below, to be executes using pkexec.</property>
+                          <property name="label" translatable="yes">The default command is "pkcon refresh", which uses packagekit with the apt backend. You can define a custom command below, to be executed using pkexec.</property>
                           <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
