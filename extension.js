@@ -589,18 +589,19 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _cleanUpgradeList: function() {
+        let trailingSpace = "   ";
         if (this._settings.get_boolean('strip-versions') == true) {
             this._updateList = this._updateList.map(function(p) {
                 // example: firefox/jessie 50.0-1 amd64 [upgradable from: 49.0-4]
                 // chunks[0] is the package name
                 // chunks[1] is the remaining part
                 var chunks = p.split("/",2);
-                return chunks[0];
+                return chunks[0] + trailingSpace;
             });
         } else {
             this._updateList = this._updateList.map(function(p) {
                 var chunks = p.split("/",2);
-                var version = chunks[1].split(" ",3)[1];
+                var version = chunks[1].split(" ",3)[1] + trailingSpace;
                 return chunks[0] + "\t" + version;
             });
         }
