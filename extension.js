@@ -246,7 +246,7 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._TimeoutId)
             GLib.source_remove(this._TimeoutId);
 
-        // Interval in seconds from settings
+        // Interval in hours from settings, convert to seconds
         let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60 * 60;
         if (CHECK_INTERVAL) {
             // This has to be relative to the last check!
@@ -265,16 +265,14 @@ const AptUpdateIndicator = new Lang.Class({
                     CHECK_INTERVAL = 10;
             }
 
-
-            let that = this;
             this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                        CHECK_INTERVAL,
-                                                       function() {
-                                                           that._isAutomaticCheck = true;
-                                                           that._checkUpdates();
-                                                           that._checkInterval();
-                                                           return false;
-                                                       });
+                                                       Lang.bind(this, function() {
+                                                               this._isAutomaticCheck = true;
+                                                               this._checkUpdates();
+                                                               this._checkInterval();
+                                                               return true;
+                                                       }));
         }
     },
 
@@ -283,16 +281,15 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._TimeoutId)
             GLib.source_remove(this._TimeoutId);
 
-        let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60;
+        let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60 * 60;
         if (CHECK_INTERVAL) {
-            let that = this;
             this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                        CHECK_INTERVAL,
-                                                       function() {
-                                                           that._isAutomaticCheck = true;
-                                                           that._checkUpdates();
-                                                           return true;
-                                                       });
+                                                       Lang.bind(this, function() {
+                                                               this._isAutomaticCheck = true;
+                                                               this._checkUpdates();
+                                                               return true;
+                                                       }));
         }
 
     },
