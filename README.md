@@ -21,6 +21,11 @@ To install, simply download and execute "make install"
 
 ## Changes
 
+### v9
+- Fix typo in Settings
+- Fix automatic updates using minutes instead of hours
+- Improve readability of notification and indicator
+
 ### v8
 - Use gnome-software or update-manager to apply updates
 
