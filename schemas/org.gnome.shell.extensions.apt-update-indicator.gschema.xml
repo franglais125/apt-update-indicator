@@ -96,12 +96,6 @@
       <description>Terminal and options to execute a shell for the upgrade process</description>
     </key>
 
-    <key name="strip-versions" type="b">
-      <default>true</default>
-        <summary>Remove version numbers from checkupdates output</summary>
-        <description></description>
-    </key>
-
     <key name="auto-expand-list" type="i">
       <default>0</default>
         <summary>Auto-open list submenu when updates count is lower than this number</summary>

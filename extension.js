@@ -537,7 +537,6 @@ const AptUpdateIndicator = new Lang.Class({
             this.label.set_text(updatesCount.toString());
 
             // Update the menu look:
-            this._cleanUpgradeList();
             this.updatesListMenuLabel.set_text( this._updateList.join("   \n") );
             this._updateMenuExpander( true, Gettext.ngettext( "%d update pending",
                                                               "%d updates pending",
@@ -610,18 +609,6 @@ const AptUpdateIndicator = new Lang.Class({
                 Gettext.ngettext( "New Update", "New Updates", updatesCount ),
                 Gettext.ngettext( "There is %d update pending", "There are %d updates pending", updatesCount ).format(updatesCount)
             );
-        }
-    },
-
-    _cleanUpgradeList: function() {
-        if (this._settings.get_boolean('strip-versions') == true) {
-            this._updateList = this._updateList.map(function(p) {
-                // example: firefox 50.0-1
-                // chunks[0] is the package name
-                // chunks[1] is the version
-                var chunks = p.split("\t",2);
-                return chunks[0];
-            });
         }
     },
 
