@@ -493,7 +493,26 @@
                         </packing>
                       </child>
                       <child>
+                        <object class="GtkLabel" id="verbosity_description">
+                          <property name="hexpand">True</property>
+                          <property name="xalign">0</property>
+                          <property name="label" translatable="yes">Up to a maximum of 50 package names.</property>
+                          <property name="use_markup">True</property>
+                          <property name="wrap">True</property>
+                          <style>
+                            <class name="dim-label"/>
+                          </style>
+                        </object>
+                        <packing>
+                          <property name="left_attach">0</property>
+                          <property name="top_attach">1</property>
+                        </packing>
+                      </child>
+                      <child>
                         <object class="GtkComboBoxText" id="verbosity">
+                          <property name="visible">True</property>
+                          <property name="can_focus">False</property>
+                          <property name="valign">center</property>
                           <items>
                             <item translatable="yes" id="0">Count only</item>
                             <item translatable="yes" id="1">New updates names</item>

@@ -570,13 +570,20 @@ const AptUpdateIndicator = new Lang.Class({
                 // Keep only packets that was not in the previous notification
                 updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
             }
+
+            if (updateList.length > 50)
+                // We show a maximum of 50 updates on the notification, as it can
+                // freeze the shell if the text is too long
+                updateList = updateList.slice(0, 50);
+
             if (updateList.length > 0) {
                 // Show notification only if there's new updates
                 this._showNotification(
                     Gettext.ngettext( "New Update", "New Updates", updateList.length ),
-                    updateList.join('\n')
+                    updateList.join(', ')
                 );
             }
+
         } else {
             this._showNotification(
                 Gettext.ngettext( "New Update", "New Updates", updatesCount ),
@@ -862,7 +869,7 @@ const AptUpdateIndicator = new Lang.Class({
             this._notifSource.createIcon = function() {
                 return new St.Icon({ icon_name: 'system-software-install-symbolic' });
             };
-            // Take care of note leaving unneeded sources
+            // Take care of not leaving unneeded sources
             this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
             Main.messageTray.add(this._notifSource);
         }
