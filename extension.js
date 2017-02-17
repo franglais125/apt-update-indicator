@@ -53,7 +53,7 @@ let UPDATES_PENDING        = STATUS.UNKNOWN;
 let UPDATES_LIST           = [];
 
 /* Various packages statuses */
-const SCRIPT_NAMES = ['upgradable', 'new', 'obsolete', 'residual', 'autoremovable'];
+const SCRIPT_NAMES = ['get-updates', 'new', 'obsolete', 'residual', 'autoremovable'];
 const PKG_STATUS = {
     UPGRADABLE:    0,
     NEW:           1,
@@ -616,17 +616,11 @@ const AptUpdateIndicator = new Lang.Class({
     _cleanUpgradeList: function() {
         if (this._settings.get_boolean('strip-versions') == true) {
             this._updateList = this._updateList.map(function(p) {
-                // example: firefox/jessie 50.0-1 amd64 [upgradable from: 49.0-4]
+                // example: firefox 50.0-1
                 // chunks[0] is the package name
-                // chunks[1] is the remaining part
-                var chunks = p.split("/",2);
+                // chunks[1] is the version
+                var chunks = p.split("\t",2);
                 return chunks[0];
-            });
-        } else {
-            this._updateList = this._updateList.map(function(p) {
-                var chunks = p.split("/",2);
-                var version = chunks[1].split(" ",3)[1];
-                return chunks[0] + "\t" + version;
             });
         }
     },
@@ -786,15 +780,9 @@ const AptUpdateIndicator = new Lang.Class({
     _otherPackages: function(initializing, index) {
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         try {
-            let script = [];
-            let path = null;
-            if (index == PKG_STATUS.UPGRADABLE)
-                script = ['/usr/bin/apt', 'list', '--upgradable'];
-            else {
-                path = Me.dir.get_path();
-                script = ['/bin/bash', path + '/scripts/' + SCRIPT_NAMES[index] + '.sh',
+            let path = Me.dir.get_path();
+            let script = ['/bin/bash', path + '/scripts/' + SCRIPT_NAMES[index] + '.sh',
                           initializing ? '1' : '0'];
-            }
 
             let [, pid, , out_fd, ] = GLib.spawn_async_with_pipes(null,
                                                                   script,
@@ -830,11 +818,8 @@ const AptUpdateIndicator = new Lang.Class({
             if (out) packagesList.push(out);
         } while (out);
 
-        if (index == PKG_STATUS.UPGRADABLE) {
-            // This removes the the first line which reads: 'Listing...'
-            packagesList.shift();
+        if (index == PKG_STATUS.UPGRADABLE)
             this._updateList = packagesList;
-        }
         else if (index == PKG_STATUS.NEW)
             this._newPackagesList = packagesList;
         else if (index == PKG_STATUS.OBSOLETE)
