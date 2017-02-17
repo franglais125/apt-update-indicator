@@ -21,5 +21,5 @@
 #                                    #
 ######################################
 
-# Get updates list    | Rm 1st line | "\" -> " "    | Package name and version
-apt list --upgradable | tail -n +2  | sed 's/\// /' | awk '{print $1 "\t" $3}'
+# Get updates list   | Print after "Results:"      | remove line if 0 updates       | print package names only
+pkcon get-updates -p | awk '/Results:/{y=1;next}y' | grep -v "no updates available" | awk '{print $2}'
