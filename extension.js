@@ -517,7 +517,7 @@ const AptUpdateIndicator = new Lang.Class({
 
             // Update the menu look:
             this._cleanUpgradeList();
-            this.updatesListMenuLabel.set_text( this._updateList.join("\n") );
+            this.updatesListMenuLabel.set_text( this._updateList.join("   \n") );
             this._updateMenuExpander( true, Gettext.ngettext( "%d update pending",
                                                               "%d updates pending",
                                                               updatesCount ).format(updatesCount) );
@@ -593,19 +593,18 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _cleanUpgradeList: function() {
-        let trailingSpace = "   ";
         if (this._settings.get_boolean('strip-versions') == true) {
             this._updateList = this._updateList.map(function(p) {
                 // example: firefox/jessie 50.0-1 amd64 [upgradable from: 49.0-4]
                 // chunks[0] is the package name
                 // chunks[1] is the remaining part
                 var chunks = p.split("/",2);
-                return chunks[0] + trailingSpace;
+                return chunks[0];
             });
         } else {
             this._updateList = this._updateList.map(function(p) {
                 var chunks = p.split("/",2);
-                var version = chunks[1].split(" ",3)[1] + trailingSpace;
+                var version = chunks[1].split(" ",3)[1];
                 return chunks[0] + "\t" + version;
             });
         }
