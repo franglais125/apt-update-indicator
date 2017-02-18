@@ -1,7 +1,7 @@
 # Basic Makefile
 
 UUID = apt-update-indicator@franglais125.gmail.com
-BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js prefs.xml stylesheet.css utils.js
+BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js Settings.ui stylesheet.css utils.js
 EXTRA_MEDIA = media/logo.png
 TOLOCALIZE = extension.js
 MSGSRC = $(wildcard po/*.po)
@@ -43,11 +43,11 @@ mergepo: potfile
 		msgmerge -U $$l ./po/apt-update-indicator.pot; \
 	done;
 
-./po/apt-update-indicator.pot: $(TOLOCALIZE) prefs.xml
+./po/apt-update-indicator.pot: $(TOLOCALIZE) Settings.ui
 	mkdir -p po
 	xgettext -k_ -kN_ -o po/apt-update-indicator.pot --package-name "Apt Update Indicator" $(TOLOCALIZE)
-	intltool-extract --type=gettext/glade prefs.xml
-	xgettext -k_ -kN_ --join-existing -o po/apt-update-indicator.pot prefs.xml.h
+	intltool-extract --type=gettext/glade Settings.ui
+	xgettext -k_ -kN_ --join-existing -o po/apt-update-indicator.pot Settings.ui.h
 
 ./po/%.mo: ./po/%.po
 	msgfmt -c $< -o $@
