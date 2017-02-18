@@ -66,7 +66,7 @@
                     <object class="GtkLabel" id="update_command_description">
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
-                      <property name="label" translatable="yes">The command will be executed this using pkexec.</property>
+                      <property name="label" translatable="yes">The command will be executed using pkexec (sudo on the terminal).</property>
                       <property name="use_markup">True</property>
                       <property name="wrap">True</property>
                       <property name="max-width-chars">25</property>
@@ -142,11 +142,32 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                     </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">0</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkLabel">
+                      <property name="label" translatable="yes">Ex: gnome-terminal -x bash -c</property>
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <style>
+                        <class name="dim-label"/>
+                      </style>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">1</property>
+                    </packing>
                   </child>
                   <child>
                     <object class="GtkEntry" id="terminal_entry">
                       <property name="width-chars">30</property>
                     </object>
+                    <packing>
+                       <property name="height">2</property>
+                    </packing>
                   </child>
                 </object>
               </child>
