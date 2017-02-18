@@ -1,4 +1,9 @@
 <schemalist gettext-domain="gnome-shell-extensions">
+  <enum id='org.gnome.shell.extensions.apt-update-indicator.interval-unit'>
+      <value value='0' nick='hours'/>
+      <value value='1' nick='days'/>
+      <value value='2' nick='weeks'/>
+  </enum>
   <enum id='org.gnome.shell.extensions.apt-update-indicator.update-method'>
       <value value='0' nick='gnome-software'/>
       <value value='1' nick='update-manager'/>
@@ -10,9 +15,15 @@
 
     <key type="i" name="check-interval">
         <default>12</default>
-        <summary>Interval between updates check (hours)</summary>
+        <summary>Interval between updates check</summary>
         <description>Time to wait between two automatic checks</description>
         <range min="0"/>
+    </key>
+
+    <key name="interval-unit" enum="org.gnome.shell.extensions.apt-update-indicator.interval-unit">
+      <default>"hours"</default>
+        <summary>Unit to use for the interval</summary>
+        <description>0: hours, 1: days, 2: weeks</description>
     </key>
 
     <key name="always-visible" type="b">

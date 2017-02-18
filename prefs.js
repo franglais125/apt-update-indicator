@@ -50,6 +50,13 @@ function buildPrefsWidget(){
                   buildable.get_object('strip_versions_switch'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
+
+    // Hours, days or weeks
+    buildable.get_object('interval_unit_combo').connect('changed', function(widget) {
+        settings.set_enum('interval-unit', widget.get_active());
+    });
+    buildable.get_object('interval_unit_combo').set_active(settings.get_enum('interval-unit'));
+
     // Indicator
     settings.bind('always-visible',
                   buildable.get_object('always_visible'),
