@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-09 15:28-0500\n"
+"POT-Creation-Date: 2017-02-22 17:28-0500\n"
 "PO-Revision-Date: 2016-10-29 14:53+0200\n"
 "Last-Translator: Fran Glais <franglais125@gmail.com>\n"
 "Language-Team: \n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "New in repository"
 msgstr "Paquetes nuevos"
 
-#: extension.js:142 prefs.xml.h:34
+#: extension.js:142 Settings.ui.h:39
 msgid "Local/Obsolete packages"
 msgstr "Paquetes locales u obsoletos"
 
@@ -42,196 +42,218 @@ msgstr "Ajustes"
 msgid "Apply updates"
 msgstr "Efectuar actualizaciones"
 
-#: extension.js:165 extension.js:510
+#: extension.js:165 extension.js:528
 msgid "Check now"
 msgstr "Comprobar ahora"
 
-#: extension.js:404
+#: extension.js:422
 #, javascript-format
 msgid "Can not connect to %s"
 msgstr "No se pudo conectar con %s"
 
-#: extension.js:469
+#: extension.js:487
 msgid "Last check: "
 msgstr "Última comprobación: "
 
-#: extension.js:507
+#: extension.js:525
 msgid "Checking"
 msgstr "Comprobando"
 
-#: extension.js:524
+#: extension.js:542
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "%d actualización pendiente"
 msgstr[1] "%d actualizaciones pendientes"
 
-#: extension.js:549
+#: extension.js:567
 msgid "Error"
 msgstr "Error"
 
-#: extension.js:553
+#: extension.js:571
 msgid "No internet"
 msgstr "Sin conexión"
 
-#: extension.js:557
+#: extension.js:575
 msgid "Up to date :)"
 msgstr "Actualizado :)"
 
-#: extension.js:579 extension.js:585
+#: extension.js:608 extension.js:615
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nueva Actualización"
 msgstr[1] "Nuevas actualizaciones"
 
-#: extension.js:586
+#: extension.js:616
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "Hay %d actualización pendiente"
 msgstr[1] "Hay %d actualizaciones pendientes"
 
-#: extension.js:876
+#: extension.js:891
 msgid "Update now"
 msgstr "Actualizar ahora"
 
-#: prefs.xml.h:1
+#: Settings.ui.h:1
 msgid "Command to update packages"
 msgstr "Comando para actualizar los paquetes"
 
-#: prefs.xml.h:2
-msgid "The command will be executed this using pkexec."
-msgstr ""
+#: Settings.ui.h:2
+msgid "The command will be executed using pkexec (sudo on the terminal)."
+msgstr "El comando será ejecutado usando pkexec (sudo en el terminal)."
 
-#: prefs.xml.h:3
+#: Settings.ui.h:3
 msgid "Show output on terminal"
 msgstr "Mostrar el progreso en una terminal"
 
-#: prefs.xml.h:4
+#: Settings.ui.h:4
 msgid "Terminal to use"
 msgstr "Terminal a usar"
 
-#: prefs.xml.h:5
-msgid "Interval between updates checks (hours, 0 to disable)"
-msgstr ""
-"Intervalo entre comprobaciones de actualización (horas, 0 para deshabilitar)"
+#: Settings.ui.h:5
+msgid "Ex: gnome-terminal -x bash -c"
+msgstr "Ej: gnome-terminal -x bash -c"
 
-#: prefs.xml.h:6
-msgid "Check for updates automatically"
-msgstr "Buscar actualizaciones automáticamente"
+#: Settings.ui.h:6
+msgid "Check for updates every:"
+msgstr "Buscar actualizaciones cada:"
 
-#: prefs.xml.h:7
+#: Settings.ui.h:7
+msgid "Automatic checks, 0 to disable"
+msgstr "Comprobación automática, 0 para deshabilitar"
+
+#: Settings.ui.h:8
+msgid "Hours"
+msgstr "Horas"
+
+#: Settings.ui.h:9
+msgid "Days"
+msgstr "Días"
+
+#: Settings.ui.h:10
+msgid "Weeks"
+msgstr "Semanas"
+
+#: Settings.ui.h:11
 msgid "Strip out version numbers"
 msgstr "Quitar número de version"
 
-#: prefs.xml.h:8
+#: Settings.ui.h:12
 msgid "Always show the indicator"
 msgstr "Siempre mostrar el indicador"
 
-#: prefs.xml.h:9
+#: Settings.ui.h:13
 msgid "Show updates count on indicator"
 msgstr "Mostrar contador de actualizaciones en el indicador"
 
-#: prefs.xml.h:10
+#: Settings.ui.h:14
 msgid ""
 "Auto-expand the list if updates count is less than this number (0 to disable)"
 msgstr ""
 "Auto-expandir la lista si el recuento de actualizaciones es menor que: (0 "
 "para deshabilitar)"
 
-#: prefs.xml.h:11
+#: Settings.ui.h:15
 msgid "Auto-expand updates list"
 msgstr "Auto-expandir la lista de actualizaciones"
 
-#: prefs.xml.h:12
+#: Settings.ui.h:16
 msgid "Send a notification when new updates are available."
 msgstr "Enviar una notificación cuando una nueva actualización esté disponible"
 
-#: prefs.xml.h:13
+#: Settings.ui.h:17
 msgid "Notifications"
 msgstr "Notificaciones"
 
-#: prefs.xml.h:14
+#: Settings.ui.h:18
 msgid "Use transient notifications (auto dismiss)"
 msgstr "Usar notificaciones transitorias (auto cierre)"
 
-#: prefs.xml.h:15
+#: Settings.ui.h:19
 msgid "How much information to show on notifications"
 msgstr "Cantidad de información a mostrar en la notificación"
 
-#: prefs.xml.h:16
+#: Settings.ui.h:20
+msgid "Up to a maximum of 50 package names."
+msgstr "Hasta un máximo de 50 nombres de paquetes"
+
+#: Settings.ui.h:21
 msgid "Count only"
 msgstr "Contador solamente"
 
-#: prefs.xml.h:17
+#: Settings.ui.h:22
 msgid "New updates names"
 msgstr "Nombres de actualizaciones nuevas"
 
-#: prefs.xml.h:18
+#: Settings.ui.h:23
 msgid "All updates names"
 msgstr "Nombres de todas las actualizaciones"
 
-#: prefs.xml.h:19
+#: Settings.ui.h:24
 msgid "Basic settings"
 msgstr "Ajustes básicos"
 
-#: prefs.xml.h:20
+#: Settings.ui.h:25
 msgid "Reset values for all commands"
 msgstr "Reinicializar todos los comandos"
 
-#: prefs.xml.h:21
+#: Settings.ui.h:26
 msgid "Reset"
 msgstr "Restaurar"
 
-#: prefs.xml.h:22
+#: Settings.ui.h:27
 msgid "Update method"
 msgstr "Método de cctualización"
 
-#: prefs.xml.h:23
+#: Settings.ui.h:28
 msgid "Method to use to apply the updates."
-msgstr ""
+msgstr "Método para aplicar las actualizaciones."
 
-#: prefs.xml.h:24
+#: Settings.ui.h:29
 msgid "Launch gnome-software"
-msgstr ""
+msgstr "Abrir gnome'software"
 
-#: prefs.xml.h:25
+#: Settings.ui.h:30
 msgid "Update-manager (Ubuntu only)"
-msgstr ""
+msgstr "Update-manager (sólo en Ubuntu)"
 
-#: prefs.xml.h:26
+#: Settings.ui.h:31
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
-#: prefs.xml.h:27
+#: Settings.ui.h:32
 msgid ""
 "The default command is \"pkcon refresh\", which uses packagekit with the apt "
 "backend. You can define a custom command below, to be executed using pkexec."
 msgstr ""
+"El comando por defecto es \"pkcon refresh\", que usa el backend apt de "
+"packagekit. Puede definir un comando personalizado más abajo, ejecutado con "
+"pkexec."
 
-#: prefs.xml.h:28
+#: Settings.ui.h:33
 msgid "Use a custom command to check for updates"
 msgstr "Usar un comando personalizado para comprobar actualizaciones"
 
-#: prefs.xml.h:29
+#: Settings.ui.h:34
 msgid "Custom command to check for updates"
 msgstr "Comando personalizado para comprobar actualizaciones"
 
-#: prefs.xml.h:30
+#: Settings.ui.h:35
 msgid "Advanced settings"
 msgstr "Ajustes avanzados"
 
-#: prefs.xml.h:31
+#: Settings.ui.h:36
 msgid ""
 "Include an item in the indicator with a list of new packages in the "
 "repository."
 msgstr "Incluir un ítem en el indicador con una lista de paquetes nuevos."
 
-#: prefs.xml.h:32
+#: Settings.ui.h:37
 msgid "New packages in repository"
 msgstr "Paquetes nuevos en el repositorio"
 
-#: prefs.xml.h:33
+#: Settings.ui.h:38
 msgid ""
 "Include an item in the indicator with a list of obsolete or local packages. "
 "Obsolete packages are not available in the repository. Local packages are "
@@ -241,7 +263,7 @@ msgstr ""
 "locales. Los paquetes obsoletos ya no están disponibles. Los paquetes "
 "locales ya no están disponibles en la versión instalada."
 
-#: prefs.xml.h:35
+#: Settings.ui.h:40
 msgid ""
 "Include an item in the indicator with a list of packages that have residual "
 "config files. Run \"sudo apt purge pkgname\" to clean them."
@@ -249,11 +271,11 @@ msgstr ""
 "Incluir un ítem en el indicador con una lista de paquetes con ficheros "
 "residuales. Ejecutar \"sudo apt purge pkgname\" para purgarlos."
 
-#: prefs.xml.h:36
+#: Settings.ui.h:41
 msgid "Residual packages"
 msgstr "Paquetes residuales"
 
-#: prefs.xml.h:37
+#: Settings.ui.h:42
 msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
@@ -261,32 +283,32 @@ msgstr ""
 "Incluir un ítem en el indicador con una lista de paquetes innecesarios. "
 "Ejecutar \"sudo apt autoremove\" para eliminarlos."
 
-#: prefs.xml.h:38
+#: Settings.ui.h:43
 msgid "Autoremovable packages"
 msgstr "Paquetes innecesarios"
 
-#: prefs.xml.h:39
+#: Settings.ui.h:44
 msgid "Package status"
 msgstr "Estado de paquetes"
 
-#: prefs.xml.h:40
+#: Settings.ui.h:45
 msgid "version: "
 msgstr "versión: "
 
-#: prefs.xml.h:41
+#: Settings.ui.h:46
 msgid "Adds an indicator to the top panel that allows to check for updates"
 msgstr ""
 "Agrega un indicador al panel superior que permite buscar actualizaciones"
 
-#: prefs.xml.h:42
+#: Settings.ui.h:47
 msgid "Maintained by"
 msgstr "Mantenido por"
 
-#: prefs.xml.h:43
+#: Settings.ui.h:48
 msgid "Webpage"
 msgstr "Sitio web"
 
-#: prefs.xml.h:44
+#: Settings.ui.h:49
 msgid ""
 "<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
@@ -297,6 +319,6 @@ msgstr ""
 "\">Licencia Pública General de GNU, versión 2 o posterior</a> para obtener "
 "más detalles.</span>"
 
-#: prefs.xml.h:46
+#: Settings.ui.h:51
 msgid "About"
 msgstr "Acerca de"

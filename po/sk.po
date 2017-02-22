@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-09 15:28-0500\n"
+"POT-Creation-Date: 2017-02-22 17:28-0500\n"
 "PO-Revision-Date: 2016-02-05 17:40+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: \n"
@@ -22,7 +22,7 @@ msgstr ""
 msgid "New in repository"
 msgstr ""
 
-#: extension.js:142 prefs.xml.h:34
+#: extension.js:142 Settings.ui.h:39
 msgid "Local/Obsolete packages"
 msgstr ""
 
@@ -43,24 +43,24 @@ msgstr "Nastavenia"
 msgid "Apply updates"
 msgstr "Názvy všetkých aktualizácií"
 
-#: extension.js:165 extension.js:510
+#: extension.js:165 extension.js:528
 msgid "Check now"
 msgstr "Skontrolovať teraz"
 
-#: extension.js:404
+#: extension.js:422
 #, javascript-format
 msgid "Can not connect to %s"
 msgstr ""
 
-#: extension.js:469
+#: extension.js:487
 msgid "Last check: "
 msgstr ""
 
-#: extension.js:507
+#: extension.js:525
 msgid "Checking"
 msgstr "Kontroluje sa"
 
-#: extension.js:524
+#: extension.js:542
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
@@ -68,19 +68,19 @@ msgstr[0] "%d dostupná aktualizácia"
 msgstr[1] "%d dostupné aktualizácie"
 msgstr[2] "%d dostupných aktualizácií"
 
-#: extension.js:549
+#: extension.js:567
 msgid "Error"
 msgstr "Chyba"
 
-#: extension.js:553
+#: extension.js:571
 msgid "No internet"
 msgstr ""
 
-#: extension.js:557
+#: extension.js:575
 msgid "Up to date :)"
 msgstr "Všetko je aktuálne :)"
 
-#: extension.js:579 extension.js:585
+#: extension.js:608 extension.js:615
 #, fuzzy
 msgid "New Update"
 msgid_plural "New Updates"
@@ -88,7 +88,7 @@ msgstr[0] "Názvy nových aktualizácií"
 msgstr[1] "Názvy nových aktualizácií"
 msgstr[2] "Názvy nových aktualizácií"
 
-#: extension.js:586
+#: extension.js:616
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
@@ -96,207 +96,226 @@ msgstr[0] "Je dostupná %d aktualizácia"
 msgstr[1] "Sú dostupné %d aktualizácie"
 msgstr[2] "Je dostupných %d aktualizácií"
 
-#: extension.js:876
+#: extension.js:891
 msgid "Update now"
 msgstr "Aktualizovať teraz"
 
-#: prefs.xml.h:1
+#: Settings.ui.h:1
 msgid "Command to update packages"
 msgstr "Príkaz na aktualizáciu balíkov"
 
-#: prefs.xml.h:2
-msgid "The command will be executed this using pkexec."
+#: Settings.ui.h:2
+msgid "The command will be executed using pkexec (sudo on the terminal)."
 msgstr ""
 
-#: prefs.xml.h:3
+#: Settings.ui.h:3
 msgid "Show output on terminal"
 msgstr ""
 
-#: prefs.xml.h:4
+#: Settings.ui.h:4
 msgid "Terminal to use"
 msgstr ""
 
-#: prefs.xml.h:5
-#, fuzzy
-msgid "Interval between updates checks (hours, 0 to disable)"
-msgstr "Interval medzi kontrolami aktualizácií (v minútach)"
+#: Settings.ui.h:5
+msgid "Ex: gnome-terminal -x bash -c"
+msgstr ""
 
-#: prefs.xml.h:6
+#: Settings.ui.h:6
 #, fuzzy
-msgid "Check for updates automatically"
+msgid "Check for updates every:"
 msgstr "<b>Kontrolujú sa aktualizácie</b>"
 
-#: prefs.xml.h:7
+#: Settings.ui.h:7
+msgid "Automatic checks, 0 to disable"
+msgstr ""
+
+#: Settings.ui.h:8
+msgid "Hours"
+msgstr ""
+
+#: Settings.ui.h:9
+msgid "Days"
+msgstr ""
+
+#: Settings.ui.h:10
+msgid "Weeks"
+msgstr ""
+
+#: Settings.ui.h:11
 #, fuzzy
 msgid "Strip out version numbers"
 msgstr "Odstrániť čísla verzií"
 
-#: prefs.xml.h:8
+#: Settings.ui.h:12
 msgid "Always show the indicator"
 msgstr ""
 
-#: prefs.xml.h:9
+#: Settings.ui.h:13
 msgid "Show updates count on indicator"
 msgstr "Zobraziť počet aktualizácií na indikátore"
 
-#: prefs.xml.h:10
+#: Settings.ui.h:14
 msgid ""
 "Auto-expand the list if updates count is less than this number (0 to disable)"
 msgstr ""
 
-#: prefs.xml.h:11
+#: Settings.ui.h:15
 msgid "Auto-expand updates list"
 msgstr ""
 
-#: prefs.xml.h:12
+#: Settings.ui.h:16
 #, fuzzy
 msgid "Send a notification when new updates are available."
 msgstr "Odoslať oznámenie, keď sú dostupné nové aktualizácie"
 
-#: prefs.xml.h:13
+#: Settings.ui.h:17
 #, fuzzy
 msgid "Notifications"
 msgstr "<b>Oznámenie</b>"
 
-#: prefs.xml.h:14
+#: Settings.ui.h:18
 msgid "Use transient notifications (auto dismiss)"
 msgstr "Použiť prechodné oznámenia (automatické zahodenie)"
 
-#: prefs.xml.h:15
+#: Settings.ui.h:19
 msgid "How much information to show on notifications"
 msgstr "Koľko informácií zobraziť v oznámeniach"
 
-#: prefs.xml.h:16
+#: Settings.ui.h:20
+msgid "Up to a maximum of 50 package names."
+msgstr ""
+
+#: Settings.ui.h:21
 msgid "Count only"
 msgstr "Iba počet"
 
-#: prefs.xml.h:17
+#: Settings.ui.h:22
 msgid "New updates names"
 msgstr "Názvy nových aktualizácií"
 
-#: prefs.xml.h:18
+#: Settings.ui.h:23
 msgid "All updates names"
 msgstr "Názvy všetkých aktualizácií"
 
-#: prefs.xml.h:19
+#: Settings.ui.h:24
 #, fuzzy
 msgid "Basic settings"
 msgstr "Nastavenia"
 
-#: prefs.xml.h:20
+#: Settings.ui.h:25
 msgid "Reset values for all commands"
 msgstr ""
 
-#: prefs.xml.h:21
+#: Settings.ui.h:26
 msgid "Reset"
 msgstr ""
 
-#: prefs.xml.h:22
+#: Settings.ui.h:27
 #, fuzzy
 msgid "Update method"
 msgstr "Aktualizovať teraz"
 
-#: prefs.xml.h:23
+#: Settings.ui.h:28
 msgid "Method to use to apply the updates."
 msgstr ""
 
-#: prefs.xml.h:24
+#: Settings.ui.h:29
 msgid "Launch gnome-software"
 msgstr ""
 
-#: prefs.xml.h:25
+#: Settings.ui.h:30
 msgid "Update-manager (Ubuntu only)"
 msgstr ""
 
-#: prefs.xml.h:26
+#: Settings.ui.h:31
 msgid "Custom"
 msgstr ""
 
-#: prefs.xml.h:27
+#: Settings.ui.h:32
 msgid ""
 "The default command is \"pkcon refresh\", which uses packagekit with the apt "
 "backend. You can define a custom command below, to be executed using pkexec."
 msgstr ""
 
-#: prefs.xml.h:28
+#: Settings.ui.h:33
 #, fuzzy
 msgid "Use a custom command to check for updates"
 msgstr "Príkaz na kontrolu aktualizácií balíkov"
 
-#: prefs.xml.h:29
+#: Settings.ui.h:34
 #, fuzzy
 msgid "Custom command to check for updates"
 msgstr "Príkaz na kontrolu aktualizácií balíkov"
 
-#: prefs.xml.h:30
+#: Settings.ui.h:35
 #, fuzzy
 msgid "Advanced settings"
 msgstr "<b>Pokročilé nastavenia</b>"
 
-#: prefs.xml.h:31
+#: Settings.ui.h:36
 msgid ""
 "Include an item in the indicator with a list of new packages in the "
 "repository."
 msgstr ""
 
-#: prefs.xml.h:32
+#: Settings.ui.h:37
 msgid "New packages in repository"
 msgstr ""
 
-#: prefs.xml.h:33
+#: Settings.ui.h:38
 msgid ""
 "Include an item in the indicator with a list of obsolete or local packages. "
 "Obsolete packages are not available in the repository. Local packages are "
 "available, but an unavailable version is installed."
 msgstr ""
 
-#: prefs.xml.h:35
+#: Settings.ui.h:40
 msgid ""
 "Include an item in the indicator with a list of packages that have residual "
 "config files. Run \"sudo apt purge pkgname\" to clean them."
 msgstr ""
 
-#: prefs.xml.h:36
+#: Settings.ui.h:41
 msgid "Residual packages"
 msgstr ""
 
-#: prefs.xml.h:37
+#: Settings.ui.h:42
 msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
 msgstr ""
 
-#: prefs.xml.h:38
+#: Settings.ui.h:43
 msgid "Autoremovable packages"
 msgstr ""
 
-#: prefs.xml.h:39
+#: Settings.ui.h:44
 msgid "Package status"
 msgstr ""
 
-#: prefs.xml.h:40
+#: Settings.ui.h:45
 msgid "version: "
 msgstr ""
 
-#: prefs.xml.h:41
+#: Settings.ui.h:46
 msgid "Adds an indicator to the top panel that allows to check for updates"
 msgstr ""
 
-#: prefs.xml.h:42
+#: Settings.ui.h:47
 msgid "Maintained by"
 msgstr ""
 
-#: prefs.xml.h:43
+#: Settings.ui.h:48
 msgid "Webpage"
 msgstr ""
 
-#: prefs.xml.h:44
+#: Settings.ui.h:49
 msgid ""
 "<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
 "General Public License, version 2 or later</a> for details.</span>"
 msgstr ""
 
-#: prefs.xml.h:46
+#: Settings.ui.h:51
 msgid "About"
 msgstr ""
