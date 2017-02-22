@@ -592,6 +592,11 @@ const AptUpdateIndicator = new Lang.Class({
                 updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
             }
 
+            // Replace tab with one space
+            updateList = this._updateList.map(function(p) {
+                return p.replace("\t", " ");
+            });
+
             if (updateList.length > 50)
                 // We show a maximum of 50 updates on the notification, as it can
                 // freeze the shell if the text is too long
