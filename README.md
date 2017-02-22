@@ -7,7 +7,7 @@ Update indicator for apt-based distributions.
 - Uses "apt upgrade -y" by default to upgrade
 - Optional update count display on panel
 - Optional notification on new updates (defaults to off)
-- Comes in English, French and Spanish so far
+- Available in English, French and Spanish so far
 
 
 ## One-click install
@@ -20,6 +20,12 @@ To install, simply download and execute "make install"
 
 
 ## Changes
+
+### v10
+- Interval: choose hours/days/weeks
+- Improve show-on-terminal section
+- Added get-updates.sh script, to prevent gchar overflow
+- Improved notifications
 
 ### v9
 - Fix typo in Settings
