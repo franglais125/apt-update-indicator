@@ -79,7 +79,7 @@
     </key>
 
     <key name="update-cmd" type="s">
-      <default>"apt upgrade -y"</default>
+      <default>"pkexec apt upgrade -y"</default>
       <summary>Command to run to update packages.</summary>
       <description>Command to run to update packages.</description>
     </key>

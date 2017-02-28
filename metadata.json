@@ -1,5 +1,5 @@
 {
-  "description": "Update indicator for Apt based distributions.\n\n* Check for updates from an indicator\n\n* It shows also the following package status (as in Synaptic):\n  - Available updates\n  - New packages in repository\n  - Local/Obsolete packages\n  - Residual config files\n  - Autoremovable packages\n\n* Forked from https://extensions.gnome.org/extension/1010/archlinux-updates-indicator/",
+  "description": "Update indicator for Apt based distributions.\n\n* Check for updates from an indicator\n\n* It shows also the following package status (as in Synaptic):\n  - Available updates\n  - New packages in repository\n  - Local/Obsolete packages\n  - Residual config files\n  - Autoremovable packages",
   "name": "Apt Update Indicator",
   "shell-version": [
     "3.14",
@@ -10,5 +10,5 @@
   ],
   "url": "https://github.com/franglais125/apt-update-indicator",
   "uuid": "apt-update-indicator@franglais125.gmail.com",
-  "version": 10
+  "version": -1
 }

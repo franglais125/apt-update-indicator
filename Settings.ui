@@ -66,7 +66,7 @@
                     <object class="GtkLabel" id="update_command_description">
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
-                      <property name="label" translatable="yes">The command will be executed using pkexec (sudo on the terminal).</property>
+                      <property name="label" translatable="yes">You can use sudo instead of pkexec for the terminal.</property>
                       <property name="use_markup">True</property>
                       <property name="wrap">True</property>
                       <property name="max-width-chars">25</property>

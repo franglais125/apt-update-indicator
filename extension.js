@@ -217,7 +217,7 @@ const AptUpdateIndicator = new Lang.Class({
             UPDATE_CMD = '/usr/bin/update-manager';
         else if (this._settings.get_enum('update-cmd-options') == 2
               && this._settings.get_string('update-cmd') !== "")
-            UPDATE_CMD = '/usr/bin/pkexec ' + this._settings.get_string('update-cmd');
+            UPDATE_CMD = '/usr/bin/' + this._settings.get_string('update-cmd');
         else
             UPDATE_CMD = STOCK_UPDATE_CMD;
 
@@ -225,10 +225,10 @@ const AptUpdateIndicator = new Lang.Class({
             this._settings.get_enum('update-cmd-options') == 2 &&
             this._settings.get_string('update-cmd') !== "")
             UPDATE_CMD = '/usr/bin/' + this._settings.get_string('terminal') +
-                         ' "echo sudo ' + this._settings.get_string('update-cmd') +
-                         '; sudo ' + this._settings.get_string('update-cmd') +
+                         ' "echo ' + this._settings.get_string('update-cmd') +
+                         '; '      + this._settings.get_string('update-cmd') +
                          '; echo Press any key to continue' +
-                         '; read -n1 key "';
+                         '; read -n1 key"';
     },
 
     _checkCMD: function() {
