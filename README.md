@@ -11,7 +11,6 @@ Update indicator for apt-based distributions.
 
 
 ## One-click install
-Soon to be on extensions.gnome.org:
 https://extensions.gnome.org/extension/1139/apt-update-indicator/
 
 
@@ -20,6 +19,10 @@ To install, simply download and execute "make install"
 
 
 ## Changes
+
+### v11
+- Add support for Gnome-Shell 3.24
+- Don't assume the use of sudo for the custom command
 
 ### v10
 - Interval: choose hours/days/weeks
@@ -72,3 +75,4 @@ To install, simply download and execute "make install"
 
 ## Credits
 Forked from https://github.com/RaphaelRochet/arch-update !
+Thanks @lucatrv for all your input!
