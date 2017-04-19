@@ -94,6 +94,7 @@ const AptUpdateIndicator = new Lang.Class({
         this.label = new St.Label({ text: '',
             y_expand: true,
             y_align: Clutter.ActorAlign.CENTER });
+        this.label.visible = false;
 
         box.add_child(this.updateIcon);
         box.add_child(this.label);
@@ -498,7 +499,9 @@ const AptUpdateIndicator = new Lang.Class({
             this.actor.visible = false;
         else
             this.actor.visible = true;
-        this.label.visible = this._settings.get_boolean('show-count');
+
+        this.label.visible = this._settings.get_boolean('show-count') &&
+                             this._updateList.length > 0;
     },
 
     _onMenuOpened: function() {
