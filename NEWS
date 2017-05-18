@@ -1,5 +1,8 @@
 ## Changes
 
+### v13
+- Add update method: gnome-update-viewer
+
 ### v12
 - Remove unnecessary space on the indicator
 
