@@ -100,12 +100,12 @@ function buildPrefsWidget(){
     });
 
     buildable.get_object('update_cmd_options').set_active(settings.get_enum('update-cmd-options'));
-    if (settings.get_enum('update-cmd-options') != 2) {
+    if (settings.get_enum('update-cmd-options') != 3) {
         buildable.get_object('update_cmd_button').set_sensitive(false);
     }
 
     settings.connect('changed::update-cmd-options', function() {
-        if (settings.get_enum('update-cmd-options') == 2)
+        if (settings.get_enum('update-cmd-options') == 3)
             buildable.get_object('update_cmd_button').set_sensitive(true);
         else
             buildable.get_object('update_cmd_button').set_sensitive(false);

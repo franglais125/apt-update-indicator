@@ -7,7 +7,8 @@
   <enum id='org.gnome.shell.extensions.apt-update-indicator.update-method'>
       <value value='0' nick='gnome-software'/>
       <value value='1' nick='update-manager'/>
-      <value value='2' nick='custom'/>
+      <value value='2' nick='gpk-update-viewer'/>
+      <value value='3' nick='custom'/>
   </enum>
 
   <schema id="org.gnome.shell.extensions.apt-update-indicator"

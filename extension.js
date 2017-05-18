@@ -214,22 +214,28 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _updateCMD: function() {
-        if (this._settings.get_enum('update-cmd-options') == 1)
+        let option = this._settings.get_enum('update-cmd-options');
+        if (option == 1) {
+            // Update manager, Ubuntu only
             UPDATE_CMD = '/usr/bin/update-manager';
-        else if (this._settings.get_enum('update-cmd-options') == 2
-              && this._settings.get_string('update-cmd') !== "")
-            UPDATE_CMD = '/usr/bin/' + this._settings.get_string('update-cmd');
-        else
+        } else if (option == 2) {
+            // Gnome Update Viewer: depends on pacakge-kit
+            UPDATE_CMD = '/usr/bin/gpk-update-viewer';
+        } else if (option == 3 && this._settings.get_string('update-cmd') !== "") {
+            // Custom command
+            if (this._settings.get_boolean('output-on-terminal')) {
+                UPDATE_CMD = '/usr/bin/' + this._settings.get_string('terminal') +
+                             ' "echo ' + this._settings.get_string('update-cmd') +
+                             '; '      + this._settings.get_string('update-cmd') +
+                             '; echo Press any key to continue' +
+                             '; read -n1 key"';
+            } else {
+                UPDATE_CMD = '/usr/bin/' + this._settings.get_string('update-cmd');
+            }
+        } else {
+            // Default, or in case the command is empty, Gnome-Software
             UPDATE_CMD = STOCK_UPDATE_CMD;
-
-        if (this._settings.get_boolean('output-on-terminal') &&
-            this._settings.get_enum('update-cmd-options') == 2 &&
-            this._settings.get_string('update-cmd') !== "")
-            UPDATE_CMD = '/usr/bin/' + this._settings.get_string('terminal') +
-                         ' "echo ' + this._settings.get_string('update-cmd') +
-                         '; '      + this._settings.get_string('update-cmd') +
-                         '; echo Press any key to continue' +
-                         '; read -n1 key"';
+        }
     },
 
     _checkCMD: function() {

@@ -552,9 +552,9 @@
                           <property name="can_focus">False</property>
                           <property name="valign">center</property>
                           <items>
-                            <item translatable="yes" id="0">Count only</item>
-                            <item translatable="yes" id="1">New updates names</item>
-                            <item translatable="yes" id="2">All updates names</item>
+                            <item translatable="yes">Count only</item>
+                            <item translatable="yes">New updates names</item>
+                            <item translatable="yes">All updates names</item>
                           </items>
                         </object>
                         <packing>
@@ -716,9 +716,10 @@
                               <property name="can_focus">False</property>
                               <property name="valign">center</property>
                               <items>
-                                <item translatable="yes" id="0">Launch gnome-software</item>
-                                <item translatable="yes" id="2">Update-manager (Ubuntu only)</item>
-                                <item translatable="yes" id="3">Custom</item>
+                                <item translatable="yes">Launch gnome-software</item>
+                                <item translatable="yes">Update-manager (Ubuntu only)</item>
+                                <item translatable="yes">Gnome package updater</item>
+                                <item translatable="yes">Custom</item>
                               </items>
                             </object>
                           </child>
