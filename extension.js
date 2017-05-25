@@ -250,8 +250,15 @@ const AptUpdateIndicator = new Lang.Class({
     _startFolderMonitor: function() {
         let directory = '/var/lib/apt/lists';
         this.apt_dir = Gio.file_new_for_path(directory);
-        this.monitor = this.apt_dir.monitor_directory(0, null, null);
-        this._signalsHandler.add([this.monitor,
+        this.apt_monitor = this.apt_dir.monitor_directory(0, null, null);
+        this._signalsHandler.add([this.apt_monitor,
+                                 'changed',
+                                 Lang.bind(this, this._onFolderChanged)]);
+
+        directory = '/var/lib/dpkg';
+        this.dpkg_dir = Gio.file_new_for_path(directory);
+        this.dpkg_monitor = this.dpkg_dir.monitor_directory(0, null, null);
+        this._signalsHandler.add([this.dpkg_monitor,
                                  'changed',
                                  Lang.bind(this, this._onFolderChanged)]);
     },
@@ -260,7 +267,7 @@ const AptUpdateIndicator = new Lang.Class({
         // Apt cache has changed! Let's schedule a check in a few seconds
         if (this._folderMonitorId)
             GLib.source_remove(this._folderMonitorId);
-        let timeout = 60;
+        let timeout = 10;
         this._folderMonitorId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                         timeout,
                                                         Lang.bind(this, function () {
