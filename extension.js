@@ -65,7 +65,7 @@ const PKG_STATUS = {
 
 function init() {
     String.prototype.format = Format.format;
-    Utils.initTranslations("apt-update-indicator");
+    Utils.initTranslations('apt-update-indicator');
 }
 
 const AptUpdateIndicator = new Lang.Class({
@@ -87,7 +87,7 @@ const AptUpdateIndicator = new Lang.Class({
     _autoremovablePackagesList: [],
 
     _init: function() {
-        this.parent(0.0, "AptUpdateIndicator");
+        this.parent(0.0, 'AptUpdateIndicator');
 
         this.updateIcon = new St.Icon({icon_name: 'system-software-install-symbolic', style_class: 'system-status-icon'});
 
@@ -121,7 +121,7 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _openSettings: function () {
-        Util.spawn([ "gnome-shell-extension-prefs", Me.uuid ]);
+        Util.spawn([ 'gnome-shell-extension-prefs', Me.uuid ]);
     },
 
     _assembleMenu: function() {
@@ -219,7 +219,7 @@ const AptUpdateIndicator = new Lang.Class({
         } else if (option == 2) {
             // Gnome Update Viewer: depends on pacakge-kit
             UPDATE_CMD = '/usr/bin/gpk-update-viewer';
-        } else if (option == 3 && this._settings.get_string('update-cmd') !== "") {
+        } else if (option == 3 && this._settings.get_string('update-cmd') !== '') {
             // Custom command
             if (this._settings.get_boolean('output-on-terminal')) {
                 UPDATE_CMD = '/usr/bin/' + this._settings.get_string('terminal') +
@@ -238,7 +238,7 @@ const AptUpdateIndicator = new Lang.Class({
 
     _checkCMD: function() {
         if (this._settings.get_boolean('use-custom-cmd') &&
-            this._settings.get_string('check-cmd-custom') !== "")
+            this._settings.get_string('check-cmd-custom') !== '')
             CHECK_CMD = '/usr/bin/pkexec ' + this._settings.get_string('check-cmd-custom');
         else
             CHECK_CMD = STOCK_CHECK_CMD;
@@ -464,10 +464,10 @@ const AptUpdateIndicator = new Lang.Class({
 
         if (this._initializing) {
             let last_check = new Date(this._settings.get_double('last-check-date-double'));
-            date = last_check.toLocaleFormat("%a %b %d, %H:%M").toString();
+            date = last_check.toLocaleFormat('%a %b %d, %H:%M').toString();
         } else {
             let now = new Date();
-            date = now.toLocaleFormat("%a %b %d, %H:%M").toString();
+            date = now.toLocaleFormat('%a %b %d, %H:%M').toString();
             this._settings.set_double('last-check-date-double', now);
             if (this._isAutomaticCheck) {
                 this._settings.set_double('last-check-date-automatic-double', now);
@@ -532,9 +532,9 @@ const AptUpdateIndicator = new Lang.Class({
 
             // Update the menu look:
             this._cleanUpgradeList();
-            this.updatesListMenuLabel.set_text( this._updateList.join("   \n") );
-            this._updateMenuExpander( true, Gettext.ngettext( "%d update pending",
-                                                              "%d updates pending",
+            this.updatesListMenuLabel.set_text( this._updateList.join('   \n') );
+            this._updateMenuExpander( true, Gettext.ngettext( '%d update pending',
+                                                              '%d updates pending',
                                                               updatesCount ).format(updatesCount) );
 
             // Emit a notification if necessary
@@ -548,7 +548,7 @@ const AptUpdateIndicator = new Lang.Class({
             this.label.set_text('');
 
             // Update the menu look:
-            this.updatesListMenuLabel.set_text("");
+            this.updatesListMenuLabel.set_text('');
 
             if (updatesCount == STATUS.UNKNOWN) {
                 // This is the value of UPDATES_PENDING at initialization.
@@ -588,7 +588,7 @@ const AptUpdateIndicator = new Lang.Class({
 
             // Replace tab with one space
             updateList = this._updateList.map(function(p) {
-                return p.replace("\t", " ");
+                return p.replace('\t', ' ');
             });
 
             if (updateList.length > 50)
@@ -599,15 +599,15 @@ const AptUpdateIndicator = new Lang.Class({
             if (updateList.length > 0) {
                 // Show notification only if there's new updates
                 this._showNotification(
-                    Gettext.ngettext( "New Update", "New Updates", updateList.length ),
+                    Gettext.ngettext( 'New Update', 'New Updates', updateList.length ),
                     updateList.join(', ')
                 );
             }
 
         } else {
             this._showNotification(
-                Gettext.ngettext( "New Update", "New Updates", updatesCount ),
-                Gettext.ngettext( "There is %d update pending", "There are %d updates pending", updatesCount ).format(updatesCount)
+                Gettext.ngettext( 'New Update', 'New Updates', updatesCount ),
+                Gettext.ngettext( 'There is %d update pending', 'There are %d updates pending', updatesCount ).format(updatesCount)
             );
         }
     },
@@ -618,7 +618,7 @@ const AptUpdateIndicator = new Lang.Class({
                 // example: firefox 50.0-1
                 // chunks[0] is the package name
                 // chunks[1] is the version
-                var chunks = p.split("\t",2);
+                var chunks = p.split('\t',2);
                 return chunks[0];
             });
         }
@@ -641,7 +641,7 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._newPackagesList.length == 0) {
             this.newPackagesExpander.actor.visible = false;
         } else {
-            this.newPackagesListMenuLabel.set_text( this._newPackagesList.join("\n") );
+            this.newPackagesListMenuLabel.set_text( this._newPackagesList.join('\n') );
             this.newPackagesExpander.actor.visible = true;
         }
     },
@@ -650,7 +650,7 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._obsoletePackagesList.length == 0)
             this.obsoletePackagesExpander.actor.visible = false;
         else {
-            this.obsoletePackagesListMenuLabel.set_text( this._obsoletePackagesList.join("\n") );
+            this.obsoletePackagesListMenuLabel.set_text( this._obsoletePackagesList.join('\n') );
             this.obsoletePackagesExpander.actor.visible = true;
         }
     },
@@ -659,7 +659,7 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._residualPackagesList.length == 0)
             this.residualPackagesExpander.actor.visible = false;
         else {
-            this.residualPackagesListMenuLabel.set_text( this._residualPackagesList.join("\n") );
+            this.residualPackagesListMenuLabel.set_text( this._residualPackagesList.join('\n') );
             this.residualPackagesExpander.actor.visible = true;
         }
     },
@@ -668,13 +668,13 @@ const AptUpdateIndicator = new Lang.Class({
         if (this._autoremovablePackagesList.length == 0)
             this.autoremovablePackagesExpander.actor.visible = false;
         else {
-            this.autoremovablePackagesListMenuLabel.set_text( this._autoremovablePackagesList.join("\n") );
+            this.autoremovablePackagesListMenuLabel.set_text( this._autoremovablePackagesList.join('\n') );
             this.autoremovablePackagesExpander.actor.visible = true;
         }
     },
 
     _updateMenuExpander: function(enabled, label) {
-        if (label == "") {
+        if (label == '') {
             // No text, hide the menuitem
             this.updatesExpander.actor.visible = false;
         } else {

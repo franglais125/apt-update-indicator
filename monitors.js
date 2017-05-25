@@ -40,7 +40,7 @@ const NetworkMonitor = new Lang.Class({
         try {
             this._network_monitor.can_reach_async(address, cancellable, Lang.bind(this, this._asyncReadyCallback));
         } catch (err) {
-            let title = _("Can not connect to %s").format(url);
+            let title = _('Can not connect to %s').format(url);
             log(title + '\n' + err.message);
         }
     },
@@ -67,7 +67,6 @@ const DirectoryMonitor = new Lang.Class({
     },
 
     start: function() {
-        global.log('starting dir monitor!');
         this.stop();
 
         let directory = '/var/lib/apt/lists';
@@ -108,7 +107,6 @@ const DirectoryMonitor = new Lang.Class({
         this._folderMonitorId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                         timeout,
                                                         Lang.bind(this, function () {
-                                                            global.log('  updating from onFolderChanged');
                                                             let initializing = false;
                                                             let checkUpgrades = 0;
                                                             this._indicator._otherPackages(initializing, checkUpgrades);
