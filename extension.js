@@ -120,6 +120,7 @@ const AptUpdateIndicator = new Lang.Class({
                                  'network-changed',
                                  Lang.bind(this, this._checkConnectionState)]);
         this._checkConnectionState();
+        this._startFolderMonitor();
     },
 
     _openSettings: function () {
@@ -244,6 +245,30 @@ const AptUpdateIndicator = new Lang.Class({
             CHECK_CMD = '/usr/bin/pkexec ' + this._settings.get_string('check-cmd-custom');
         else
             CHECK_CMD = STOCK_CHECK_CMD;
+    },
+
+    _startFolderMonitor: function() {
+        let directory = '/var/lib/apt/lists';
+        this.apt_dir = Gio.file_new_for_path(directory);
+        this.monitor = this.apt_dir.monitor_directory(0, null, null);
+        this._signalsHandler.add([this.monitor,
+                                 'changed',
+                                 Lang.bind(this, this._onFolderChanged)]);
+    },
+
+    _onFolderChanged: function() {
+        // Apt cache has changed! Let's schedule a check in a few seconds
+        if (this._folderMonitorId)
+            GLib.source_remove(this._folderMonitorId);
+        let timeout = 60;
+        this._folderMonitorId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+                                                        timeout,
+                                                        Lang.bind(this, function () {
+                                                            let initializing = false;
+                                                            this._otherPackages(initializing, PKG_STATUS.UPGRADABLE);
+                                                            this._folderMonitorId = null;
+                                                            return false;
+                                                        }));
     },
 
     _initializeInterval: function() {
