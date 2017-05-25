@@ -1,7 +1,7 @@
 # Basic Makefile
 
 UUID = apt-update-indicator@franglais125.gmail.com
-BASE_MODULES = extension.js LICENCE.txt metadata.json prefs.js Settings.ui stylesheet.css utils.js
+BASE_MODULES = extension.js LICENCE.txt metadata.json monitors.js prefs.js Settings.ui stylesheet.css utils.js
 EXTRA_MEDIA = media/logo.png
 TOLOCALIZE = extension.js
 MSGSRC = $(wildcard po/*.po)

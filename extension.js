@@ -30,6 +30,7 @@ const Util = imports.misc.util;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
+const Monitors = Me.imports.monitors;
 
 const Format = imports.format;
 const Gettext = imports.gettext.domain('apt-update-indicator');
@@ -110,17 +111,13 @@ const AptUpdateIndicator = new Lang.Class({
         this._settings = Utils.getSettings();
         this._applySettings();
 
+        // Start network and directory monitors
+        this._netMonitor = new Monitors.NetworkMonitor();
+        this._dirMonitor = new Monitors.DirectoryMonitor(this);
+
         // The first run is initialization only: we only read the existing files
         this._initializing = true;
         this._otherPackages(false, PKG_STATUS.UPGRADABLE);
-
-        // We check for the network status before trying to update apt-cache
-        this._network_monitor = Gio.network_monitor_get_default();
-        this._signalsHandler.add([this._network_monitor,
-                                 'network-changed',
-                                 Lang.bind(this, this._checkConnectionState)]);
-        this._checkConnectionState();
-        this._startFolderMonitor();
     },
 
     _openSettings: function () {
@@ -245,37 +242,6 @@ const AptUpdateIndicator = new Lang.Class({
             CHECK_CMD = '/usr/bin/pkexec ' + this._settings.get_string('check-cmd-custom');
         else
             CHECK_CMD = STOCK_CHECK_CMD;
-    },
-
-    _startFolderMonitor: function() {
-        let directory = '/var/lib/apt/lists';
-        this.apt_dir = Gio.file_new_for_path(directory);
-        this.apt_monitor = this.apt_dir.monitor_directory(0, null, null);
-        this._signalsHandler.add([this.apt_monitor,
-                                 'changed',
-                                 Lang.bind(this, this._onFolderChanged)]);
-
-        directory = '/var/lib/dpkg';
-        this.dpkg_dir = Gio.file_new_for_path(directory);
-        this.dpkg_monitor = this.dpkg_dir.monitor_directory(0, null, null);
-        this._signalsHandler.add([this.dpkg_monitor,
-                                 'changed',
-                                 Lang.bind(this, this._onFolderChanged)]);
-    },
-
-    _onFolderChanged: function() {
-        // Apt cache has changed! Let's schedule a check in a few seconds
-        if (this._folderMonitorId)
-            GLib.source_remove(this._folderMonitorId);
-        let timeout = 10;
-        this._folderMonitorId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
-                                                        timeout,
-                                                        Lang.bind(this, function () {
-                                                            let initializing = false;
-                                                            this._otherPackages(initializing, PKG_STATUS.UPGRADABLE);
-                                                            this._folderMonitorId = null;
-                                                            return false;
-                                                        }));
     },
 
     _initializeInterval: function() {
@@ -450,23 +416,6 @@ const AptUpdateIndicator = new Lang.Class({
         ]);
     },
 
-    _checkConnectionState: function() {
-        let url = 'http://ftp.debian.org';
-        let address = Gio.NetworkAddress.parse_uri(url, 80);
-        let cancellable = Gio.Cancellable.new();
-        this._connected = false;
-        try {
-            this._network_monitor.can_reach_async(address, cancellable, Lang.bind(this, this._asyncReadyCallback));
-        } catch (err) {
-            let title = _("Can not connect to %s").format(url);
-            log(title + '\n' + err.message);
-        }
-    },
-
-    _asyncReadyCallback: function(nm, res) {
-        this._connected = this._network_monitor.can_reach_finish(res);
-    },
-
     destroy: function() {
         // Remove remaining processes to avoid zombies
         if (this._upgradeProcess_sourceId) {
@@ -487,6 +436,10 @@ const AptUpdateIndicator = new Lang.Class({
 
         // Disconnect global signals
         this._signalsHandler.destroy();
+
+        // Destroy monitors
+        this._netMonitor.destroy();
+        this._dirMonitor.destroy();
 
         this.parent();
     },
@@ -786,7 +739,7 @@ const AptUpdateIndicator = new Lang.Class({
         this._showChecking(true);
         try {
             // First, check network access
-            if (this._connected) {
+            if (this._netMonitor._connected) {
                 // Parse check command line
                 let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
                 if (!parseok) { throw 'Parse error' };
@@ -824,6 +777,10 @@ const AptUpdateIndicator = new Lang.Class({
      */
 
     _otherPackages: function(initializing, index) {
+        // Stop the dir monitor to prevent it from updating again right after
+        // the update
+        this._dirMonitor.stop();
+
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
         try {
             let path = Me.dir.get_path();
@@ -906,6 +863,8 @@ const AptUpdateIndicator = new Lang.Class({
             if (this._settings.get_boolean('autoremovable-packages'))
                 this._otherPackages(this._initializing, PKG_STATUS.AUTOREMOVABLE);
             this._initializing = false;
+
+            this._dirMonitor.start();
         }
     },
 
