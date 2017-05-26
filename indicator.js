@@ -76,7 +76,13 @@ const AptUpdateIndicator = new Lang.Class({
         let dontCreateMenu = false;
         this.parent(alignment, buttonName, dontCreateMenu);
 
-        this.updateIcon = new St.Icon({icon_name: 'system-software-install-symbolic', style_class: 'system-status-icon'});
+        // We apply a scale factor in case we have a HiDPI screen
+        let iconSize = 20;
+        let scaleFactor = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+        iconSize = scaleFactor > 0 ? Math.round((iconSize) / scaleFactor) : iconSize;
+        this.updateIcon = new St.Icon({icon_name: 'system-software-install-symbolic',
+                                       icon_size: iconSize.toString(),
+                                       style_class: 'system-status-icon'});
 
         this.box = new St.BoxLayout({ vertical: false, style_class: 'panel-status-menu-box' });
         this.label = new St.Label({ text: '',
