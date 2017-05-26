@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-22 17:28-0500\n"
+"POT-Creation-Date: 2017-05-26 15:42-0400\n"
 "PO-Revision-Date: 2016-10-20 22:19+0200\n"
 "Last-Translator: Fran Glais <franglais125@gmail.com>\n"
 "Language-Team: \n"
@@ -18,90 +18,90 @@ msgstr ""
 "X-Generator: Poedit 1.8.9\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
 
-#: extension.js:136
+#: indicator.js:138
 msgid "New in repository"
 msgstr "Nouveaux paquets dans les dépôts"
 
-#: extension.js:142 Settings.ui.h:39
+#: indicator.js:144 Settings.ui.h:40
 msgid "Local/Obsolete packages"
 msgstr "Paquets locaux ou obsolètes"
 
-#: extension.js:148
+#: indicator.js:150
 msgid "Residual config files"
 msgstr "Résidus de configuration"
 
-#: extension.js:154
+#: indicator.js:156
 msgid "Autoremovable"
 msgstr "Automatiquement supprimable"
 
-#: extension.js:161
+#: indicator.js:163
 msgid "Settings"
 msgstr "Paramètres"
 
-#: extension.js:162
+#: indicator.js:164
 msgid "Apply updates"
 msgstr "Mettre à jour maintenant"
 
-#: extension.js:165 extension.js:528
+#: indicator.js:167 indicator.js:249
 msgid "Check now"
 msgstr "Vérifier maintenant"
 
-#: extension.js:422
-#, javascript-format
-msgid "Can not connect to %s"
-msgstr "Impossible d'ouvrir %s"
-
-#: extension.js:487
-msgid "Last check: "
-msgstr "Dernière vérification: "
-
-#: extension.js:525
+#: indicator.js:246
 msgid "Checking"
 msgstr "Vérification en cours"
 
-#: extension.js:542
+#: indicator.js:263
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "%d mise à jour en attente"
 msgstr[1] "%d mises à jour en attente"
 
-#: extension.js:567
+#: indicator.js:288
 msgid "Error"
 msgstr "Erreur"
 
-#: extension.js:571
+#: indicator.js:292
 msgid "No internet"
 msgstr "Sans connexion"
 
-#: extension.js:575
+#: indicator.js:296
 msgid "Up to date :)"
 msgstr "Tout est à jour :)"
 
-#: extension.js:608 extension.js:615
+#: indicator.js:329 indicator.js:336
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nouvelle mise à jour"
 msgstr[1] "Nouvelles mises à jour"
 
-#: extension.js:616
+#: indicator.js:337
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "Il y a %d mise à jour en attente"
 msgstr[1] "Il y a %d mises à jour en attente"
 
-#: extension.js:891
+#: indicator.js:446
 msgid "Update now"
 msgstr "Mettre à jour maintenant"
+
+#: monitors.js:42
+#, javascript-format
+msgid "Can not connect to %s"
+msgstr "Impossible d'ouvrir %s"
+
+#: updateManager.js:510
+msgid "Last check: "
+msgstr "Dernière vérification: "
 
 #: Settings.ui.h:1
 msgid "Command to update packages"
 msgstr "Commande pour mettre à jour les paquets"
 
 #: Settings.ui.h:2
-msgid "The command will be executed using pkexec (sudo on the terminal)."
-msgstr "La commande sera executée avec pkexec (sudo sur le terminal)."
+msgid "You can use sudo instead of pkexec for the terminal."
+msgstr ""
 
 #: Settings.ui.h:3
 msgid "Show output on terminal"
@@ -160,7 +160,8 @@ msgstr "Étendre la liste automatiquement"
 
 #: Settings.ui.h:16
 msgid "Send a notification when new updates are available."
-msgstr "Afficher une notification quand de nouvelles mises à jour sont disponibles"
+msgstr ""
+"Afficher une notification quand de nouvelles mises à jour sont disponibles"
 
 #: Settings.ui.h:17
 msgid "Notifications"
@@ -219,31 +220,35 @@ msgid "Update-manager (Ubuntu only)"
 msgstr "Update-manager (Ubuntu seulement)"
 
 #: Settings.ui.h:31
+msgid "Gnome package updater"
+msgstr ""
+
+#: Settings.ui.h:32
 msgid "Custom"
 msgstr "Personnaliser"
 
-#: Settings.ui.h:32
+#: Settings.ui.h:33
 msgid ""
 "The default command is \"pkcon refresh\", which uses packagekit with the apt "
 "backend. You can define a custom command below, to be executed using pkexec."
 msgstr ""
-"La commande pas défaut est \"pkcon refresh\", qui utilise le backend apt pour "
-"packagekit. Vous pouvez définir une commande personnalisée plus bas, qui sera "
-"executée avec pkexec."
+"La commande pas défaut est \"pkcon refresh\", qui utilise le backend apt "
+"pour packagekit. Vous pouvez définir une commande personnalisée plus bas, "
+"qui sera executée avec pkexec."
 
-#: Settings.ui.h:33
+#: Settings.ui.h:34
 msgid "Use a custom command to check for updates"
 msgstr "Utiliser une commande personnalisée pour rechercher les mises à jour"
 
-#: Settings.ui.h:34
+#: Settings.ui.h:35
 msgid "Custom command to check for updates"
 msgstr "Commande personnalisée pour rechercher les mises à jour"
 
-#: Settings.ui.h:35
+#: Settings.ui.h:36
 msgid "Advanced settings"
 msgstr "Réglages avancés"
 
-#: Settings.ui.h:36
+#: Settings.ui.h:37
 msgid ""
 "Include an item in the indicator with a list of new packages in the "
 "repository."
@@ -251,11 +256,11 @@ msgstr ""
 "Inclure an item dans l'indicateur avec une liste de nouveaux paquets dans "
 "les dépôts."
 
-#: Settings.ui.h:37
+#: Settings.ui.h:38
 msgid "New packages in repository"
 msgstr "Nouveaux paquets"
 
-#: Settings.ui.h:38
+#: Settings.ui.h:39
 msgid ""
 "Include an item in the indicator with a list of obsolete or local packages. "
 "Obsolete packages are not available in the repository. Local packages are "
@@ -265,7 +270,7 @@ msgstr ""
 "obsolètes. Les paquets obsolètes ne sont plus disponibles. Les paquets "
 "locaux sont disponibles, mais pas dans la version installée."
 
-#: Settings.ui.h:40
+#: Settings.ui.h:41
 msgid ""
 "Include an item in the indicator with a list of packages that have residual "
 "config files. Run \"sudo apt purge pkgname\" to clean them."
@@ -274,11 +279,11 @@ msgstr ""
 "résidus de configuration. Exécutez \"sudo apt purge pkgname\" pour les "
 "purger."
 
-#: Settings.ui.h:41
+#: Settings.ui.h:42
 msgid "Residual packages"
 msgstr "Résidus de configuration"
 
-#: Settings.ui.h:42
+#: Settings.ui.h:43
 msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
@@ -286,31 +291,32 @@ msgstr ""
 "Inclure an item dans l'indicateur avec une liste de paquets qui ne sont plus "
 "nécessaires. Exécutez \"sudo apt autoremove\" pour les désinstaller."
 
-#: Settings.ui.h:43
+#: Settings.ui.h:44
 msgid "Autoremovable packages"
 msgstr "Paquets n'étant plus nécessaires"
 
-#: Settings.ui.h:44
+#: Settings.ui.h:45
 msgid "Package status"
 msgstr "État des paquets"
 
-#: Settings.ui.h:45
+#: Settings.ui.h:46
 msgid "version: "
 msgstr "version: "
 
-#: Settings.ui.h:46
-msgid "Adds an indicator to the top panel that allows to check for updates"
-msgstr "Ajoute un indicateur au panneau supérieur pour vérifier les mises à jour"
-
 #: Settings.ui.h:47
+msgid "Adds an indicator to the top panel that allows to check for updates"
+msgstr ""
+"Ajoute un indicateur au panneau supérieur pour vérifier les mises à jour"
+
+#: Settings.ui.h:48
 msgid "Maintained by"
 msgstr "Maintenu par"
 
-#: Settings.ui.h:48
+#: Settings.ui.h:49
 msgid "Webpage"
 msgstr "Page web"
 
-#: Settings.ui.h:49
+#: Settings.ui.h:50
 msgid ""
 "<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
@@ -321,6 +327,9 @@ msgstr ""
 "\">Licence Générale Publique GNU version 2 ou plus récente</a> pour plus "
 "d'informations.</span>"
 
-#: Settings.ui.h:51
+#: Settings.ui.h:52
 msgid "About"
 msgstr "À propos"
+
+#~ msgid "The command will be executed using pkexec (sudo on the terminal)."
+#~ msgstr "La commande sera executée avec pkexec (sudo sur le terminal)."

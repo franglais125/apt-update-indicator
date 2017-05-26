@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-22 17:28-0500\n"
+"POT-Creation-Date: 2017-05-26 15:42-0400\n"
 "PO-Revision-Date: 2016-01-04 04:53+0200\n"
 "Last-Translator: Sorin-Mihai Vârgolici <sorin-mihai@vargolici.com>\n"
 "Language-Team: \n"
@@ -19,91 +19,91 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: extension.js:136
+#: indicator.js:138
 msgid "New in repository"
 msgstr ""
 
-#: extension.js:142 Settings.ui.h:39
+#: indicator.js:144 Settings.ui.h:40
 msgid "Local/Obsolete packages"
 msgstr ""
 
-#: extension.js:148
+#: indicator.js:150
 msgid "Residual config files"
 msgstr ""
 
-#: extension.js:154
+#: indicator.js:156
 msgid "Autoremovable"
 msgstr ""
 
-#: extension.js:161
+#: indicator.js:163
 msgid "Settings"
 msgstr "Setări"
 
-#: extension.js:162
+#: indicator.js:164
 #, fuzzy
 msgid "Apply updates"
 msgstr "Numele tuturor actualizărilor"
 
-#: extension.js:165 extension.js:528
+#: indicator.js:167 indicator.js:249
 msgid "Check now"
 msgstr "Verifică acum"
 
-#: extension.js:422
-#, javascript-format
-msgid "Can not connect to %s"
-msgstr ""
-
-#: extension.js:487
-msgid "Last check: "
-msgstr ""
-
-#: extension.js:525
+#: indicator.js:246
 msgid "Checking"
 msgstr "Se verifică"
 
-#: extension.js:542
+#: indicator.js:263
 #, fuzzy, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "actualizări în așteptare"
 msgstr[1] "actualizări în așteptare"
 
-#: extension.js:567
+#: indicator.js:288
 msgid "Error"
 msgstr "Eroare"
 
-#: extension.js:571
+#: indicator.js:292
 msgid "No internet"
 msgstr ""
 
-#: extension.js:575
+#: indicator.js:296
 msgid "Up to date :)"
 msgstr "Actualizat :)"
 
-#: extension.js:608 extension.js:615
+#: indicator.js:329 indicator.js:336
 #, fuzzy
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nunele noilor actualizări"
 msgstr[1] "Nunele noilor actualizări"
 
-#: extension.js:616
+#: indicator.js:337
 #, fuzzy, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "actualizări în așteptare"
 msgstr[1] "actualizări în așteptare"
 
-#: extension.js:891
+#: indicator.js:446
 msgid "Update now"
 msgstr "Actualizează acum"
+
+#: monitors.js:42
+#, javascript-format
+msgid "Can not connect to %s"
+msgstr ""
+
+#: updateManager.js:510
+msgid "Last check: "
+msgstr ""
 
 #: Settings.ui.h:1
 msgid "Command to update packages"
 msgstr "Comandă pentru actualizarea pachetelor"
 
 #: Settings.ui.h:2
-msgid "The command will be executed using pkexec (sudo on the terminal)."
+msgid "You can use sudo instead of pkexec for the terminal."
 msgstr ""
 
 #: Settings.ui.h:3
@@ -225,94 +225,98 @@ msgid "Update-manager (Ubuntu only)"
 msgstr ""
 
 #: Settings.ui.h:31
-msgid "Custom"
+msgid "Gnome package updater"
 msgstr ""
 
 #: Settings.ui.h:32
+msgid "Custom"
+msgstr ""
+
+#: Settings.ui.h:33
 msgid ""
 "The default command is \"pkcon refresh\", which uses packagekit with the apt "
 "backend. You can define a custom command below, to be executed using pkexec."
 msgstr ""
 
-#: Settings.ui.h:33
+#: Settings.ui.h:34
 #, fuzzy
 msgid "Use a custom command to check for updates"
 msgstr "Comandă pentru actualizarea pachetelor"
 
-#: Settings.ui.h:34
+#: Settings.ui.h:35
 #, fuzzy
 msgid "Custom command to check for updates"
 msgstr "Comandă pentru actualizarea pachetelor"
 
-#: Settings.ui.h:35
+#: Settings.ui.h:36
 #, fuzzy
 msgid "Advanced settings"
 msgstr "<b>Setări avansate</b>"
 
-#: Settings.ui.h:36
+#: Settings.ui.h:37
 msgid ""
 "Include an item in the indicator with a list of new packages in the "
 "repository."
 msgstr ""
 
-#: Settings.ui.h:37
+#: Settings.ui.h:38
 msgid "New packages in repository"
 msgstr ""
 
-#: Settings.ui.h:38
+#: Settings.ui.h:39
 msgid ""
 "Include an item in the indicator with a list of obsolete or local packages. "
 "Obsolete packages are not available in the repository. Local packages are "
 "available, but an unavailable version is installed."
 msgstr ""
 
-#: Settings.ui.h:40
+#: Settings.ui.h:41
 msgid ""
 "Include an item in the indicator with a list of packages that have residual "
 "config files. Run \"sudo apt purge pkgname\" to clean them."
 msgstr ""
 
-#: Settings.ui.h:41
+#: Settings.ui.h:42
 msgid "Residual packages"
 msgstr ""
 
-#: Settings.ui.h:42
+#: Settings.ui.h:43
 msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
 msgstr ""
 
-#: Settings.ui.h:43
+#: Settings.ui.h:44
 msgid "Autoremovable packages"
 msgstr ""
 
-#: Settings.ui.h:44
+#: Settings.ui.h:45
 msgid "Package status"
 msgstr ""
 
-#: Settings.ui.h:45
+#: Settings.ui.h:46
 msgid "version: "
 msgstr ""
 
-#: Settings.ui.h:46
+#: Settings.ui.h:47
 msgid "Adds an indicator to the top panel that allows to check for updates"
 msgstr ""
 
-#: Settings.ui.h:47
+#: Settings.ui.h:48
 msgid "Maintained by"
 msgstr ""
 
-#: Settings.ui.h:48
+#: Settings.ui.h:49
 msgid "Webpage"
 msgstr ""
 
-#: Settings.ui.h:49
+#: Settings.ui.h:50
 msgid ""
 "<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
 "General Public License, version 2 or later</a> for details.</span>"
 msgstr ""
 
-#: Settings.ui.h:51
+#: Settings.ui.h:52
 msgid "About"
 msgstr ""

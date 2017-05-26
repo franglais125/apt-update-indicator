@@ -3,7 +3,7 @@
 UUID = apt-update-indicator@franglais125.gmail.com
 BASE_MODULES = extension.js indicator.js LICENCE.txt metadata.json monitors.js prefs.js Settings.ui stylesheet.css updateManager.js utils.js
 EXTRA_MEDIA = media/logo.png
-TOLOCALIZE = extension.js
+TOLOCALIZE = indicator.js monitors.js updateManager.js
 MSGSRC = $(wildcard po/*.po)
 INSTALLNAME = apt-update-indicator@franglais125.gmail.com
 ifeq ($(strip $(DESTDIR)),)
