@@ -11,7 +11,7 @@
     You should have received a copy of the GNU General Public License
     along with Apt Update Indicator.  If not, see <http://www.gnu.org/licenses/>.
     Copyright 2016 Raphael Rochet
-    Copyright 2016 Fran Glais
+    Copyright 2016, 2017 Fran Glais
 */
 
 const GLib = imports.gi.GLib;
@@ -21,18 +21,12 @@ const Lang = imports.lang;
 const Util = imports.misc.util;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Utils = Me.imports.utils;
 const Indicator = Me.imports.indicator;
 const Monitors = Me.imports.monitors;
+const Utils = Me.imports.utils;
 
-const Format = imports.format;
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
-
-function init() {
-    String.prototype.format = Format.format;
-    Utils.initTranslations('apt-update-indicator');
-}
 
 /* Options */
 const STOCK_CHECK_CMD  = '/usr/bin/pkcon refresh';
@@ -537,13 +531,3 @@ const UpdateManager = new Lang.Class({
         this._indicator.destroy();
     }
 });
-
-let updateManager;
-
-function enable() {
-    updateManager = new UpdateManager();
-}
-
-function disable() {
-    updateManager.destroy();
-}
