@@ -64,6 +64,11 @@ const UpdateManager = new Lang.Class({
         // The first run is initialization only: we only read the existing files
         this._initializing = true;
 
+        // We don't update the date in some cases:
+        //  - updates check comes from a folder change
+        //  - after applying updates
+        this._dontUpdateDate = false;
+
         // Load settings
         this._settings = Utils.getSettings();
         this._applySettings();
@@ -325,6 +330,7 @@ const UpdateManager = new Lang.Class({
         this._upgradeProcess_sourceId = null;
 
         // Check if updates are available
+        this._dontUpdateDate = true;
         this._launchScript(SCRIPT.UPGRADES);
     },
 
@@ -391,6 +397,7 @@ const UpdateManager = new Lang.Class({
                             'obsolete',
                             'residual',
                             'autoremovable'];
+
         // Run asynchronously, to avoid shell freeze - even for a 1s check
         try {
             let path = Me.dir.get_path();
@@ -480,6 +487,10 @@ const UpdateManager = new Lang.Class({
     },
 
     _lastCheck: function() {
+        if (this._dontUpdateDate) {
+            this._dontUpdateDate = false;
+            return;
+        }
         let date;
 
         if (this._initializing) {

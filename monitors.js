@@ -107,6 +107,7 @@ const DirectoryMonitor = new Lang.Class({
                                                         timeout,
                                                         Lang.bind(this, function () {
                                                             let checkUpgrades = 0;
+                                                            this._updateManager._dontUpdateDate = true;
                                                             this._updateManager._launchScript(checkUpgrades);
                                                             this._folderMonitorId = null;
                                                             return false;
