@@ -20,7 +20,6 @@ const Lang = imports.lang;
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
-
 const NetworkMonitor = new Lang.Class({
     Name: 'NetworkMonitor',
 
@@ -36,7 +35,7 @@ const NetworkMonitor = new Lang.Class({
         let url = 'http://ftp.debian.org';
         let address = Gio.NetworkAddress.parse_uri(url, 80);
         let cancellable = Gio.Cancellable.new();
-        this._connected = false;
+        this.connected = false;
         try {
             this._network_monitor.can_reach_async(address, cancellable, Lang.bind(this, this._asyncReadyCallback));
         } catch (err) {
@@ -46,7 +45,7 @@ const NetworkMonitor = new Lang.Class({
     },
 
     _asyncReadyCallback: function(nm, res) {
-        this._connected = this._network_monitor.can_reach_finish(res);
+        this.connected = this._network_monitor.can_reach_finish(res);
     },
 
     destroy: function() {
@@ -60,8 +59,8 @@ const NetworkMonitor = new Lang.Class({
 const DirectoryMonitor = new Lang.Class({
     Name: 'DirectoryMonitor',
 
-    _init: function(indicator) {
-        this._indicator = indicator;
+    _init: function(updateManager) {
+        this._updateManager = updateManager;
 
         this.start();
     },
@@ -107,9 +106,8 @@ const DirectoryMonitor = new Lang.Class({
         this._folderMonitorId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                         timeout,
                                                         Lang.bind(this, function () {
-                                                            let initializing = false;
                                                             let checkUpgrades = 0;
-                                                            this._indicator._otherPackages(initializing, checkUpgrades);
+                                                            this._updateManager._launchScript(checkUpgrades);
                                                             this._folderMonitorId = null;
                                                             return false;
                                                         }));

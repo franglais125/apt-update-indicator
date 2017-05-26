@@ -14,98 +14,61 @@
     Copyright 2016 Fran Glais
 */
 
-const Clutter = imports.gi.Clutter;
-const Lang = imports.lang;
-
-const St = imports.gi.St;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
-
-const Main = imports.ui.main;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
-const MessageTray = imports.ui.messageTray;
+const Lang = imports.lang;
 
 const Util = imports.misc.util;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
+const Indicator = Me.imports.indicator;
 const Monitors = Me.imports.monitors;
 
 const Format = imports.format;
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
-/* For error checking */
-const STATUS = {
-    UNKNOWN:     -1,
-    ERROR:       -2,
-    NO_INTERNET: -3
-};
+function init() {
+    String.prototype.format = Format.format;
+    Utils.initTranslations('apt-update-indicator');
+}
 
 /* Options */
-const STOCK_CHECK_CMD    = '/usr/bin/pkcon refresh';
-const STOCK_UPDATE_CMD   = '/usr/bin/gnome-software --mode updates';
-let CHECK_CMD            = STOCK_CHECK_CMD;
-let UPDATE_CMD           = STOCK_UPDATE_CMD;
-
-/* Variables we want to keep when extension is disabled (eg during screen lock) */
-let UPDATES_PENDING        = STATUS.UNKNOWN;
-let UPDATES_LIST           = [];
+const STOCK_CHECK_CMD  = '/usr/bin/pkcon refresh';
+const STOCK_UPDATE_CMD = '/usr/bin/gnome-software --mode updates';
+let CHECK_CMD          = STOCK_CHECK_CMD;
+let UPDATE_CMD         = STOCK_UPDATE_CMD;
 
 /* Various packages statuses */
-const SCRIPT_NAMES = ['get-updates', 'new', 'obsolete', 'residual', 'autoremovable'];
-const PKG_STATUS = {
-    UPGRADABLE:    0,
+const SCRIPT = {
+    UPGRADES:      0,
     NEW:           1,
     OBSOLETE:      2,
     RESIDUAL:      3,
     AUTOREMOVABLE: 4
 };
 
-function init() {
-    String.prototype.format = Format.format;
-    Utils.initTranslations('apt-update-indicator');
-}
-
-const AptUpdateIndicator = new Lang.Class({
-    Name: 'AptUpdateIndicator',
-    Extends: PanelMenu.Button,
+const UpdateManager = new Lang.Class({
+    Name: 'UpdateManager',
 
     _TimeoutId: null,
 
     _upgradeProcess_sourceId: null,
     _upgradeProcess_stream: null,
 
-    _process_sourceId: [null, null, null, null],
-    _process_stream: [null, null, null, null],
-
-    _updateList: [],
-    _newPackagesList: [],
-    _obsoletePackagesList: [],
-    _residualPackagesList: [],
-    _autoremovablePackagesList: [],
+    _process_sourceId: [null, null, null, null, null],
+    _process_stream:   [null, null, null, null, null],
 
     _init: function() {
-        this.parent(0.0, 'AptUpdateIndicator');
-
-        this.updateIcon = new St.Icon({icon_name: 'system-software-install-symbolic', style_class: 'system-status-icon'});
-
-        let box = new St.BoxLayout({ vertical: false, style_class: 'panel-status-menu-box' });
-        this.label = new St.Label({ text: '',
-            y_expand: true,
-            y_align: Clutter.ActorAlign.CENTER });
-        this.label.visible = false;
-
-        box.add_child(this.updateIcon);
-        box.add_child(this.label);
-        this.actor.add_child(box);
+        // Create indicator on the panel
+        this._indicator = new Indicator.AptUpdateIndicator();
 
         // Prepare to track connections
         this._signalsHandler = new Utils.GlobalSignalsHandler();
 
-        // Assemble the menu
-        this._assembleMenu();
+        // The first run is initialization only: we only read the existing files
+        this._initializing = true;
 
         // Load settings
         this._settings = Utils.getSettings();
@@ -115,89 +78,7 @@ const AptUpdateIndicator = new Lang.Class({
         this._netMonitor = new Monitors.NetworkMonitor();
         this._dirMonitor = new Monitors.DirectoryMonitor(this);
 
-        // The first run is initialization only: we only read the existing files
-        this._initializing = true;
-        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
-    },
-
-    _openSettings: function () {
-        Util.spawn([ 'gnome-shell-extension-prefs', Me.uuid ]);
-    },
-
-    _assembleMenu: function() {
-        // Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
-        // Scrollability will also be taken care of by the popupmenu
-        this.updatesExpander = new PopupMenu.PopupSubMenuMenuItem('');
-        this.updatesListMenuLabel = new St.Label();
-        this.updatesExpander.menu.box.add(this.updatesListMenuLabel);
-        this.updatesExpander.menu.box.style_class = 'apt-update-indicator-list';
-
-        this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
-        this.newPackagesListMenuLabel = new St.Label();
-        this.newPackagesExpander.menu.box.add(this.newPackagesListMenuLabel);
-        this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
-        this.newPackagesExpander.actor.visible = false;
-
-        this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
-        this.obsoletePackagesListMenuLabel = new St.Label();
-        this.obsoletePackagesExpander.menu.box.add(this.obsoletePackagesListMenuLabel);
-        this.obsoletePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
-        this.obsoletePackagesExpander.actor.visible = false;
-
-        this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
-        this.residualPackagesListMenuLabel = new St.Label();
-        this.residualPackagesExpander.menu.box.add(this.residualPackagesListMenuLabel);
-        this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
-        this.residualPackagesExpander.actor.visible = false;
-
-        this.autoremovablePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Autoremovable'));
-        this.autoremovablePackagesListMenuLabel = new St.Label();
-        this.autoremovablePackagesExpander.menu.box.add(this.autoremovablePackagesListMenuLabel);
-        this.autoremovablePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
-        this.autoremovablePackagesExpander.actor.visible = false;
-
-        // Other standard menu items
-        let settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
-        this.updateNowMenuItem = new PopupMenu.PopupMenuItem(_('Apply updates'));
-
-        // "Check now" and "Last Check" menu items
-        this.checkNowMenuItem = new PopupMenu.PopupMenuItem( _('Check now') );
-        this.lastCheckMenuItem = new PopupMenu.PopupMenuItem( '' );
-        this.lastCheckMenuItem.actor.reactive = false;
-        this.lastCheckMenuItem.actor.visible = false;
-
-        // Assemble all menu items into the popup menu
-        this.menu.addMenuItem(this.updatesExpander);
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addMenuItem(this.newPackagesExpander);
-        this.menu.addMenuItem(this.obsoletePackagesExpander);
-        this.menu.addMenuItem(this.residualPackagesExpander);
-        this.menu.addMenuItem(this.autoremovablePackagesExpander);
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addMenuItem(this.updateNowMenuItem);
-        this.menu.addMenuItem(this.checkNowMenuItem);
-        this.menu.addMenuItem(this.lastCheckMenuItem);
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-        this.menu.addMenuItem(settingsMenuItem);
-
-        // Bind some events
-        this._signalsHandler.add([
-            this.menu,
-            'open-state-changed',
-            Lang.bind(this, this._onMenuOpened)
-        ],[
-            this.checkNowMenuItem,
-            'activate',
-            Lang.bind(this, this._checkUpdates)
-        ],[
-            this.updateNowMenuItem,
-            'activate',
-            Lang.bind(this, this._updateNow)
-        ],[
-            settingsMenuItem,
-            'activate',
-            Lang.bind(this, this._openSettings)
-        ]);
+        this._launchScript(SCRIPT.UPGRADES);
     },
 
     _applySettings: function() {
@@ -317,37 +198,37 @@ const AptUpdateIndicator = new Lang.Class({
 
     _newPackagesBinding: function() {
         if (this._settings.get_boolean('new-packages')) {
-            this._otherPackages(this._initializing, PKG_STATUS.NEW);
+            this._launchScript(SCRIPT.NEW);
         } else {
-            this._newPackagesList = [];
-            this._updateNewPackagesStatus();
+            this._indicator._newPackagesList = [];
+            this._indicator._updateNewPackagesStatus();
         }
     },
 
     _obsoletePackagesBinding: function() {
         if (this._settings.get_boolean('obsolete-packages')) {
-            this._otherPackages(this._initializing, PKG_STATUS.OBSOLETE);
+            this._launchScript(SCRIPT.OBSOLETE);
         } else {
-            this._obsoletePackagesList = [];
-            this._updateObsoletePackagesStatus();
+            this._indicator._obsoletePackagesList = [];
+            this._indicator._updateObsoletePackagesStatus();
         }
     },
 
     _residualPackagesBinding: function() {
         if (this._settings.get_boolean('residual-packages')) {
-            this._otherPackages(this._initializing, PKG_STATUS.RESIDUAL);
+            this._launchScript(SCRIPT.RESIDUAL);
         } else {
-            this._residualPackagesList = [];
-            this._updateResidualPackagesStatus();
+            this._indicator._residualPackagesList = [];
+            this._indicator._updateResidualPackagesStatus();
         }
     },
 
     _autoremovablePackagesBinding: function() {
         if (this._settings.get_boolean('autoremovable-packages')) {
-            this._otherPackages(this._initializing, PKG_STATUS.AUTOREMOVABLE);
+            this._launchScript(SCRIPT.AUTOREMOVABLE);
         } else {
-            this._autoremovablePackagesList = [];
-            this._updateAutoremovablePackagesStatus();
+            this._indicator._autoremovablePackagesList = [];
+            this._indicator._updateAutoremovablePackagesStatus();
         }
     },
 
@@ -389,14 +270,6 @@ const AptUpdateIndicator = new Lang.Class({
             'changed::interval-unit',
             Lang.bind(this, this._initializeInterval)
         ],[
-            this._settings,
-            'changed::show-count',
-            Lang.bind(this, this._checkShowHideIndicator)
-        ],[
-            this._settings,
-            'changed::always-visible',
-            Lang.bind(this, this._checkShowHideIndicator)
-        ],[
         // Synaptic features
             this._settings,
             'changed::new-packages',
@@ -413,51 +286,204 @@ const AptUpdateIndicator = new Lang.Class({
             this._settings,
             'changed::autoremovable-packages',
             Lang.bind(this, this._autoremovablePackagesBinding)
+        ],[
+            // Indicator buttons
+            this._indicator.checkNowMenuItem,
+            'activate',
+            Lang.bind(this, this._checkUpdates)
+        ],[
+            this._indicator.applyUpdatesMenuItem,
+            'activate',
+            Lang.bind(this, this._applyUpdates)
         ]);
     },
 
-    destroy: function() {
-        // Remove remaining processes to avoid zombies
-        if (this._upgradeProcess_sourceId) {
-            GLib.source_remove(this._upgradeProcess_sourceId);
-            this._upgradeProcess_sourceId = null;
-            this._upgradeProcess_stream = null;
+    /* Upgrade functions:
+     *     _applyUpdates
+     *     _applyUpdatesEnd
+     */
+
+    _applyUpdates: function () {
+        if(this._upgradeProcess_sourceId) {
+            // A check is running ! Maybe we should kill it and run another one ?
+            return;
         }
-        for (let i = 0; i < PKG_STATUS.length; i++)
-            if (this._process_sourceId[i]) {
-                GLib.source_remove(this._process_sourceId[i]);
-                this._process_sourceId[i] = null;
-                this._process_stream[i] = null;
-            }
-        if (this._TimeoutId) {
-            GLib.source_remove(this._TimeoutId);
-            this._TimeoutId = null;
+        try {
+            // Parse check command line
+            let [parseok, argvp] = GLib.shell_parse_argv( UPDATE_CMD );
+            if (!parseok) { throw 'Parse error' };
+            let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
+                                                            argvp,
+                                                            null,
+                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                            null);
+
+            // We will process the output at once when it's done
+            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._applyUpdatesEnd));
+        } catch (err) {
         }
-
-        // Disconnect global signals
-        this._signalsHandler.destroy();
-
-        // Destroy monitors
-        this._netMonitor.destroy();
-        this._dirMonitor.destroy();
-
-        this.parent();
     },
 
-    /* Menu functions:
-     *     _lastCheck
-     *     _checkShowHideIndicator
-     *     _onMenuOpened
-     *     _checkAutoExpandList
-     *     _showChecking
-     *     _updateStatus
-     *     _updatePackagesStatus
-     *     _updateNewPackagesStatus
-     *     _updateObsoletePackagesStatus
-     *     _updateResidualPackagesStatus
-     *     _updateAutoremovablePackagesStatus
-     *     _updateMenuExpander
+    _applyUpdatesEnd: function() {
+        // Free resources
+        if (this._upgradeProcess_sourceId)
+            GLib.source_remove(this._upgradeProcess_sourceId);
+        this._upgradeProcess_sourceId = null;
+
+        // Check if updates are available
+        this._launchScript(SCRIPT.UPGRADES);
+    },
+
+    /* Update functions:
+     *     _checkUpdates
+     *     _checkUpdatesEnd
      */
+
+    _checkUpdates: function() {
+        if(this._upgradeProcess_sourceId) {
+            // A check is already running ! Maybe we should kill it and run another one ?
+            return;
+        }
+        // Run asynchronously, to avoid  shell freeze - even for a 1s check
+        this._indicator._showChecking(true);
+        try {
+            // First, check network access
+            if (this._netMonitor.connected) {
+                // Parse check command line
+                let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
+                if (!parseok) { throw 'Parse error' };
+                let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
+                                                                argvp,
+                                                                null,
+                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                null);
+
+                // We will process the output at once when it's done
+                this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
+            } else {
+                this._indicator._showChecking(false);
+                this._indicator._updateStatus(STATUS.NO_INTERNET);
+            }
+        } catch (err) {
+            this._indicator._showChecking(false);
+            this._indicator._updateStatus(STATUS.ERROR);
+        }
+    },
+
+    _checkUpdatesEnd: function() {
+        // Free resources
+        if (this._upgradeProcess_sourceId)
+            GLib.source_remove(this._upgradeProcess_sourceId);
+        this._upgradeProcess_sourceId = null;
+
+        // Update indicator
+        this._launchScript(SCRIPT.UPGRADES);
+    },
+
+    /* Extra packages functions:
+     *     _launchScript
+     *     _packagesRead
+     *     _packagesEnd
+     *     _lastCheck
+     */
+
+    _launchScript: function(index) {
+        // Stop the dir monitor to prevent it from updating again right after
+        // the update
+        this._dirMonitor.stop();
+
+        let script_names = ['get-updates',
+                            'new',
+                            'obsolete',
+                            'residual',
+                            'autoremovable'];
+        // Run asynchronously, to avoid shell freeze - even for a 1s check
+        try {
+            let path = Me.dir.get_path();
+            let script = ['/bin/bash',
+                          path + '/scripts/' + script_names[index] + '.sh',
+                          this._initializing ? '1' : '0'];
+
+            let [, pid, , out_fd, ] = GLib.spawn_async_with_pipes(null,
+                                                                  script,
+                                                                  null,
+                                                                  GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                                  null);
+
+            // Let's buffer the command's output - that's an input for us !
+            this._process_stream[index] = new Gio.DataInputStream({
+                base_stream: new Gio.UnixInputStream({fd: out_fd})
+            });
+
+            // We will process the output at once when it's done
+            this._process_sourceId[index] = GLib.child_watch_add(0, pid, Lang.bind(this,
+                function() {
+                    this._packagesRead(index);
+                    return true;
+                }));
+        } catch (err) {
+            if (index == SCRIPT.UPGRADES) {
+                this._indicator._showChecking(false);
+                this._indicator._updateStatus(STATUS.ERROR);
+            }
+        }
+    },
+
+    _packagesRead: function(index) {
+        // Reset the new packages list
+        let packagesList = [];
+        let out, size;
+        do {
+            [out, size] = this._process_stream[index].read_line_utf8(null);
+            if (out) packagesList.push(out);
+        } while (out);
+
+        if (index == SCRIPT.UPGRADES)
+            this._indicator._updateList = packagesList;
+        else if (index == SCRIPT.NEW)
+            this._indicator._newPackagesList = packagesList;
+        else if (index == SCRIPT.OBSOLETE)
+            this._indicator._obsoletePackagesList = packagesList;
+        else if (index == SCRIPT.RESIDUAL)
+            this._indicator._residualPackagesList = packagesList;
+        else if (index == SCRIPT.AUTOREMOVABLE)
+            this._indicator._autoremovablePackagesList = packagesList;
+
+        this._packagesEnd(index);
+    },
+
+    _packagesEnd: function(index) {
+        // Free resources
+        this._process_stream  [index].close(null);
+        this._process_stream  [index] = null;
+        if (this._process_sourceId[index])
+            GLib.source_remove(this._process_sourceId[index]);
+        this._process_sourceId[index] = null;
+
+        // Update indicator
+        this._indicator._updatePackagesStatus(index);
+
+        if (index == SCRIPT.UPGRADES) {
+            // Update indicator
+            this._indicator._showChecking(false);
+
+            // Update time on menu
+            this._lastCheck();
+
+            // Launch other checks
+            if (this._settings.get_boolean('new-packages'))
+                this._launchScript(SCRIPT.NEW);
+            if (this._settings.get_boolean('obsolete-packages'))
+                this._launchScript(SCRIPT.OBSOLETE);
+            if (this._settings.get_boolean('residual-packages'))
+                this._launchScript(SCRIPT.RESIDUAL);
+            if (this._settings.get_boolean('autoremovable-packages'))
+                this._launchScript(SCRIPT.AUTOREMOVABLE);
+            this._initializing = false;
+
+            this._dirMonitor.start();
+        }
+    },
 
     _lastCheck: function() {
         let date;
@@ -476,437 +502,48 @@ const AptUpdateIndicator = new Lang.Class({
         }
 
         if (date != '') {
-            this.lastCheckMenuItem.label.set_text(_('Last check: ') + date);
-            this.lastCheckMenuItem.actor.visible = true;
+            this._indicator.lastCheckMenuItem.label.set_text(_('Last check: ') + date);
+            this._indicator.lastCheckMenuItem.actor.visible = true;
         }
     },
 
-    _checkShowHideIndicator: function() {
-        if ( this._upgradeProcess_sourceId )
-            // Do not apply visibility change while checking for updates
-            return;
-
-        if (!this._settings.get_boolean('always-visible') && this._updateList.length < 1)
-            this.actor.visible = false;
-        else
-            this.actor.visible = true;
-
-        this.label.visible = this._settings.get_boolean('show-count') &&
-                             this._updateList.length > 0;
-    },
-
-    _onMenuOpened: function() {
-        // This event is fired when menu is shown or hidden
-        // Only open the submenu if the menu is being opened and there is something to show
-        this._checkAutoExpandList();
-    },
-
-    _checkAutoExpandList: function() {
-        let count = this._updateList.length;
-        if (this.menu.isOpen &&
-            count > 0 &&
-            count <= this._settings.get_int('auto-expand-list')) {
-            this.updatesExpander.setSubmenuShown(true);
-        } else {
-            this.updatesExpander.setSubmenuShown(false);
-        }
-    },
-
-    _showChecking: function(isChecking) {
-        if (isChecking == true) {
-            this.updateIcon.set_icon_name('emblem-synchronizing-symbolic');
-            this.checkNowMenuItem.actor.reactive = false;
-            this.checkNowMenuItem.label.set_text(_('Checking'));
-        } else {
-            this.checkNowMenuItem.actor.reactive = true;
-            this.checkNowMenuItem.label.set_text(_('Check now'));
-        }
-    },
-
-    _updateStatus: function(updatesCount) {
-        updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
-        if (updatesCount > 0) {
-            // Update indicator look:
-            this.updateIcon.set_icon_name('software-update-available');
-            this.label.set_text(updatesCount.toString());
-
-            // Update the menu look:
-            this._cleanUpgradeList();
-            this.updatesListMenuLabel.set_text( this._updateList.join('   \n') );
-            this._updateMenuExpander( true, Gettext.ngettext( '%d update pending',
-                                                              '%d updates pending',
-                                                              updatesCount ).format(updatesCount) );
-
-            // Emit a notification if necessary
-            if (this._settings.get_boolean('notify') && UPDATES_PENDING < updatesCount)
-                this._notify(updatesCount);
-
-            // Store the new list
-            UPDATES_LIST = this._updateList;
-        } else {
-            // Update the indicator look:
-            this.label.set_text('');
-
-            // Update the menu look:
-            this.updatesListMenuLabel.set_text('');
-
-            if (updatesCount == STATUS.UNKNOWN) {
-                // This is the value of UPDATES_PENDING at initialization.
-                // For some reason, the update process didn't work at all
-                this.updateIcon.set_icon_name('dialog-warning-symbolic');
-                this._updateMenuExpander( false, '' );
-            } else if (updatesCount == STATUS.ERROR) {
-                // Error
-                this.updateIcon.set_icon_name('dialog-warning-symbolic');
-                this._updateMenuExpander( false, _('Error') );
-            } else if (updatesCount == STATUS.NO_INTERNET) {
-                // Error
-                this.updateIcon.set_icon_name('dialog-warning-symbolic');
-                this._updateMenuExpander( false, _('No internet') );
-            } else {
-                // Up to date
-                this.updateIcon.set_icon_name('system-software-install-symbolic');
-                this._updateMenuExpander( false, _('Up to date :)') );
-                UPDATES_LIST = []; // Reset stored list
-            }
-        }
-
-        UPDATES_PENDING = updatesCount;
-        this._checkAutoExpandList();
-        this._checkShowHideIndicator();
-    },
-
-    _notify: function(updatesCount) {
-        if (this._settings.get_int('verbosity') > 0) {
-            let updateList = [];
-            if (this._settings.get_int('verbosity') > 1) {
-                updateList = this._updateList;
-            } else {
-                // Keep only packets that was not in the previous notification
-                updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
-            }
-
-            // Replace tab with one space
-            updateList = this._updateList.map(function(p) {
-                return p.replace('\t', ' ');
-            });
-
-            if (updateList.length > 50)
-                // We show a maximum of 50 updates on the notification, as it can
-                // freeze the shell if the text is too long
-                updateList = updateList.slice(0, 50);
-
-            if (updateList.length > 0) {
-                // Show notification only if there's new updates
-                this._showNotification(
-                    Gettext.ngettext( 'New Update', 'New Updates', updateList.length ),
-                    updateList.join(', ')
-                );
-            }
-
-        } else {
-            this._showNotification(
-                Gettext.ngettext( 'New Update', 'New Updates', updatesCount ),
-                Gettext.ngettext( 'There is %d update pending', 'There are %d updates pending', updatesCount ).format(updatesCount)
-            );
-        }
-    },
-
-    _cleanUpgradeList: function() {
-        if (this._settings.get_boolean('strip-versions') == true) {
-            this._updateList = this._updateList.map(function(p) {
-                // example: firefox 50.0-1
-                // chunks[0] is the package name
-                // chunks[1] is the version
-                var chunks = p.split('\t',2);
-                return chunks[0];
-            });
-        }
-    },
-
-    _updatePackagesStatus: function(index) {
-        if (index == PKG_STATUS.UPGRADABLE)
-            this._updateStatus(this._updateList.length);
-        else if (index == PKG_STATUS.NEW)
-            this._updateNewPackagesStatus();
-        else if (index == PKG_STATUS.OBSOLETE)
-            this._updateObsoletePackagesStatus();
-        else if (index == PKG_STATUS.RESIDUAL)
-            this._updateResidualPackagesStatus();
-        else if (index == PKG_STATUS.AUTOREMOVABLE)
-            this._updateAutoremovablePackagesStatus();
-    },
-
-    _updateNewPackagesStatus: function() {
-        if (this._newPackagesList.length == 0) {
-            this.newPackagesExpander.actor.visible = false;
-        } else {
-            this.newPackagesListMenuLabel.set_text( this._newPackagesList.join('\n') );
-            this.newPackagesExpander.actor.visible = true;
-        }
-    },
-
-    _updateObsoletePackagesStatus: function() {
-        if (this._obsoletePackagesList.length == 0)
-            this.obsoletePackagesExpander.actor.visible = false;
-        else {
-            this.obsoletePackagesListMenuLabel.set_text( this._obsoletePackagesList.join('\n') );
-            this.obsoletePackagesExpander.actor.visible = true;
-        }
-    },
-
-    _updateResidualPackagesStatus: function() {
-        if (this._residualPackagesList.length == 0)
-            this.residualPackagesExpander.actor.visible = false;
-        else {
-            this.residualPackagesListMenuLabel.set_text( this._residualPackagesList.join('\n') );
-            this.residualPackagesExpander.actor.visible = true;
-        }
-    },
-
-    _updateAutoremovablePackagesStatus: function() {
-        if (this._autoremovablePackagesList.length == 0)
-            this.autoremovablePackagesExpander.actor.visible = false;
-        else {
-            this.autoremovablePackagesListMenuLabel.set_text( this._autoremovablePackagesList.join('\n') );
-            this.autoremovablePackagesExpander.actor.visible = true;
-        }
-    },
-
-    _updateMenuExpander: function(enabled, label) {
-        if (label == '') {
-            // No text, hide the menuitem
-            this.updatesExpander.actor.visible = false;
-        } else {
-        // We make our expander look like a regular menu label if disabled
-            this.updatesExpander.actor.reactive = enabled;
-            this.updatesExpander._triangle.visible = enabled;
-            this.updatesExpander.label.set_text(label);
-            this.updatesExpander.actor.visible = true;
-        }
-
-        // 'Update now' visibility is linked so let's save a few lines and set it here
-        this.updateNowMenuItem.actor.reactive = enabled;
-    },
-
-    /* Upgrade functions:
-     *     _updateNow
-     *     _updateNowEnd
-     */
-
-    _updateNow: function () {
-        if(this._upgradeProcess_sourceId) {
-            // A check is running ! Maybe we should kill it and run another one ?
-            return;
-        }
-        try {
-            // Parse check command line
-            let [parseok, argvp] = GLib.shell_parse_argv( UPDATE_CMD );
-            if (!parseok) { throw 'Parse error' };
-            let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
-                                                            argvp,
-                                                            null,
-                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                            null);
-
-            // We will process the output at once when it's done
-            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._updateNowEnd));
-        } catch (err) {
-        }
-    },
-
-    _updateNowEnd: function() {
-        // Free resources
-        if (this._upgradeProcess_sourceId)
+    destroy: function() {
+        // Remove remaining processes to avoid zombies
+        if (this._upgradeProcess_sourceId) {
             GLib.source_remove(this._upgradeProcess_sourceId);
-        this._upgradeProcess_sourceId = null;
-
-        // Check if updates are available
-        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
-    },
-
-    /* Update functions:
-     *     _checkUpdates
-     *     _checkUpdatesEnd
-     */
-
-    _checkUpdates: function() {
-        if(this._upgradeProcess_sourceId) {
-            // A check is already running ! Maybe we should kill it and run another one ?
-            return;
+            this._upgradeProcess_sourceId = null;
+            this._upgradeProcess_stream = null;
         }
-        // Run asynchronously, to avoid  shell freeze - even for a 1s check
-        this._showChecking(true);
-        try {
-            // First, check network access
-            if (this._netMonitor._connected) {
-                // Parse check command line
-                let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
-                if (!parseok) { throw 'Parse error' };
-                let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
-                                                                argvp,
-                                                                null,
-                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                null);
 
-                // We will process the output at once when it's done
-                this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
-            } else {
-                this._showChecking(false);
-                this._updateStatus(STATUS.NO_INTERNET);
+        for (let i = 0; i < SCRIPT.length; i++)
+            if (this._process_sourceId[i]) {
+                GLib.source_remove(this._process_sourceId[i]);
+                this._process_sourceId[i] = null;
+                this._process_stream[i] = null;
             }
-        } catch (err) {
-            this._showChecking(false);
-            this._updateStatus(STATUS.ERROR);
+
+        if (this._TimeoutId) {
+            GLib.source_remove(this._TimeoutId);
+            this._TimeoutId = null;
         }
-    },
 
-    _checkUpdatesEnd: function() {
-        // Free resources
-        if (this._upgradeProcess_sourceId)
-            GLib.source_remove(this._upgradeProcess_sourceId);
-        this._upgradeProcess_sourceId = null;
+        // Disconnect global signals
+        this._signalsHandler.destroy();
 
-        // Update indicator
-        this._otherPackages(false, PKG_STATUS.UPGRADABLE);
-    },
+        // Destroy monitors
+        this._netMonitor.destroy();
+        this._dirMonitor.destroy();
 
-    /* Extra packages functions:
-     *     _packagesRead
-     *     _packagesEnd
-     */
-
-    _otherPackages: function(initializing, index) {
-        // Stop the dir monitor to prevent it from updating again right after
-        // the update
-        this._dirMonitor.stop();
-
-        // Run asynchronously, to avoid  shell freeze - even for a 1s check
-        try {
-            let path = Me.dir.get_path();
-            let script = ['/bin/bash', path + '/scripts/' + SCRIPT_NAMES[index] + '.sh',
-                          initializing ? '1' : '0'];
-
-            let [, pid, , out_fd, ] = GLib.spawn_async_with_pipes(null,
-                                                                  script,
-                                                                  null,
-                                                                  GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                  null);
-
-            // Let's buffer the command's output - that's a input for us !
-            this._process_stream[index] = new Gio.DataInputStream({
-                base_stream: new Gio.UnixInputStream({fd: out_fd})
-            });
-
-            // We will process the output at once when it's done
-            this._process_sourceId[index] = GLib.child_watch_add(0, pid, Lang.bind(this,
-                function() {
-                    this._packagesRead(index);
-                    return true;
-                }));
-        } catch (err) {
-            if (index == PKG_STATUS.UPGRADABLE) {
-                this._showChecking(false);
-                this._updateStatus(STATUS.ERROR);
-            }
-        }
-    },
-
-    _packagesRead: function(index) {
-        // Reset the new packages list
-        let packagesList = [];
-        let out, size;
-        do {
-            [out, size] = this._process_stream[index].read_line_utf8(null);
-            if (out) packagesList.push(out);
-        } while (out);
-
-        if (index == PKG_STATUS.UPGRADABLE)
-            this._updateList = packagesList;
-        else if (index == PKG_STATUS.NEW)
-            this._newPackagesList = packagesList;
-        else if (index == PKG_STATUS.OBSOLETE)
-            this._obsoletePackagesList = packagesList;
-        else if (index == PKG_STATUS.RESIDUAL)
-            this._residualPackagesList = packagesList;
-        else if (index == PKG_STATUS.AUTOREMOVABLE)
-            this._autoremovablePackagesList = packagesList;
-
-        this._packagesEnd(index);
-    },
-
-    _packagesEnd: function(index) {
-        // Free resources
-        this._process_stream  [index].close(null);
-        this._process_stream  [index] = null;
-        if (this._process_sourceId[index])
-            GLib.source_remove(this._process_sourceId[index]);
-        this._process_sourceId[index] = null;
-
-        // Update indicator
-        this._updatePackagesStatus(index);
-
-        if (index == PKG_STATUS.UPGRADABLE) {
-            // Update indicator
-            this._showChecking(false);
-
-            // Update time on menu
-            this._lastCheck();
-
-            // Launch other checks
-            if (this._settings.get_boolean('new-packages'))
-                this._otherPackages(this._initializing, PKG_STATUS.NEW);
-            if (this._settings.get_boolean('obsolete-packages'))
-                this._otherPackages(this._initializing, PKG_STATUS.OBSOLETE);
-            if (this._settings.get_boolean('residual-packages'))
-                this._otherPackages(this._initializing, PKG_STATUS.RESIDUAL);
-            if (this._settings.get_boolean('autoremovable-packages'))
-                this._otherPackages(this._initializing, PKG_STATUS.AUTOREMOVABLE);
-            this._initializing = false;
-
-            this._dirMonitor.start();
-        }
-    },
-
-    /*
-     * Notifications
-     * */
-
-    _showNotification: function(title, message) {
-        if (this._notifSource == null) {
-            // We have to prepare this only once
-            this._notifSource = new MessageTray.SystemNotificationSource();
-            this._notifSource.createIcon = function() {
-                return new St.Icon({ icon_name: 'system-software-install-symbolic' });
-            };
-            // Take care of not leaving unneeded sources
-            this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
-            Main.messageTray.add(this._notifSource);
-        }
-        let notification = null;
-        // We do not want to have multiple notifications stacked
-        // instead we will update previous
-        if (this._notifSource.notifications.length == 0) {
-            notification = new MessageTray.Notification(this._notifSource, title, message);
-            notification.addAction( _('Update now') , Lang.bind(this, function() {this._updateNow()}) );
-        } else {
-            notification = this._notifSource.notifications[0];
-            notification.update( title, message, { clear: true });
-        }
-        notification.setTransient(this._settings.get_boolean('transient'));
-        this._notifSource.notify(notification);
-    },
-
-
+        this._indicator.destroy();
+    }
 });
 
-let aptUpdateIndicator;
+let updateManager;
 
 function enable() {
-    aptUpdateIndicator = new AptUpdateIndicator();
-    Main.panel.addToStatusArea('AptUpdateIndicator', aptUpdateIndicator);
+    updateManager = new UpdateManager();
 }
 
 function disable() {
-    aptUpdateIndicator.destroy();
+    updateManager.destroy();
 }
