@@ -43,6 +43,9 @@ const SCRIPT = {
     AUTOREMOVABLE: 4
 };
 
+/* For error checking */
+const STATUS = Indicator.STATUS;
+
 const UpdateManager = new Lang.Class({
     Name: 'UpdateManager',
 
