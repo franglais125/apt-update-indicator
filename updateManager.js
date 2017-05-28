@@ -59,7 +59,7 @@ const UpdateManager = new Lang.Class({
 
     _init: function() {
         // Create indicator on the panel
-        this._indicator = new Indicator.AptUpdateIndicator();
+        this._indicator = new Indicator.AptUpdateIndicator(this);
 
         // Prepare to track connections
         this._signalsHandler = new Utils.GlobalSignalsHandler();

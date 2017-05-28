@@ -70,7 +70,10 @@ const AptUpdateIndicator = new Lang.Class({
     _residualPackagesList: [],
     _autoremovablePackagesList: [],
 
-    _init: function() {
+    _init: function(updateManager) {
+
+        this._updateManager = updateManager;
+
         let alignment = 0.0;
         let buttonName = 'AptUpdateIndicator';
         let dontCreateMenu = false;
@@ -449,7 +452,7 @@ const AptUpdateIndicator = new Lang.Class({
         // instead we will update previous
         if (this._notifSource.notifications.length == 0) {
             notification = new MessageTray.Notification(this._notifSource, title, message);
-            notification.addAction( _('Update now') , Lang.bind(this, function() {this._applyUpdates()}) );
+            notification.addAction( _('Update now') , Lang.bind(this, function() {this._updateManager._applyUpdates()}) );
         } else {
             notification = this._notifSource.notifications[0];
             notification.update( title, message, { clear: true });
