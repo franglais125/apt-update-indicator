@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-26 15:42-0400\n"
+"POT-Creation-Date: 2017-05-29 00:30-0400\n"
 "PO-Revision-Date: 2016-10-20 22:19+0200\n"
 "Last-Translator: Fran Glais <franglais125@gmail.com>\n"
 "Language-Team: \n"
@@ -18,71 +18,75 @@ msgstr ""
 "X-Generator: Poedit 1.8.9\n"
 "Plural-Forms: nplurals=2; plural=(n>1);\n"
 
-#: indicator.js:138
+#: indicator.js:145
 msgid "New in repository"
 msgstr "Nouveaux paquets dans les dépôts"
 
-#: indicator.js:144 Settings.ui.h:40
+#: indicator.js:151 Settings.ui.h:40
 msgid "Local/Obsolete packages"
 msgstr "Paquets locaux ou obsolètes"
 
-#: indicator.js:150
+#: indicator.js:157
 msgid "Residual config files"
 msgstr "Résidus de configuration"
 
-#: indicator.js:156
+#: indicator.js:163
 msgid "Autoremovable"
 msgstr "Automatiquement supprimable"
 
-#: indicator.js:163
+#: indicator.js:170
 msgid "Settings"
 msgstr "Paramètres"
 
-#: indicator.js:164
+#: indicator.js:171
 msgid "Apply updates"
 msgstr "Mettre à jour maintenant"
 
-#: indicator.js:167 indicator.js:249
+#: indicator.js:174 indicator.js:256
 msgid "Check now"
 msgstr "Vérifier maintenant"
 
-#: indicator.js:246
+#: indicator.js:253
 msgid "Checking"
 msgstr "Vérification en cours"
 
-#: indicator.js:263
+#: indicator.js:270
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "%d mise à jour en attente"
 msgstr[1] "%d mises à jour en attente"
 
-#: indicator.js:288
+#: indicator.js:295
 msgid "Error"
 msgstr "Erreur"
 
-#: indicator.js:292
+#: indicator.js:299
 msgid "No internet"
 msgstr "Sans connexion"
 
-#: indicator.js:296
+#: indicator.js:302
+msgid "Initializing"
+msgstr "Initialisation"
+
+#: indicator.js:306
 msgid "Up to date :)"
 msgstr "Tout est à jour :)"
 
-#: indicator.js:329 indicator.js:336
+#: indicator.js:339 indicator.js:346
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nouvelle mise à jour"
 msgstr[1] "Nouvelles mises à jour"
 
-#: indicator.js:337
+#: indicator.js:347
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "Il y a %d mise à jour en attente"
 msgstr[1] "Il y a %d mises à jour en attente"
 
-#: indicator.js:446
+#: indicator.js:456
 msgid "Update now"
 msgstr "Mettre à jour maintenant"
 
@@ -91,7 +95,7 @@ msgstr "Mettre à jour maintenant"
 msgid "Can not connect to %s"
 msgstr "Impossible d'ouvrir %s"
 
-#: updateManager.js:510
+#: updateManager.js:541
 msgid "Last check: "
 msgstr "Dernière vérification: "
 
@@ -101,7 +105,7 @@ msgstr "Commande pour mettre à jour les paquets"
 
 #: Settings.ui.h:2
 msgid "You can use sudo instead of pkexec for the terminal."
-msgstr ""
+msgstr "Vous pouvez utiliser sudo à la place de pkexec sur le terminal."
 
 #: Settings.ui.h:3
 msgid "Show output on terminal"
@@ -330,6 +334,3 @@ msgstr ""
 #: Settings.ui.h:52
 msgid "About"
 msgstr "À propos"
-
-#~ msgid "The command will be executed using pkexec (sudo on the terminal)."
-#~ msgstr "La commande sera executée avec pkexec (sudo sur le terminal)."

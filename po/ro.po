@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-26 15:42-0400\n"
+"POT-Creation-Date: 2017-05-29 00:30-0400\n"
 "PO-Revision-Date: 2016-01-04 04:53+0200\n"
 "Last-Translator: Sorin-Mihai Vârgolici <sorin-mihai@vargolici.com>\n"
 "Language-Team: \n"
@@ -19,73 +19,77 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Gtranslator 2.91.7\n"
 
-#: indicator.js:138
+#: indicator.js:145
 msgid "New in repository"
 msgstr ""
 
-#: indicator.js:144 Settings.ui.h:40
+#: indicator.js:151 Settings.ui.h:40
 msgid "Local/Obsolete packages"
 msgstr ""
 
-#: indicator.js:150
+#: indicator.js:157
 msgid "Residual config files"
 msgstr ""
 
-#: indicator.js:156
+#: indicator.js:163
 msgid "Autoremovable"
 msgstr ""
 
-#: indicator.js:163
+#: indicator.js:170
 msgid "Settings"
 msgstr "Setări"
 
-#: indicator.js:164
+#: indicator.js:171
 #, fuzzy
 msgid "Apply updates"
 msgstr "Numele tuturor actualizărilor"
 
-#: indicator.js:167 indicator.js:249
+#: indicator.js:174 indicator.js:256
 msgid "Check now"
 msgstr "Verifică acum"
 
-#: indicator.js:246
+#: indicator.js:253
 msgid "Checking"
 msgstr "Se verifică"
 
-#: indicator.js:263
+#: indicator.js:270
 #, fuzzy, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
 msgstr[0] "actualizări în așteptare"
 msgstr[1] "actualizări în așteptare"
 
-#: indicator.js:288
+#: indicator.js:295
 msgid "Error"
 msgstr "Eroare"
 
-#: indicator.js:292
+#: indicator.js:299
 msgid "No internet"
 msgstr ""
 
-#: indicator.js:296
+#: indicator.js:302
+msgid "Initializing"
+msgstr ""
+
+#: indicator.js:306
 msgid "Up to date :)"
 msgstr "Actualizat :)"
 
-#: indicator.js:329 indicator.js:336
+#: indicator.js:339 indicator.js:346
 #, fuzzy
 msgid "New Update"
 msgid_plural "New Updates"
 msgstr[0] "Nunele noilor actualizări"
 msgstr[1] "Nunele noilor actualizări"
 
-#: indicator.js:337
+#: indicator.js:347
 #, fuzzy, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
 msgstr[0] "actualizări în așteptare"
 msgstr[1] "actualizări în așteptare"
 
-#: indicator.js:446
+#: indicator.js:456
 msgid "Update now"
 msgstr "Actualizează acum"
 
@@ -94,7 +98,7 @@ msgstr "Actualizează acum"
 msgid "Can not connect to %s"
 msgstr ""
 
-#: updateManager.js:510
+#: updateManager.js:541
 msgid "Last check: "
 msgstr ""
 

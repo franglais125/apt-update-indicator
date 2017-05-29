@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Apt-Update-Indicator\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-26 15:42-0400\n"
+"POT-Creation-Date: 2017-05-29 00:30-0400\n"
 "PO-Revision-Date: 2016-09-10 16:43+0300\n"
 "Last-Translator: snql <me@snql.by>\n"
 "Language-Team: \n"
@@ -19,40 +19,40 @@ msgstr ""
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "X-Generator: Poedit 1.8.8\n"
 
-#: indicator.js:138
+#: indicator.js:145
 msgid "New in repository"
 msgstr ""
 
-#: indicator.js:144 Settings.ui.h:40
+#: indicator.js:151 Settings.ui.h:40
 msgid "Local/Obsolete packages"
 msgstr ""
 
-#: indicator.js:150
+#: indicator.js:157
 msgid "Residual config files"
 msgstr ""
 
-#: indicator.js:156
+#: indicator.js:163
 msgid "Autoremovable"
 msgstr ""
 
-#: indicator.js:163
+#: indicator.js:170
 msgid "Settings"
 msgstr "Настройки"
 
-#: indicator.js:164
+#: indicator.js:171
 #, fuzzy
 msgid "Apply updates"
 msgstr "Все имена обновляемых пакетов"
 
-#: indicator.js:167 indicator.js:249
+#: indicator.js:174 indicator.js:256
 msgid "Check now"
 msgstr "Проверить сейчас"
 
-#: indicator.js:246
+#: indicator.js:253
 msgid "Checking"
 msgstr "Проверка"
 
-#: indicator.js:263
+#: indicator.js:270
 #, javascript-format
 msgid "%d update pending"
 msgid_plural "%d updates pending"
@@ -60,19 +60,23 @@ msgstr[0] "%d обновление в ожидании"
 msgstr[1] "%d обновления в ожидании"
 msgstr[2] "%d обновлений в ожидании"
 
-#: indicator.js:288
+#: indicator.js:295
 msgid "Error"
 msgstr "Ошибка"
 
-#: indicator.js:292
+#: indicator.js:299
 msgid "No internet"
 msgstr ""
 
-#: indicator.js:296
+#: indicator.js:302
+msgid "Initializing"
+msgstr ""
+
+#: indicator.js:306
 msgid "Up to date :)"
 msgstr "В актуальном состоянии :)"
 
-#: indicator.js:329 indicator.js:336
+#: indicator.js:339 indicator.js:346
 #, fuzzy
 msgid "New Update"
 msgid_plural "New Updates"
@@ -80,7 +84,7 @@ msgstr[0] "Имена обновляемых пакетов"
 msgstr[1] "Имена обновляемых пакетов"
 msgstr[2] "Имена обновляемых пакетов"
 
-#: indicator.js:337
+#: indicator.js:347
 #, javascript-format
 msgid "There is %d update pending"
 msgid_plural "There are %d updates pending"
@@ -88,7 +92,7 @@ msgstr[0] "Обнаружено %d обновление"
 msgstr[1] "Обнаружено %d обновления"
 msgstr[2] "Обнаружено %d обновлений"
 
-#: indicator.js:446
+#: indicator.js:456
 msgid "Update now"
 msgstr "Обновить сейчас"
 
@@ -97,7 +101,7 @@ msgstr "Обновить сейчас"
 msgid "Can not connect to %s"
 msgstr ""
 
-#: updateManager.js:510
+#: updateManager.js:541
 msgid "Last check: "
 msgstr ""
 
