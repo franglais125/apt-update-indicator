@@ -82,7 +82,7 @@ const AptUpdateIndicator = new Lang.Class({
 
         Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('media').get_path());
 
-        this.updateIcon = new St.Icon({icon_name: 'apt-update-indicator', style_class: 'system-status-icon'});
+        this.updateIcon = new St.Icon({icon_name: 'apt-update-indicator-symbolic', style_class: 'system-status-icon'});
 
         this.box = new St.BoxLayout({ vertical: false, style_class: 'panel-status-menu-box' });
         this.label = new St.Label({ text: '',
@@ -298,7 +298,7 @@ const AptUpdateIndicator = new Lang.Class({
                 this._updateMenuExpander( false, _('No internet') );
             } else {
                 // Up to date
-                this.updateIcon.set_icon_name('apt-update-indicator');
+                this.updateIcon.set_icon_name('apt-update-indicator-symbolic');
                 this._updateMenuExpander( false, _('Up to date :)') );
                 UPDATES_LIST = []; // Reset stored list
             }
@@ -438,7 +438,7 @@ const AptUpdateIndicator = new Lang.Class({
             // We have to prepare this only once
             this._notifSource = new MessageTray.SystemNotificationSource();
             this._notifSource.createIcon = function() {
-                return new St.Icon({ icon_name: 'apt-update-indicator' });
+                return new St.Icon({ icon_name: 'apt-update-indicator-symbolic' });
             };
             // Take care of not leaving unneeded sources
             this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
