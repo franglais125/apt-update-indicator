@@ -36,9 +36,10 @@ const _ = Gettext.gettext;
 
 /* For error checking */
 const STATUS = {
-    UNKNOWN:     -1,
-    ERROR:       -2,
-    NO_INTERNET: -3
+    UNKNOWN:      -1,
+    ERROR:        -2,
+    NO_INTERNET:  -3,
+    INITIALIZING: -4
 };
 
 /* Variables we want to keep when extension is disabled (eg during screen lock) */
@@ -47,7 +48,7 @@ let UPDATES_LIST    = [];
 
 /* Various packages statuses */
 const SCRIPT = {
-    UPGRADES:    0,
+    UPGRADES:      0,
     NEW:           1,
     OBSOLETE:      2,
     RESIDUAL:      3,
@@ -204,9 +205,9 @@ const AptUpdateIndicator = new Lang.Class({
      *     _checkShowHideIndicator
      *     _onMenuOpened
      *     _checkAutoExpandList
-     *     _showChecking
-     *     _updateStatus
-     *     _updatePackagesStatus
+     *     showChecking
+     *     updateStatus
+     *     updatePackagesStatus
      *     _updateNewPackagesStatus
      *     _updateObsoletePackagesStatus
      *     _updateResidualPackagesStatus
@@ -245,7 +246,7 @@ const AptUpdateIndicator = new Lang.Class({
         }
     },
 
-    _showChecking: function(isChecking) {
+    showChecking: function(isChecking) {
         if (isChecking == true) {
             this.updateIcon.set_icon_name('emblem-synchronizing-symbolic');
             this.checkNowMenuItem.actor.reactive = false;
@@ -256,7 +257,7 @@ const AptUpdateIndicator = new Lang.Class({
         }
     },
 
-    _updateStatus: function(updatesCount) {
+    updateStatus: function(updatesCount) {
         updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
             // Update indicator look:
@@ -296,6 +297,9 @@ const AptUpdateIndicator = new Lang.Class({
                 // Error
                 this.updateIcon.set_icon_name('dialog-warning-symbolic');
                 this._updateMenuExpander( false, _('No internet') );
+            } else if (updatesCount == STATUS.INITIALIZING) {
+                this.updateIcon.set_icon_name('apt-update-indicator-symbolic');
+                this._updateMenuExpander( false, _('Initializing') );
             } else {
                 // Up to date
                 this.updateIcon.set_icon_name('apt-update-indicator-symbolic');
@@ -357,10 +361,10 @@ const AptUpdateIndicator = new Lang.Class({
         }
     },
 
-    _updatePackagesStatus: function(index) {
+    updatePackagesStatus: function(index) {
         switch (index) {
             case SCRIPT.UPGRADES:
-                this._updateStatus(this._updateList.length);
+                this.updateStatus(this._updateList.length);
                 break;
             case SCRIPT.NEW:
                 this._updateNewPackagesStatus();

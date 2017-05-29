@@ -51,6 +51,8 @@ const UpdateManager = new Lang.Class({
 
     _TimeoutId: null,
 
+    _initialTimeoutId: null,
+
     _upgradeProcess_sourceId: null,
     _upgradeProcess_stream: null,
 
@@ -58,8 +60,9 @@ const UpdateManager = new Lang.Class({
     _process_stream:   [null, null, null, null, null],
 
     _init: function() {
-        // Create indicator on the panel
+        // Create indicator on the panel and initialize it
         this._indicator = new Indicator.AptUpdateIndicator(this);
+        this._indicator.updateStatus(STATUS.INITIALIZING);
 
         // Prepare to track connections
         this._signalsHandler = new Utils.GlobalSignalsHandler();
@@ -80,7 +83,17 @@ const UpdateManager = new Lang.Class({
         this._netMonitor = new Monitors.NetworkMonitor();
         this._dirMonitor = new Monitors.DirectoryMonitor(this);
 
-        this._launchScript(SCRIPT.UPGRADES);
+        // Initial run. We wait 30 seconds before listing the upgrades, this:
+        //  - allows a smoother initialization
+        //  - lets the async calls finish in case of a quick disable/enable loop
+        let initialRunTimeout = 30;
+        this._initialTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
+                                                          initialRunTimeout,
+                                                          Lang.bind(this, function() {
+                                                                  this._launchScript(SCRIPT.UPGRADES);
+                                                                  this._initialTimeoutId = null;
+                                                                  return false;
+                                                          }));
     },
 
     _applySettings: function() {
@@ -335,6 +348,8 @@ const UpdateManager = new Lang.Class({
         // Check if updates are available
         this._dontUpdateDate = true;
         this._launchScript(SCRIPT.UPGRADES);
+
+        return GLib.SOURCE_REMOVE;
     },
 
     /* Update functions:
@@ -352,7 +367,7 @@ const UpdateManager = new Lang.Class({
             return;
         }
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
-        this._indicator._showChecking(true);
+        this._indicator.showChecking(true);
         try {
             // First, check network access
             if (this._netMonitor.connected) {
@@ -368,12 +383,12 @@ const UpdateManager = new Lang.Class({
                 // We will process the output at once when it's done
                 this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
             } else {
-                this._indicator._showChecking(false);
-                this._indicator._updateStatus(STATUS.NO_INTERNET);
+                this._indicator.showChecking(false);
+                this._indicator.updateStatus(STATUS.NO_INTERNET);
             }
         } catch (err) {
-            this._indicator._showChecking(false);
-            this._indicator._updateStatus(STATUS.ERROR);
+            this._indicator.showChecking(false);
+            this._indicator.updateStatus(STATUS.ERROR);
         }
     },
 
@@ -385,6 +400,8 @@ const UpdateManager = new Lang.Class({
 
         // Update indicator
         this._launchScript(SCRIPT.UPGRADES);
+
+        return GLib.SOURCE_REMOVE;
     },
 
     /* Extra packages functions:
@@ -423,12 +440,11 @@ const UpdateManager = new Lang.Class({
             this._process_sourceId[index] = GLib.child_watch_add(0, pid, Lang.bind(this,
                 function() {
                     this._packagesRead(index);
-                    return true;
                 }));
         } catch (err) {
             if (index == SCRIPT.UPGRADES) {
-                this._indicator._showChecking(false);
-                this._indicator._updateStatus(STATUS.ERROR);
+                this._indicator.showChecking(false);
+                this._indicator.updateStatus(STATUS.ERROR);
             }
         }
     },
@@ -437,56 +453,68 @@ const UpdateManager = new Lang.Class({
         // Reset the new packages list
         let packagesList = [];
         let out, size;
-        do {
-            [out, size] = this._process_stream[index].read_line_utf8(null);
-            if (out) packagesList.push(out);
-        } while (out);
+        if (this._process_stream[index]) {
+            do {
+                [out, size] = this._process_stream[index].read_line_utf8(null);
+                if (out) packagesList.push(out);
+            } while (out);
+        }
 
-        if (index == SCRIPT.UPGRADES)
-            this._indicator._updateList = packagesList;
-        else if (index == SCRIPT.NEW)
-            this._indicator._newPackagesList = packagesList;
-        else if (index == SCRIPT.OBSOLETE)
-            this._indicator._obsoletePackagesList = packagesList;
-        else if (index == SCRIPT.RESIDUAL)
-            this._indicator._residualPackagesList = packagesList;
-        else if (index == SCRIPT.AUTOREMOVABLE)
-            this._indicator._autoremovablePackagesList = packagesList;
+        // Since this runs async, the indicator might have been destroyed!
+        if (this._indicator) {
+            if (index == SCRIPT.UPGRADES)
+                this._indicator._updateList = packagesList;
+            else if (index == SCRIPT.NEW)
+                this._indicator._newPackagesList = packagesList;
+            else if (index == SCRIPT.OBSOLETE)
+                this._indicator._obsoletePackagesList = packagesList;
+            else if (index == SCRIPT.RESIDUAL)
+                this._indicator._residualPackagesList = packagesList;
+            else if (index == SCRIPT.AUTOREMOVABLE)
+                this._indicator._autoremovablePackagesList = packagesList;
+        }
 
         this._packagesEnd(index);
     },
 
     _packagesEnd: function(index) {
         // Free resources
-        this._process_stream  [index].close(null);
-        this._process_stream  [index] = null;
+        if (this._process_stream[index]) {
+            this._process_stream[index].close(null);
+            this._process_stream[index] = null;
+        }
         if (this._process_sourceId[index])
             GLib.source_remove(this._process_sourceId[index]);
         this._process_sourceId[index] = null;
 
-        // Update indicator
-        this._indicator._updatePackagesStatus(index);
-
-        if (index == SCRIPT.UPGRADES) {
+        // Since this runs async, the indicator might have been destroyed!
+        if (this._indicator) {
             // Update indicator
-            this._indicator._showChecking(false);
+            this._indicator.updatePackagesStatus(index);
 
-            // Update time on menu
-            this._lastCheck();
+            if (index == SCRIPT.UPGRADES) {
+                // Update indicator
+                this._indicator.showChecking(false);
 
-            // Launch other checks
-            if (this._settings.get_boolean('new-packages'))
-                this._launchScript(SCRIPT.NEW);
-            if (this._settings.get_boolean('obsolete-packages'))
-                this._launchScript(SCRIPT.OBSOLETE);
-            if (this._settings.get_boolean('residual-packages'))
-                this._launchScript(SCRIPT.RESIDUAL);
-            if (this._settings.get_boolean('autoremovable-packages'))
-                this._launchScript(SCRIPT.AUTOREMOVABLE);
-            this._initializing = false;
+                // Update time on menu
+                this._lastCheck();
 
-            this._dirMonitor.start();
+                // Launch other checks
+                if (this._settings.get_boolean('new-packages'))
+                    this._launchScript(SCRIPT.NEW);
+                if (this._settings.get_boolean('obsolete-packages'))
+                    this._launchScript(SCRIPT.OBSOLETE);
+                if (this._settings.get_boolean('residual-packages'))
+                    this._launchScript(SCRIPT.RESIDUAL);
+                if (this._settings.get_boolean('autoremovable-packages'))
+                    this._launchScript(SCRIPT.AUTOREMOVABLE);
+                this._initializing = false;
+
+                this._dirMonitor.start();
+            }
         }
+
+        return GLib.SOURCE_REMOVE;
     },
 
     _lastCheck: function() {
@@ -535,6 +563,11 @@ const UpdateManager = new Lang.Class({
             this._TimeoutId = null;
         }
 
+        if (this._initialTimeoutId) {
+            GLib.source_remove(this._initialTimeoutId);
+            this._initialTimeoutId = null;
+        }
+
         // Disconnect global signals
         this._signalsHandler.destroy();
 
@@ -543,5 +576,6 @@ const UpdateManager = new Lang.Class({
         this._dirMonitor.destroy();
 
         this._indicator.destroy();
+        this._indicator = null;
     }
 });
