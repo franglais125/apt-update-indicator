@@ -1,5 +1,11 @@
 ## Changes
 
+### v14
+- Code reorganization to allow for better maintainability
+- Automatically list upgrades when the apt/dpkg caches are refreshed
+- Larger icon size
+- Add initial timeout to allow for a smoother initialization
+
 ### v13
 - Add update method: gnome-update-viewer
 
