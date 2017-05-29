@@ -343,6 +343,10 @@ const UpdateManager = new Lang.Class({
      */
 
     _checkUpdates: function() {
+        // Stop the dir monitor to prevent it from updating again right after
+        // the update
+        this._dirMonitor.stop();
+
         if(this._upgradeProcess_sourceId) {
             // A check is already running ! Maybe we should kill it and run another one ?
             return;
@@ -391,10 +395,6 @@ const UpdateManager = new Lang.Class({
      */
 
     _launchScript: function(index) {
-        // Stop the dir monitor to prevent it from updating again right after
-        // the update
-        this._dirMonitor.stop();
-
         let script_names = ['get-updates',
                             'new',
                             'obsolete',
