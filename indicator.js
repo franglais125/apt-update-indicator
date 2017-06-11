@@ -264,11 +264,11 @@ const AptUpdateIndicator = new Lang.Class({
             // Update the menu look:
             this._cleanUpgradeLists();
 
-            let icon_name = 'software-update-available';
+            let icon_name = 'software-update-available-symbolic';
             let menuUpdateList = this._updateList;
 
             if (this._urgentList.length > 0) {
-                icon_name = 'software-update-urgent';
+                icon_name = 'software-update-urgent-symbolic';
                 menuUpdateList = this._updateList.filter(Lang.bind(this,
                     function(pkg) { return this._urgentList.indexOf(pkg) < 0; }
                 ));
