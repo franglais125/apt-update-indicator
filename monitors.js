@@ -24,11 +24,47 @@ const NetworkMonitor = new Lang.Class({
     Name: 'NetworkMonitor',
 
     _init: function() {
+        // When initializing, we wait a bit before the first network check
+        this._initializing = true;
+        this.connected = false;
+
         // We check for the network status before trying to update apt-cache
         this._network_monitor = Gio.network_monitor_get_default();
+
+        // On network changes, wait 3 seconds before pinging.
+        // This avoids repeatedly sending async requests and flooding the logs.
+        this._networkTimeoutId = 0;
         this._connectionId = this._network_monitor.connect('network-changed',
-                                                           Lang.bind(this, this._checkConnectionState));
-        this._checkConnectionState();
+                                                           Lang.bind(this, this._networkTimeout));
+        this._networkTimeout();
+    },
+
+    _networkTimeout: function() {
+        if (this._networkTimeoutId) {
+            GLib.source_remove(this._networkTimeoutId);
+            this._networkTimeoutId = 0;
+        }
+
+        // Block checks for updates while we ensure the connection is up
+        this.connected = false;
+
+        // Timeout in milliseconds. Just over a second, as there seems to be a 1s
+        // timeout elsewhere in the Shell: 'network-changed' is suspiciously
+        // emitted at 1s intervals very often.
+        let timeout = 1250;
+        if (this._initializing) {
+            timeout = 3000;
+            this._initializing = false;
+        }
+        this._networkTimeoutId = GLib.timeout_add(
+            GLib.PRIORITY_DEFAULT,
+            timeout,
+            Lang.bind(this, function() {
+                this._checkConnectionState();
+                this._networkTimeoutId = 0;
+                return false;
+            })
+        );
     },
 
     _checkConnectionState: function() {
@@ -52,6 +88,11 @@ const NetworkMonitor = new Lang.Class({
         if (this._connectionId) {
             this._network_monitor.disconnect(this._connectionId);
             this._connectionId = null;
+        }
+
+        if (this._networkTimeoutId) {
+            GLib.source_remove(this._networkTimeoutId);
+            this._networkTimeoutId = 0;
         }
     }
 });
