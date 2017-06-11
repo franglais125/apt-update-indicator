@@ -490,7 +490,10 @@ const UpdateManager = new Lang.Class({
         // Since this runs async, the indicator might have been destroyed!
         if (this._indicator) {
             // Update indicator
-            this._indicator.updatePackagesStatus(index);
+            if (index == SCRIPT.UPGRADES) // && this._settings.get_boolean('show-critical-updates'))
+                this._checkUrgency();
+            else
+                this._indicator.updatePackagesStatus(index);
 
             if (index == SCRIPT.UPGRADES) {
                 // Update indicator
@@ -515,6 +518,66 @@ const UpdateManager = new Lang.Class({
         }
 
         return GLib.SOURCE_REMOVE;
+    },
+
+    _checkUrgency: function() {
+        try {
+            let path = Me.dir.get_path();
+            let argvp = ['/bin/bash', path + '/scripts/urgency.sh'];
+
+            let [, pid, , out_fd, ] = GLib.spawn_async_with_pipes(null,
+                                                            argvp,
+                                                            null,
+                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                            null);
+
+            // Let's buffer the command's output - that's an input for us !
+            this._urgency_process_stream = new Gio.DataInputStream({
+                base_stream: new Gio.UnixInputStream({fd: out_fd})
+            });
+
+            // We will process the output at once when it's done
+            this._urgencyCheckId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUrgencyRead));
+        } catch (err) {
+        }
+    },
+
+    _checkUrgencyRead: function() {
+        // Reset the new packages list
+        let urgencyList = [];
+        let out, size;
+        if (this._urgency_process_stream) {
+            do {
+                [out, size] = this._urgency_process_stream.read_line_utf8(null);
+                if (out) urgencyList.push(out);
+            } while (out);
+        }
+
+        let cleanUrgentList = this._indicator._updateList.filter(function(pkg) {
+            for (let i = 0; i < urgencyList.length; i++) {
+                // Only get the package name, in case the version is included
+                var pkgName = pkg.split('\t',2)[0];
+                if (urgencyList[i].indexOf(pkgName + '-') !== -1)
+                    return true;
+            }
+            return false;
+        });
+
+        this._indicator._urgentList = cleanUrgentList;
+        this._indicator.updatePackagesStatus(SCRIPT.UPGRADES);
+
+        this._checkUrgencyEnd();
+    },
+
+    _checkUrgencyEnd: function() {
+        // Free resources
+        if (this._urgency_process_stream) {
+            this._urgency_process_stream.close(null);
+            this._urgency_process_stream = null;
+        }
+        if (this._urgencyCheckId)
+            GLib.source_remove(this._urgencyCheckId);
+        this._urgencyCheckId = null;
     },
 
     _lastCheck: function() {

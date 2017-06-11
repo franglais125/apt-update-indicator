@@ -67,6 +67,7 @@ const AptUpdateIndicator = new Lang.Class({
     _process_stream: [null, null, null, null],
 
     _updateList: [],
+    _urgentList: [],
     _newPackagesList: [],
     _obsoletePackagesList: [],
     _residualPackagesList: [],
@@ -138,9 +139,9 @@ const AptUpdateIndicator = new Lang.Class({
         // Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
         // Scrollability will also be taken care of by the popupmenu
         this.updatesExpander = new PopupMenu.PopupSubMenuMenuItem('');
-        this.updatesListMenuLabel = new St.Label();
-        this.updatesExpander.menu.box.add(this.updatesListMenuLabel);
         this.updatesExpander.menu.box.style_class = 'apt-update-indicator-list';
+        this.urgentListMenuLabel = null;
+        this.updatesListMenuLabel = null;
 
         this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
         this.newPackagesListMenuLabel = new St.Label();
@@ -262,11 +263,42 @@ const AptUpdateIndicator = new Lang.Class({
         if (updatesCount > 0) {
             // Update the menu look:
             this._cleanUpgradeList();
+
+            let icon_name = 'software-update-available';
+            let menuUpdateList = this._updateList;
+
+            if (this._urgentList.length > 0) {// this._settings.get_boolean('show-critical-updates')) {
+                icon_name = 'software-update-urgent';
+                menuUpdateList = this._updateList.filter(Lang.bind(this,
+                    function(pkg) { return this._urgentList.indexOf(pkg) < 0; }
+                ));
+                if (!this.urgentListMenuLabel) {
+                    this.urgentListMenuLabel = new St.Label();
+                    this.updatesExpander.menu.box.add(this.urgentListMenuLabel);
+                }
+                this.urgentListMenuLabel.set_style('color: red;');
+                this.urgentListMenuLabel.set_text( this._urgentList.join('   \n') );
+            } else if (this.urgentListMenuLabel) {
+                this.urgentListMenuLabel.destroy();
+                this.urgentListMenuLabel = null;
+            }
+
             // Update indicator look:
-            this.updateIcon.set_icon_name('software-update-available');
+            this.updateIcon.set_icon_name(icon_name);
             this.label.set_text(updatesCount.toString());
 
-            this.updatesListMenuLabel.set_text( this._updateList.join('   \n') );
+            if (menuUpdateList.length > 0) {
+                if (!this.updatesListMenuLabel) {
+                    this.updatesListMenuLabel = new St.Label();
+                    this.updatesExpander.menu.box.add(this.updatesListMenuLabel);
+                }
+                this.updatesListMenuLabel.set_text( menuUpdateList.join('   \n') );
+            }
+            else if (this.updatesListMenuLabel) {
+                this.updatesListMenuLabel.destroy();
+                this.updatesListMenuLabel = null;
+            }
+
             this._updateMenuExpander( true, Gettext.ngettext( '%d update pending',
                                                               '%d updates pending',
                                                               updatesCount ).format(updatesCount) );
@@ -282,7 +314,14 @@ const AptUpdateIndicator = new Lang.Class({
             this.label.set_text('');
 
             // Update the menu look:
-            this.updatesListMenuLabel.set_text('');
+            if (this.updatesListMenuLabel) {
+                this.updatesListMenuLabel.destroy();
+                this.updatesListMenuLabel = null;
+            }
+            if (this.urgentListMenuLabel) {
+                this.urgentListMenuLabel.destroy();
+                this.urgentListMenuLabel = null;
+            }
 
             if (updatesCount == STATUS.UNKNOWN) {
                 // This is the value of UPDATES_PENDING at initialization.
@@ -320,7 +359,7 @@ const AptUpdateIndicator = new Lang.Class({
                 updateList = this._updateList;
             } else {
                 // Keep only packets that was not in the previous notification
-                updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
+                updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0; });
             }
 
             // Replace tab(s) with one space
