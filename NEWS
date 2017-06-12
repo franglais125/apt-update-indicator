@@ -1,5 +1,11 @@
 ## Changes
 
+### v15
+- Improve the performance when checking the network status
+- Better format for the list of updates
+- Option: distinguish security/important updates (on by default)
+- Use symbolic icons for avilable/urgent updates
+
 ### v14
 - Code reorganization to allow for better maintainability
 - Automatically list upgrades when the apt/dpkg caches are refreshed
