@@ -267,7 +267,7 @@ const AptUpdateIndicator = new Lang.Class({
             let icon_name = 'software-update-available';
             let menuUpdateList = this._updateList;
 
-            if (this._urgentList.length > 0) {// this._settings.get_boolean('show-critical-updates')) {
+            if (this._urgentList.length > 0) {
                 icon_name = 'software-update-urgent';
                 menuUpdateList = this._updateList.filter(Lang.bind(this,
                     function(pkg) { return this._urgentList.indexOf(pkg) < 0; }

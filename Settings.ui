@@ -270,18 +270,90 @@
                           <property name="height">2</property>
                         </packing>
                       </child>
+                    </object>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+        <packing>
+          <property name="expand">False</property>
+          <property name="fill">True</property>
+          <property name="position">0</property>
+        </packing>
+      </child>
+      <child>
+        <object class="GtkFrame" id="updates_menu_frame">
+          <property name="label_xalign">0</property>
+          <property name="shadow_type">in</property>
+          <child>
+            <object class="GtkListBox" id="strip_versions_listbox">
+              <property name="selection_mode">none</property>
+              <child>
+                <object class="GtkListBoxRow" id="strip_versions_listboxrow">
+                  <child>
+                    <object class="GtkGrid" id="strip_versions_grid">
+                      <property name="margin_left">12</property>
+                      <property name="margin_right">12</property>
+                      <property name="margin_top">12</property>
+                      <property name="margin_bottom">12</property>
+                      <property name="column_spacing">32</property>
                       <child>
-                        <object class="GtkCheckButton" id="strip_versions_switch">
-                          <property name="label" translatable="yes">Strip out version numbers</property>
-                          <property name="receives_default">False</property>
-                          <property name="margin_top">12</property>
+                        <object class="GtkLabel" id="strip_versions_label">
+                          <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="draw_indicator">True</property>
+                          <property name="label" translatable="yes">Strip out version numbers</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
-                          <property name="top_attach">2</property>
-                          <property name="width">2</property>
+                          <property name="top_attach">0</property>
+                        </packing>
+                      </child>
+                      <child>
+                        <object class="GtkSwitch" id="strip_versions_switch">
+                          <property name="halign">end</property>
+                          <property name="valign">center</property>
+                        </object>
+                        <packing>
+                          <property name="left_attach">1</property>
+                          <property name="top_attach">0</property>
+                          <property name="height">2</property>
+                        </packing>
+                      </child>
+                    </object>
+                  </child>
+                </object>
+              </child>
+              <child>
+                <object class="GtkListBoxRow" id="urgent_updates_listboxrow">
+                  <child>
+                    <object class="GtkGrid" id="urgent_updates_grid">
+                      <property name="margin_left">12</property>
+                      <property name="margin_right">12</property>
+                      <property name="margin_top">12</property>
+                      <property name="margin_bottom">12</property>
+                      <property name="column_spacing">32</property>
+                      <child>
+                        <object class="GtkLabel" id="urgent_updates_label">
+                          <property name="hexpand">True</property>
+                          <property name="xalign">0</property>
+                          <property name="label" translatable="yes">Distinguish security/important updates from regular updates</property>
+                        </object>
+                        <packing>
+                          <property name="left_attach">0</property>
+                          <property name="top_attach">0</property>
+                        </packing>
+                      </child>
+                      <child>
+                        <object class="GtkSwitch" id="urgent_updates_switch">
+                          <property name="halign">end</property>
+                          <property name="valign">center</property>
+                        </object>
+                        <packing>
+                          <property name="left_attach">1</property>
+                          <property name="top_attach">0</property>
+                          <property name="height">2</property>
                         </packing>
                       </child>
                     </object>
@@ -294,7 +366,7 @@
         <packing>
           <property name="expand">False</property>
           <property name="fill">True</property>
-          <property name="position">0</property>
+          <property name="position">1</property>
         </packing>
       </child>
       <child>
@@ -434,7 +506,7 @@
         <packing>
           <property name="expand">False</property>
           <property name="fill">True</property>
-          <property name="position">1</property>
+          <property name="position">2</property>
         </packing>
       </child>
       <child>
@@ -573,7 +645,7 @@
         <packing>
           <property name="expand">False</property>
           <property name="fill">True</property>
-          <property name="position">2</property>
+          <property name="position">3</property>
         </packing>
       </child>
     </object>

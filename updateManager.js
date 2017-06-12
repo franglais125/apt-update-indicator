@@ -285,6 +285,14 @@ const UpdateManager = new Lang.Class({
             'changed::interval-unit',
             Lang.bind(this, this._initializeInterval)
         ],[
+            this._settings,
+            'changed::strip-versions',
+            Lang.bind(this, function() {this._launchScript(SCRIPT.UPGRADES);})
+        ],[
+            this._settings,
+            'changed::show-critical-updates',
+            Lang.bind(this, function() {this._launchScript(SCRIPT.UPGRADES);})
+        ],[
         // Synaptic features
             this._settings,
             'changed::new-packages',
@@ -490,10 +498,12 @@ const UpdateManager = new Lang.Class({
         // Since this runs async, the indicator might have been destroyed!
         if (this._indicator) {
             // Update indicator
-            if (index == SCRIPT.UPGRADES) // && this._settings.get_boolean('show-critical-updates'))
+            if (index == SCRIPT.UPGRADES && this._settings.get_boolean('show-critical-updates'))
                 this._checkUrgency();
-            else
+            else {
                 this._indicator.updatePackagesStatus(index);
+                this._indicator._urgentList = [];
+            }
 
             if (index == SCRIPT.UPGRADES) {
                 // Update indicator

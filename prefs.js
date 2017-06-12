@@ -50,6 +50,10 @@ function buildPrefsWidget(){
                   buildable.get_object('strip_versions_switch'),
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('show-critical-updates',
+                  buildable.get_object('urgent_updates_switch'),
+                  'active',
+                  Gio.SettingsBindFlags.DEFAULT);
 
     // Hours, days or weeks
     buildable.get_object('interval_unit_combo').connect('changed', function(widget) {
