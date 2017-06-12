@@ -144,25 +144,25 @@ const AptUpdateIndicator = new Lang.Class({
         this.updatesListMenuLabel = null;
 
         this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
-        this.newPackagesListMenuLabel = new St.Label();
+        this.newPackagesListMenuLabel = new St.Label({style_class: 'apt-update-indicator-updatelabel'});
         this.newPackagesExpander.menu.box.add(this.newPackagesListMenuLabel);
         this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.newPackagesExpander.actor.visible = false;
 
         this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
-        this.obsoletePackagesListMenuLabel = new St.Label();
+        this.obsoletePackagesListMenuLabel = new St.Label({style_class: 'apt-update-indicator-updatelabel'});
         this.obsoletePackagesExpander.menu.box.add(this.obsoletePackagesListMenuLabel);
         this.obsoletePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.obsoletePackagesExpander.actor.visible = false;
 
         this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
-        this.residualPackagesListMenuLabel = new St.Label();
+        this.residualPackagesListMenuLabel = new St.Label({style_class: 'apt-update-indicator-updatelabel'});
         this.residualPackagesExpander.menu.box.add(this.residualPackagesListMenuLabel);
         this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.residualPackagesExpander.actor.visible = false;
 
         this.autoremovablePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Autoremovable'));
-        this.autoremovablePackagesListMenuLabel = new St.Label();
+        this.autoremovablePackagesListMenuLabel = new St.Label({style_class: 'apt-update-indicator-updatelabel'});
         this.autoremovablePackagesExpander.menu.box.add(this.autoremovablePackagesListMenuLabel);
         this.autoremovablePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.autoremovablePackagesExpander.actor.visible = false;
@@ -262,7 +262,7 @@ const AptUpdateIndicator = new Lang.Class({
         updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
             // Update the menu look:
-            this._cleanUpgradeList();
+            this._cleanUpgradeLists();
 
             let icon_name = 'software-update-available';
             let menuUpdateList = this._updateList;
@@ -273,11 +273,10 @@ const AptUpdateIndicator = new Lang.Class({
                     function(pkg) { return this._urgentList.indexOf(pkg) < 0; }
                 ));
                 if (!this.urgentListMenuLabel) {
-                    this.urgentListMenuLabel = new St.Label();
+                    this.urgentListMenuLabel = new St.Label({style_class: 'apt-update-indicator-urgentlabel'});
                     this.updatesExpander.menu.box.add(this.urgentListMenuLabel);
                 }
-                this.urgentListMenuLabel.set_style('color: red;');
-                this.urgentListMenuLabel.set_text( this._urgentList.join('   \n') );
+                this.urgentListMenuLabel.set_text( 'Important/Security\n\n' + this._urgentList.join(' \n') );
             } else if (this.urgentListMenuLabel) {
                 this.urgentListMenuLabel.destroy();
                 this.urgentListMenuLabel = null;
@@ -289,10 +288,14 @@ const AptUpdateIndicator = new Lang.Class({
 
             if (menuUpdateList.length > 0) {
                 if (!this.updatesListMenuLabel) {
-                    this.updatesListMenuLabel = new St.Label();
+                    this.updatesListMenuLabel = new St.Label({style_class: 'apt-update-indicator-updatelabel'});
                     this.updatesExpander.menu.box.add(this.updatesListMenuLabel);
                 }
-                this.updatesListMenuLabel.set_text( menuUpdateList.join('   \n') );
+                let subTitle = '';
+                if (this._urgentList.length > 0) {
+                    subTitle = '\nRegular\n\n';
+                }
+                this.updatesListMenuLabel.set_text( subTitle + menuUpdateList.join(' \n') );
             }
             else if (this.updatesListMenuLabel) {
                 this.updatesListMenuLabel.destroy();
@@ -389,9 +392,26 @@ const AptUpdateIndicator = new Lang.Class({
         }
     },
 
-    _cleanUpgradeList: function() {
+    _cleanUpgradeLists: function() {
+        // We first find the longest entry in both lists
+        let maxWidth = 0;
+        this._updateList.forEach(function(line) {
+            // example: firefox [tab] 50.0-1
+            var name = line.split('\t',2)[0];
+            maxWidth = name.length > maxWidth ? name.length : maxWidth;
+        });
+        this._urgentList.forEach(function(line) {
+            // example: firefox [tab] 50.0-1
+            var name = line.split('\t',2)[0];
+            maxWidth = name.length > maxWidth ? name.length : maxWidth;
+        });
+        this._updateList = this._cleanUpgradeList(this._updateList, maxWidth);
+        this._urgentList = this._cleanUpgradeList(this._urgentList, maxWidth);
+    },
+
+    _cleanUpgradeList: function(list, maxWidth) {
         if (this._settings.get_boolean('strip-versions') == true) {
-            this._updateList = this._updateList.map(function(p) {
+            return list.map(function(p) {
                 // example: firefox 50.0-1
                 // chunks[0] is the package name
                 // chunks[1] is the version
@@ -399,17 +419,12 @@ const AptUpdateIndicator = new Lang.Class({
                 return chunks[0];
             });
         } else {
-            let maxWidth = 0;
-            this._updateList.forEach(function(line) {
-                // example: firefox [tab] 50.0-1
-                var name = line.split('\t',2)[0];
-                maxWidth = name.length > maxWidth ? name.length : maxWidth;
-            });
-            this._updateList = this._updateList.map(function(p) {
+            let tabWidth = 8;
+            return list.map(function(p) {
                 var chunks = p.split('\t',2);
                 let difference = maxWidth - chunks[0].length;
-                let nTabs = Math.round(difference/5); // 5 is roughly the tab width
-                let spacing = '';
+                let nTabs = Math.floor(difference / tabWidth);
+                let spacing = '\t';
                 for (let i = 0; i < nTabs; i++)
                     spacing += '\t';
                 return chunks[0] + spacing + chunks[1];

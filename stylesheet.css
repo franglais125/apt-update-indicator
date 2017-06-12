@@ -1,18 +1,27 @@
 .apt-update-indicator-list {
-	padding-left: 20px;
-	padding-top: 20px;
-	padding-bottom: 20px;
+    padding-left: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 
 .apt-update-indicator-menubutton {
-	/* Meant to be used as an override to display a small system-menu-action */
-	border-radius: 10px;
-	padding: 0px 4px;
+    /* Meant to be used as an override to display a small system-menu-action */
+    border-radius: 10px;
+    padding: 0px 4px;
 }
 .apt-update-indicator-menubutton:hover, .apt-update-indicator-menubutton:focus {
-	/* 1px borders disapears, need to compensate */
-	padding: 1px 5px;
+    /* 1px borders disapears, need to compensate */
+    padding: 1px 5px;
 }
 .apt-update-indicator-menubutton > StIcon {
-	icon-size: 16px;
+    icon-size: 16px;
+}
+
+.apt-update-indicator-updatelabel {
+    font-family: monospace;
+}
+
+.apt-update-indicator-urgentlabel {
+    font-family: monospace;
+    color: rgba(255, 60, 60, 1);
 }
