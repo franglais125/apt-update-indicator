@@ -260,12 +260,12 @@ const AptUpdateIndicator = new Lang.Class({
     updateStatus: function(updatesCount) {
         updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
+            // Update the menu look:
+            this._cleanUpgradeList();
             // Update indicator look:
             this.updateIcon.set_icon_name('software-update-available');
             this.label.set_text(updatesCount.toString());
 
-            // Update the menu look:
-            this._cleanUpgradeList();
             this.updatesListMenuLabel.set_text( this._updateList.join('   \n') );
             this._updateMenuExpander( true, Gettext.ngettext( '%d update pending',
                                                               '%d updates pending',
@@ -357,6 +357,22 @@ const AptUpdateIndicator = new Lang.Class({
                 // chunks[1] is the version
                 var chunks = p.split('\t',2);
                 return chunks[0];
+            });
+        } else {
+            let maxWidth = 0;
+            this._updateList.forEach(function(line) {
+                // example: firefox [tab] 50.0-1
+                var name = line.split('\t',2)[0];
+                maxWidth = name.length > maxWidth ? name.length : maxWidth;
+            });
+            this._updateList = this._updateList.map(function(p) {
+                var chunks = p.split('\t',2);
+                let difference = maxWidth - chunks[0].length;
+                let nTabs = Math.round(difference/5); // 5 is roughly the tab width
+                let spacing = '';
+                for (let i = 0; i < nTabs; i++)
+                    spacing += '\t';
+                return chunks[0] + spacing + chunks[1];
             });
         }
     },
