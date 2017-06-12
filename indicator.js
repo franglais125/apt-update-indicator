@@ -323,9 +323,10 @@ const AptUpdateIndicator = new Lang.Class({
                 updateList = this._updateList.filter(function(pkg) { return UPDATES_LIST.indexOf(pkg) < 0 });
             }
 
-            // Replace tab with one space
+            // Replace tab(s) with one space
             updateList = this._updateList.map(function(p) {
-                return p.replace('\t', ' ');
+                p = p.replace('\t', ' ');
+                return p.replace(/\s\s+/g, ' '); // Removes double saces (\s)
             });
 
             if (updateList.length > 50)
