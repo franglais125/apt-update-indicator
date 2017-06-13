@@ -1,5 +1,8 @@
 ## Changes
 
+### v16
+- Small fix for string format
+
 ### v15
 - Improve the performance when checking the network status
 - Better format for the list of updates
