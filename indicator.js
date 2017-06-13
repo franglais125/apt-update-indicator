@@ -420,9 +420,10 @@ const AptUpdateIndicator = new Lang.Class({
             });
         } else {
             let tabWidth = 8;
+            let widthNeeded = tabWidth*(Math.floor(maxWidth / tabWidth) + 1) - 1;
             return list.map(function(p) {
                 var chunks = p.split('\t',2);
-                let difference = maxWidth - chunks[0].length;
+                let difference = widthNeeded - chunks[0].length;
                 let nTabs = Math.floor(difference / tabWidth);
                 let spacing = '\t';
                 for (let i = 0; i < nTabs; i++)
