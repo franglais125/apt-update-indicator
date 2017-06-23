@@ -20,6 +20,8 @@ const St = imports.gi.St;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const Gtk = imports.gi.Gtk;
+const Meta = imports.gi.Meta;
+const Shell = imports.gi.Shell;
 
 const Main = imports.ui.main;
 const PanelMenu = imports.ui.panelMenu;
@@ -107,6 +109,8 @@ const AptUpdateIndicator = new Lang.Class({
         this._bindSignals();
 
         Main.panel.addToStatusArea('AptUpdateIndicator', this);
+
+        this._enableShortcut();
     },
 
     _openSettings: function () {
@@ -198,6 +202,8 @@ const AptUpdateIndicator = new Lang.Class({
 
         this.box.destroy();
         this.label.destroy();
+
+        this._disableShortcut();
 
         this.parent();
     },
@@ -542,6 +548,16 @@ const AptUpdateIndicator = new Lang.Class({
         this._notifSource.notify(notification);
     },
 
+    _enableShortcut: function() {
+        Main.wm.addKeybinding('apt-update-indicator-shortcut', this._settings,
+                              Meta.KeyBindingFlags.NONE,
+                              Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
+                              Lang.bind(this.menu, this.menu.toggle));
+    },
+
+    _disableShortcut: function() {
+        Main.wm.removeKeybinding('apt-update-indicator-shortcut');
+    }
 
 });
 
