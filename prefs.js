@@ -74,6 +74,7 @@ function buildPrefsWidget(){
                   buildable.get_object('auto_expand_list'),
                  'value',
                   Gio.SettingsBindFlags.DEFAULT);
+
     // Notifications
     settings.bind('notify',
                   buildable.get_object('notifications'),
@@ -96,6 +97,14 @@ function buildPrefsWidget(){
                   buildable.get_object('verbosity'),
                   'sensitive',
                   Gio.SettingsBindFlags.DEFAULT);
+
+    // Shortcut
+    settings.bind('shortcut-text',
+                  buildable.get_object('shortcut_entry'),
+                  'text',
+                  Gio.SettingsBindFlags.DEFAULT);
+    // We need to update the shortcut 'strv' when the text is modified
+    settings.connect('changed::shortcut-text', function() {setShortcut(settings);});
 
     // Advanced settings tab:
     // Update method
@@ -210,3 +219,15 @@ function buildPrefsWidget(){
     return box;
 };
 
+function setShortcut(settings) {
+    let shortcut_text = settings.get_string('shortcut-text');
+    let [key, mods] = Gtk.accelerator_parse(shortcut_text);
+
+    if (Gtk.accelerator_valid(key, mods)) {
+        let shortcut = Gtk.accelerator_name(key, mods);
+        settings.set_strv('shortcut', [shortcut]);
+    }
+    else {
+        settings.set_strv('shortcut', []);
+    }
+}

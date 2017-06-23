@@ -61,6 +61,18 @@
         <description></description>
     </key>
 
+    <key type="s" name="shortcut-text">
+      <default>"&lt;Super&gt;i"</default>
+      <summary>Keybinding to open the indicator.</summary>
+      <description>If showing, the indicator menu is toggled.</description>
+  </key>
+
+    <key type="as" name="apt-update-indicator-shortcut">
+      <default><![CDATA[['<Super>i']]]></default>
+      <summary>Keybinding to show the dock and the number overlay.</summary>
+      <description>Behavior depends on hotkeys-show-dock and hotkeys-overlay.</description>
+    </key>
+
     <key name="use-custom-cmd" type="b">
       <default>false</default>
         <summary>Allow checks for updates without a passwrd</summary>
