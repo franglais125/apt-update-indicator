@@ -149,7 +149,7 @@
                   </child>
                   <child>
                     <object class="GtkLabel">
-                      <property name="label" translatable="yes">Ex: gnome-terminal -x bash -c</property>
+                      <property name="label" translatable="yes">Ex: xterm -e</property>
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <style>

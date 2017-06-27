@@ -92,7 +92,7 @@
     </key>
 
     <key name="terminal" type="s">
-      <default>"xterm -fa monospace -fs 11 -e"</default>
+      <default>"gnome-terminal -x bash -c"</default>
       <summary>Terminal and options to use</summary>
       <description>Terminal and options to execute a shell for the upgrade process</description>
     </key>
