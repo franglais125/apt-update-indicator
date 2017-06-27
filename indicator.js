@@ -261,6 +261,16 @@ const AptUpdateIndicator = new Lang.Class({
     updateStatus: function(updatesCount) {
         updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
+            // Destroy existing labels to ensure correct display
+            if (this.urgentListMenuLabel) {
+                this.urgentListMenuLabel.destroy();
+                this.urgentListMenuLabel = null;
+            }
+            if (this.updatesListMenuLabel) {
+                this.updatesListMenuLabel.destroy();
+                this.updatesListMenuLabel = null;
+            }
+
             // Update the menu look:
             this._cleanUpgradeLists();
 
@@ -268,18 +278,20 @@ const AptUpdateIndicator = new Lang.Class({
             let menuUpdateList = this._updateList;
 
             if (this._urgentList.length > 0) {
+                // Update icon name and updates list
                 icon_name = 'software-update-urgent-symbolic';
                 menuUpdateList = this._updateList.filter(Lang.bind(this,
                     function(pkg) { return this._urgentList.indexOf(pkg) < 0; }
                 ));
-                if (!this.urgentListMenuLabel) {
-                    this.urgentListMenuLabel = new St.Label({style_class: 'apt-update-indicator-urgentlabel'});
-                    this.updatesExpander.menu.box.add(this.urgentListMenuLabel);
-                }
-                this.urgentListMenuLabel.set_text( 'Important/Security\n\n' + this._urgentList.join(' \n') );
-            } else if (this.urgentListMenuLabel) {
-                this.urgentListMenuLabel.destroy();
-                this.urgentListMenuLabel = null;
+
+                this.urgentListMenuLabel = new St.Label({style_class: 'apt-update-indicator-urgentlabel'});
+                this.updatesExpander.menu.box.add(this.urgentListMenuLabel);
+
+                // If there are non-security updates, add an extra line
+                this.urgentListMenuLabel.set_text(
+                    'Important/Security\n\n' +
+                    this._urgentList.join(' \n')
+                );
             }
 
             // Update indicator look:
@@ -287,19 +299,15 @@ const AptUpdateIndicator = new Lang.Class({
             this.label.set_text(updatesCount.toString());
 
             if (menuUpdateList.length > 0) {
-                if (!this.updatesListMenuLabel) {
-                    this.updatesListMenuLabel = new St.Label({style_class: 'apt-update-indicator-updatelabel'});
-                    this.updatesExpander.menu.box.add(this.updatesListMenuLabel);
-                }
+
+                this.updatesListMenuLabel = new St.Label({style_class: 'apt-update-indicator-updatelabel'});
+                this.updatesExpander.menu.box.add(this.updatesListMenuLabel);
+
                 let subTitle = '';
                 if (this._urgentList.length > 0) {
                     subTitle = '\nRegular\n\n';
                 }
                 this.updatesListMenuLabel.set_text( subTitle + menuUpdateList.join(' \n') );
-            }
-            else if (this.updatesListMenuLabel) {
-                this.updatesListMenuLabel.destroy();
-                this.updatesListMenuLabel = null;
             }
 
             this._updateMenuExpander( true, Gettext.ngettext( '%d update pending',
