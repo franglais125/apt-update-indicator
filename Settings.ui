@@ -60,7 +60,6 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <property name="label" translatable="yes">Always show the indicator</property>
-                      <property name="wrap">True</property>
                     </object>
                     <packing>
                       <property name="left_attach">0</property>
@@ -96,7 +95,6 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <property name="label" translatable="yes">Show updates count on the indicator</property>
-                      <property name="wrap">True</property>
                     </object>
                     <packing>
                       <property name="left_attach">0</property>
@@ -131,9 +129,7 @@
                     <object class="GtkLabel" id="auto_expand_list_description">
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
-                      <property name="label" translatable="yes">Auto-expand the list if updates count is less than this number (0 to disable)</property>
-                      <property name="wrap">True</property>
-                      <property name="max-width-chars">45</property>
+                      <property name="label" translatable="yes">If updates count is less than this number (0 to disable)</property>
                       <style>
                         <class name="dim-label"/>
                       </style>
@@ -148,7 +144,6 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <property name="label" translatable="yes">Auto-expand updates list</property>
-                      <property name="wrap">True</property>
                     </object>
                     <packing>
                       <property name="left_attach">0</property>
@@ -218,7 +213,6 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <property name="label" translatable="yes">Send a notification when new updates are available</property>
-                      <property name="wrap">True</property>
                     </object>
                     <packing>
                       <property name="left_attach">0</property>
@@ -268,7 +262,6 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <property name="label" translatable="yes">How much information to show on notifications</property>
-                      <property name="wrap">True</property>
                     </object>
                     <packing>
                       <property name="left_attach">0</property>
@@ -280,8 +273,6 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <property name="label" translatable="yes">Up to a maximum of 50 package names.</property>
-                      <property name="use_markup">True</property>
-                      <property name="wrap">True</property>
                       <style>
                         <class name="dim-label"/>
                       </style>
@@ -366,7 +357,6 @@
                       <property name="hexpand">True</property>
                       <property name="xalign">0</property>
                       <property name="label" translatable="yes">You can use sudo instead of pkexec for the terminal.</property>
-                      <property name="use_markup">True</property>
                       <property name="wrap">True</property>
                       <property name="max-width-chars">25</property>
                       <style>
@@ -519,7 +509,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Check for updates every:</property>
-                          <property name="wrap">True</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
@@ -689,7 +678,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Indicator</property>
-                          <property name="wrap">True</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
@@ -749,7 +737,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Notifications</property>
-                          <property name="wrap">True</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
@@ -826,7 +813,6 @@
                           <property name="xalign">0</property>
                           <property name="max-width-chars">40</property>
                           <property name="label" translatable="yes">Syntax: &lt;Shift&gt;, &lt;Ctrl&gt;, &lt;Alt&gt;, &lt;Super&gt;</property>
-                          <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>
                           </style>
@@ -957,8 +943,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Method to use to apply the updates.</property>
-                          <property name="use_markup">True</property>
-                          <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>
                           </style>
@@ -1044,7 +1028,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">The default command is "pkcon refresh", which uses packagekit with the apt backend. You can define a custom command below, to be executed using pkexec.</property>
-                          <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>
@@ -1157,7 +1140,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Include an item in the indicator with a list of new packages in the repository.</property>
-                          <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>
@@ -1208,7 +1190,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Include an item in the indicator with a list of obsolete or local packages. Obsolete packages are not available in the repository. Local packages are available, but an unavailable version is installed.</property>
-                          <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>
@@ -1259,7 +1240,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Include an item in the indicator with a list of packages that have residual config files. Run "sudo apt purge pkgname" to clean them.</property>
-                          <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>
@@ -1310,7 +1290,6 @@
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Include an item in the indicator with a list of autoremovable packages. Run "sudo apt autoremove" to remove them.</property>
-                          <property name="use_markup">True</property>
                           <property name="wrap">True</property>
                           <style>
                             <class name="dim-label"/>
