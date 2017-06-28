@@ -27,6 +27,305 @@
   <property name="step_increment">1</property>
 </object>
 
+<object class="GtkBox" id="indicator_dialog">
+  <property name="visible">True</property>
+  <property name="can_focus">False</property>
+  <property name="margin_left">12</property>
+  <property name="margin_right">12</property>
+  <property name="margin_top">12</property>
+  <property name="margin_bottom">12</property>
+  <property name="orientation">vertical</property>
+  <child>
+    <object class="GtkFrame" id="frame_indicator">
+      <property name="visible">True</property>
+      <property name="can_focus">False</property>
+      <property name="label_xalign">0</property>
+      <property name="shadow_type">in</property>
+      <child>
+        <object class="GtkListBox" id="listbox_indicator">
+          <property name="visible">True</property>
+          <property name="can_focus">False</property>
+          <property name="selection_mode">none</property>
+          <child>
+            <object class="GtkListBoxRow" id="always_visible_listboxrow_2">
+              <child>
+                <object class="GtkGrid" id="always_visible_grid_2">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">32</property>
+                  <child>
+                    <object class="GtkLabel" id="always_visible_label_2">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">Always show the indicator</property>
+                      <property name="wrap">True</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">0</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkSwitch" id="always_visible">
+                      <property name="halign">end</property>
+                      <property name="valign">center</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">1</property>
+                      <property name="top_attach">0</property>
+                      <property name="height">2</property>
+                    </packing>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBoxRow" id="show_count_listboxrow">
+              <child>
+                <object class="GtkGrid" id="show_count_grid">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">32</property>
+                  <child>
+                    <object class="GtkLabel" id="show_count_label">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">Show updates count on indicator</property>
+                      <property name="wrap">True</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">0</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkSwitch" id="show_count">
+                      <property name="halign">end</property>
+                      <property name="valign">center</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">1</property>
+                      <property name="top_attach">0</property>
+                      <property name="height">2</property>
+                    </packing>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBoxRow" id="auto_expand_list_listboxrow">
+              <child>
+                <object class="GtkGrid" id="auto_expand_list_grid">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">32</property>
+                  <child>
+                    <object class="GtkLabel" id="auto_expand_list_description">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">Auto-expand the list if updates count is less than this number (0 to disable)</property>
+                      <property name="wrap">True</property>
+                      <property name="max-width-chars">45</property>
+                      <style>
+                        <class name="dim-label"/>
+                      </style>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">1</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkLabel" id="auto_expand_list_label">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">Auto-expand updates list</property>
+                      <property name="wrap">True</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">0</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkSpinButton" id="auto_expand_list">
+                      <property name="adjustment">Adjust_expand_list</property>
+                      <property name="halign">end</property>
+                      <property name="valign">center</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">1</property>
+                      <property name="top_attach">0</property>
+                      <property name="height">2</property>
+                    </packing>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child type="label_item">
+        <placeholder/>
+      </child>
+    </object>
+    <packing>
+      <property name="expand">False</property>
+      <property name="fill">True</property>
+      <property name="position">0</property>
+    </packing>
+  </child>
+</object>
+
+<object class="GtkBox" id="notifications_dialog">
+  <property name="visible">True</property>
+  <property name="can_focus">False</property>
+  <property name="margin_left">12</property>
+  <property name="margin_right">12</property>
+  <property name="margin_top">12</property>
+  <property name="margin_bottom">12</property>
+  <property name="orientation">vertical</property>
+  <child>
+    <object class="GtkFrame" id="frame_notifications">
+      <property name="visible">True</property>
+      <property name="can_focus">False</property>
+      <property name="label_xalign">0</property>
+      <property name="shadow_type">in</property>
+      <child>
+        <object class="GtkListBox" id="listbox_notifications">
+          <property name="visible">True</property>
+          <property name="can_focus">False</property>
+          <property name="selection_mode">none</property>
+          <child>
+            <object class="GtkListBoxRow" id="notifications_listboxrow">
+              <child>
+                <object class="GtkGrid" id="notifications_grid">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">32</property>
+                  <child>
+                    <object class="GtkLabel" id="notifications_label">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">Send a notification when new updates are available</property>
+                      <property name="wrap">True</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">0</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkSwitch" id="notifications">
+                      <property name="halign">end</property>
+                      <property name="valign">center</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">1</property>
+                      <property name="top_attach">0</property>
+                      <property name="height">2</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkCheckButton" id="transient_notifications">
+                      <property name="label" translatable="yes">Use transient notifications (auto dismiss)</property>
+                      <property name="receives_default">False</property>
+                      <property name="margin_top">12</property>
+                      <property name="xalign">0</property>
+                      <property name="draw_indicator">True</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">2</property>
+                      <property name="width">2</property>
+                    </packing>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+          <child>
+            <object class="GtkListBoxRow" id="verbosity_listboxrow">
+              <child>
+                <object class="GtkGrid" id="verbosity_grid">
+                  <property name="margin_left">12</property>
+                  <property name="margin_right">12</property>
+                  <property name="margin_top">12</property>
+                  <property name="margin_bottom">12</property>
+                  <property name="column_spacing">32</property>
+                  <child>
+                    <object class="GtkLabel" id="verbosity_label">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">How much information to show on notifications</property>
+                      <property name="wrap">True</property>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">0</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkLabel" id="verbosity_description">
+                      <property name="hexpand">True</property>
+                      <property name="xalign">0</property>
+                      <property name="label" translatable="yes">Up to a maximum of 50 package names.</property>
+                      <property name="use_markup">True</property>
+                      <property name="wrap">True</property>
+                      <style>
+                        <class name="dim-label"/>
+                      </style>
+                    </object>
+                    <packing>
+                      <property name="left_attach">0</property>
+                      <property name="top_attach">1</property>
+                    </packing>
+                  </child>
+                  <child>
+                    <object class="GtkComboBoxText" id="verbosity">
+                      <property name="visible">True</property>
+                      <property name="can_focus">False</property>
+                      <property name="valign">center</property>
+                      <items>
+                        <item translatable="yes">Count only</item>
+                        <item translatable="yes">New updates names</item>
+                        <item translatable="yes">All updates names</item>
+                      </items>
+                    </object>
+                    <packing>
+                      <property name="left_attach">1</property>
+                      <property name="top_attach">0</property>
+                      <property name="height">2</property>
+                    </packing>
+                  </child>
+                </object>
+              </child>
+            </object>
+          </child>
+        </object>
+      </child>
+      <child type="label_item">
+        <placeholder/>
+      </child>
+    </object>
+    <packing>
+      <property name="expand">False</property>
+      <property name="fill">True</property>
+      <property name="position">0</property>
+    </packing>
+  </child>
+</object>
+
 <object class="GtkBox" id="custom_command_dialog">
   <property name="visible">True</property>
   <property name="can_focus">False</property>
@@ -338,7 +637,7 @@
                         <object class="GtkLabel" id="urgent_updates_label">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Distinguish security/important updates from regular updates</property>
+                          <property name="label" translatable="yes">Highlight security/important updates</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
@@ -389,112 +688,32 @@
                         <object class="GtkLabel" id="always_visible_label">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Always show the indicator</property>
+                          <property name="label" translatable="yes">Indicator</property>
                           <property name="wrap">True</property>
                         </object>
                         <packing>
                           <property name="left_attach">0</property>
-                          <property name="top_attach">1</property>
-                        </packing>
-                      </child>
-                      <child>
-                        <object class="GtkSwitch" id="always_visible">
-                          <property name="halign">end</property>
-                          <property name="valign">center</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">1</property>
                           <property name="top_attach">0</property>
-                          <property name="height">2</property>
-                        </packing>
-                      </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="GtkListBoxRow" id="show_count_listboxrow">
-                  <child>
-                    <object class="GtkGrid" id="show_count_grid">
-                      <property name="margin_left">12</property>
-                      <property name="margin_right">12</property>
-                      <property name="margin_top">12</property>
-                      <property name="margin_bottom">12</property>
-                      <property name="column_spacing">32</property>
-                      <child>
-                        <object class="GtkLabel" id="show_count_label">
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Show updates count on indicator</property>
-                          <property name="wrap">True</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">0</property>
-                          <property name="top_attach">1</property>
                         </packing>
                       </child>
                       <child>
-                        <object class="GtkSwitch" id="show_count">
-                          <property name="halign">end</property>
+                        <object class="GtkButton" id="indicator_button">
+                          <property name="visible">True</property>
+                          <property name="can_focus">True</property>
+                          <property name="receives_default">True</property>
+                          <property name="halign">center</property>
                           <property name="valign">center</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">1</property>
-                          <property name="top_attach">0</property>
-                          <property name="height">2</property>
-                        </packing>
-                      </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="GtkListBoxRow" id="auto_expand_list_listboxrow">
-                  <child>
-                    <object class="GtkGrid" id="auto_expand_list_grid">
-                      <property name="margin_left">12</property>
-                      <property name="margin_right">12</property>
-                      <property name="margin_top">12</property>
-                      <property name="margin_bottom">12</property>
-                      <property name="column_spacing">32</property>
-                      <child>
-                        <object class="GtkLabel" id="auto_expand_list_description">
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Auto-expand the list if updates count is less than this number (0 to disable)</property>
-                          <property name="wrap">True</property>
+                          <child>
+                            <object class="GtkImage" id="indicator_image">
+                              <property name="visible">True</property>
+                              <property name="can_focus">False</property>
+                              <property name="icon_name">emblem-system-symbolic</property>
+                            </object>
+                          </child>
                           <style>
-                            <class name="dim-label"/>
+                            <class name="circular"/>
                           </style>
                         </object>
-                        <packing>
-                          <property name="left_attach">0</property>
-                          <property name="top_attach">1</property>
-                        </packing>
-                      </child>
-                      <child>
-                        <object class="GtkLabel" id="auto_expand_list_label">
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Auto-expand updates list</property>
-                          <property name="wrap">True</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">0</property>
-                          <property name="top_attach">0</property>
-                        </packing>
-                      </child>
-                      <child>
-                        <object class="GtkSpinButton" id="auto_expand_list">
-                          <property name="adjustment">Adjust_expand_list</property>
-                          <property name="halign">end</property>
-                          <property name="valign">center</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">1</property>
-                          <property name="top_attach">0</property>
-                          <property name="height">2</property>
-                        </packing>
                       </child>
                     </object>
                   </child>
@@ -517,31 +736,16 @@
             <object class="GtkListBox" id="notifications_listbox">
               <property name="selection_mode">none</property>
               <child>
-                <object class="GtkListBoxRow" id="notifications_listboxrow">
+                <object class="GtkListBoxRow" id="notifications_listboxrow_2">
                   <child>
-                    <object class="GtkGrid" id="notifications_grid">
+                    <object class="GtkGrid" id="notifications_grid_2">
                       <property name="margin_left">12</property>
                       <property name="margin_right">12</property>
                       <property name="margin_top">12</property>
                       <property name="margin_bottom">12</property>
                       <property name="column_spacing">32</property>
                       <child>
-                        <object class="GtkLabel" id="notifications_description">
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Send a notification when new updates are available.</property>
-                          <property name="wrap">True</property>
-                          <style>
-                            <class name="dim-label"/>
-                          </style>
-                        </object>
-                        <packing>
-                          <property name="left_attach">0</property>
-                          <property name="top_attach">1</property>
-                        </packing>
-                      </child>
-                      <child>
-                        <object class="GtkLabel" id="notifications_label">
+                        <object class="GtkLabel" id="notifications_label_2">
                           <property name="hexpand">True</property>
                           <property name="xalign">0</property>
                           <property name="label" translatable="yes">Notifications</property>
@@ -553,87 +757,23 @@
                         </packing>
                       </child>
                       <child>
-                        <object class="GtkSwitch" id="notifications">
-                          <property name="halign">end</property>
+                        <object class="GtkButton" id="notifications_button">
+                          <property name="visible">True</property>
+                          <property name="can_focus">True</property>
+                          <property name="receives_default">True</property>
+                          <property name="halign">center</property>
                           <property name="valign">center</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">1</property>
-                          <property name="top_attach">0</property>
-                          <property name="height">2</property>
-                        </packing>
-                      </child>
-                      <child>
-                        <object class="GtkCheckButton" id="transient_notifications">
-                          <property name="label" translatable="yes">Use transient notifications (auto dismiss)</property>
-                          <property name="receives_default">False</property>
-                          <property name="margin_top">12</property>
-                          <property name="xalign">0</property>
-                          <property name="draw_indicator">True</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">0</property>
-                          <property name="top_attach">2</property>
-                          <property name="width">2</property>
-                        </packing>
-                      </child>
-                    </object>
-                  </child>
-                </object>
-              </child>
-              <child>
-                <object class="GtkListBoxRow" id="verbosity_listboxrow">
-                  <child>
-                    <object class="GtkGrid" id="verbosity_grid">
-                      <property name="margin_left">12</property>
-                      <property name="margin_right">12</property>
-                      <property name="margin_top">12</property>
-                      <property name="margin_bottom">12</property>
-                      <property name="column_spacing">32</property>
-                      <child>
-                        <object class="GtkLabel" id="verbosity_label">
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                          <property name="label" translatable="yes">How much information to show on notifications</property>
-                          <property name="wrap">True</property>
-                        </object>
-                        <packing>
-                          <property name="left_attach">0</property>
-                          <property name="top_attach">0</property>
-                        </packing>
-                      </child>
-                      <child>
-                        <object class="GtkLabel" id="verbosity_description">
-                          <property name="hexpand">True</property>
-                          <property name="xalign">0</property>
-                          <property name="label" translatable="yes">Up to a maximum of 50 package names.</property>
-                          <property name="use_markup">True</property>
-                          <property name="wrap">True</property>
+                          <child>
+                            <object class="GtkImage" id="notifications_image">
+                              <property name="visible">True</property>
+                              <property name="can_focus">False</property>
+                              <property name="icon_name">emblem-system-symbolic</property>
+                            </object>
+                          </child>
                           <style>
-                            <class name="dim-label"/>
+                            <class name="circular"/>
                           </style>
                         </object>
-                        <packing>
-                          <property name="left_attach">0</property>
-                          <property name="top_attach">1</property>
-                        </packing>
-                      </child>
-                      <child>
-                        <object class="GtkComboBoxText" id="verbosity">
-                          <property name="visible">True</property>
-                          <property name="can_focus">False</property>
-                          <property name="valign">center</property>
-                          <items>
-                            <item translatable="yes">Count only</item>
-                            <item translatable="yes">New updates names</item>
-                            <item translatable="yes">All updates names</item>
-                          </items>
-                        </object>
-                        <packing>
-                          <property name="left_attach">1</property>
-                          <property name="top_attach">0</property>
-                          <property name="height">2</property>
-                        </packing>
                       </child>
                     </object>
                   </child>

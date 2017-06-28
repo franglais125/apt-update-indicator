@@ -61,42 +61,84 @@ function buildPrefsWidget(){
     });
     buildable.get_object('interval_unit_combo').set_active(settings.get_enum('interval-unit'));
 
-    // Indicator
-    settings.bind('always-visible',
-                  buildable.get_object('always_visible'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('show-count',
-                  buildable.get_object('show_count'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('auto-expand-list',
-                  buildable.get_object('auto_expand_list'),
-                 'value',
-                  Gio.SettingsBindFlags.DEFAULT);
+    // Create dialog for the indicator settings
+    buildable.get_object('indicator_button').connect('clicked', function() {
 
-    // Notifications
-    settings.bind('notify',
-                  buildable.get_object('notifications'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('transient',
-                  buildable.get_object('transient_notifications'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('verbosity',
-                  buildable.get_object('verbosity'),
-                  'active',
-                  Gio.SettingsBindFlags.DEFAULT);
+        let dialog = new Gtk.Dialog({ title: _('Indicator options'),
+                                      transient_for: box.get_toplevel(),
+                                      use_header_bar: true,
+                                      modal: true });
 
-    settings.bind('notify',
-                  buildable.get_object('transient_notifications'),
-                  'sensitive',
-                  Gio.SettingsBindFlags.DEFAULT);
-    settings.bind('notify',
-                  buildable.get_object('verbosity'),
-                  'sensitive',
-                  Gio.SettingsBindFlags.DEFAULT);
+        let sub_box = buildable.get_object('indicator_dialog');
+        dialog.get_content_area().add(sub_box);
+
+        settings.bind('always-visible',
+                      buildable.get_object('always_visible'),
+                      'active',
+                      Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('show-count',
+                      buildable.get_object('show_count'),
+                      'active',
+                      Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('auto-expand-list',
+                      buildable.get_object('auto_expand_list'),
+                      'value',
+                      Gio.SettingsBindFlags.DEFAULT);
+
+        dialog.connect('response', Lang.bind(this, function(dialog, id) {
+            // remove the settings box so it doesn't get destroyed;
+            dialog.get_content_area().remove(sub_box);
+            dialog.destroy();
+            return;
+        }));
+
+        dialog.show_all();
+
+    });
+
+    // Create dialog for the notification settings
+    buildable.get_object('notifications_button').connect('clicked', function() {
+
+        let dialog = new Gtk.Dialog({ title: _('Notification options'),
+                                      transient_for: box.get_toplevel(),
+                                      use_header_bar: true,
+                                      modal: true });
+
+        let sub_box = buildable.get_object('notifications_dialog');
+        dialog.get_content_area().add(sub_box);
+
+        settings.bind('notify',
+                      buildable.get_object('notifications'),
+                      'active',
+                      Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('transient',
+                      buildable.get_object('transient_notifications'),
+                      'active',
+                      Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('verbosity',
+                      buildable.get_object('verbosity'),
+                      'active',
+                      Gio.SettingsBindFlags.DEFAULT);
+
+        settings.bind('notify',
+                      buildable.get_object('transient_notifications'),
+                      'sensitive',
+                      Gio.SettingsBindFlags.DEFAULT);
+        settings.bind('notify',
+                      buildable.get_object('verbosity'),
+                      'sensitive',
+                      Gio.SettingsBindFlags.DEFAULT);
+
+        dialog.connect('response', Lang.bind(this, function(dialog, id) {
+            // remove the settings box so it doesn't get destroyed;
+            dialog.get_content_area().remove(sub_box);
+            dialog.destroy();
+            return;
+        }));
+
+        dialog.show_all();
+
+    });
 
     // Shortcut
     settings.bind('shortcut-text',
