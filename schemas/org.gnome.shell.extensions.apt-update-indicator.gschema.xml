@@ -61,11 +61,17 @@
         <description></description>
     </key>
 
+    <key name="use-shortcut" type="b">
+      <default>false</default>
+        <summary>Use a shortcut to open the indicator.</summary>
+        <description></description>
+    </key>
+
     <key type="s" name="shortcut-text">
       <default>"&lt;Super&gt;i"</default>
       <summary>Keybinding to open the indicator.</summary>
       <description>If showing, the indicator menu is toggled.</description>
-  </key>
+    </key>
 
     <key type="as" name="apt-update-indicator-shortcut">
       <default><![CDATA[['<Super>i']]]></default>

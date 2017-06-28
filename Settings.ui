@@ -792,7 +792,7 @@
                       <property name="margin_right">12</property>
                       <property name="margin_top">12</property>
                       <property name="margin_bottom">12</property>
-                      <property name="column_spacing">32</property>
+                      <property name="column_spacing">12</property>
                       <child>
                         <object class="GtkLabel" id="shortcut_label">
                           <property name="visible">True</property>
@@ -824,7 +824,16 @@
                       </child>
                       <child>
                         <object class="GtkEntry" id="shortcut_entry">
-                          <property name="width-chars">12</property>
+                          <property name="width-chars">18</property>
+                          <property name="valign">center</property>
+                        </object>
+                        <packing>
+                          <property name="height">2</property>
+                        </packing>
+                      </child>
+                      <child>
+                        <object class="GtkSwitch" id="use_shortcut">
+                          <property name="halign">end</property>
                           <property name="valign">center</property>
                         </object>
                         <packing>

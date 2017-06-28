@@ -110,7 +110,8 @@ const AptUpdateIndicator = new Lang.Class({
 
         Main.panel.addToStatusArea('AptUpdateIndicator', this);
 
-        this._enableShortcut();
+        this._shortcutIsSet = false;
+        this._toggleShortcut();
     },
 
     _openSettings: function () {
@@ -127,6 +128,10 @@ const AptUpdateIndicator = new Lang.Class({
             this._settings,
             'changed::always-visible',
             Lang.bind(this, this._checkShowHideIndicator)
+        ],[
+            this._settings,
+            'changed::use-shortcut',
+            Lang.bind(this, this._toggleShortcut)
         ],[
         // Bind some events
             this.menu,
@@ -548,15 +553,28 @@ const AptUpdateIndicator = new Lang.Class({
         this._notifSource.notify(notification);
     },
 
+    _toggleShortcut: function() {
+        if (this._settings.get_boolean('use-shortcut'))
+            this._enableShortcut();
+        else
+            this._disableShortcut();
+    },
+
     _enableShortcut: function() {
-        Main.wm.addKeybinding('apt-update-indicator-shortcut', this._settings,
-                              Meta.KeyBindingFlags.NONE,
-                              Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
-                              Lang.bind(this.menu, this.menu.toggle));
+        if (!this._shortcutIsSet) {
+            Main.wm.addKeybinding('apt-update-indicator-shortcut', this._settings,
+                                  Meta.KeyBindingFlags.NONE,
+                                  Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
+                                  Lang.bind(this.menu, this.menu.toggle));
+            this._shortcutIsSet = true;
+        }
     },
 
     _disableShortcut: function() {
-        Main.wm.removeKeybinding('apt-update-indicator-shortcut');
+        if (this._shortcutIsSet) {
+            Main.wm.removeKeybinding('apt-update-indicator-shortcut');
+            this._shortcutIsSet = false;
+        }
     }
 
 });

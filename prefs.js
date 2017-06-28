@@ -147,6 +147,14 @@ function buildPrefsWidget(){
                   Gio.SettingsBindFlags.DEFAULT);
     // We need to update the shortcut 'strv' when the text is modified
     settings.connect('changed::shortcut-text', function() {setShortcut(settings);});
+    settings.bind('use-shortcut',
+                  buildable.get_object('use_shortcut'),
+                  'active',
+                  Gio.SettingsBindFlags.DEFAULT);
+    settings.bind('use-shortcut',
+                  buildable.get_object('shortcut_entry'),
+                  'sensitive',
+                  Gio.SettingsBindFlags.DEFAULT);
 
     // Advanced settings tab:
     // Update method
@@ -267,9 +275,9 @@ function setShortcut(settings) {
 
     if (Gtk.accelerator_valid(key, mods)) {
         let shortcut = Gtk.accelerator_name(key, mods);
-        settings.set_strv('shortcut', [shortcut]);
+        settings.set_strv('apt-update-indicator-shortcut', [shortcut]);
     }
     else {
-        settings.set_strv('shortcut', []);
+        settings.set_strv('apt-update-indicator-shortcut', []);
     }
 }
