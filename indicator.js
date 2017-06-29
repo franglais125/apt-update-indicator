@@ -150,27 +150,15 @@ const AptUpdateIndicator = new Lang.Class({
         this.updatesExpander = new PopupMenu.PopupSubMenuMenuItem('');
 
         this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
-        this.newPackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
-        this.newPackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
-        this.newPackagesExpander.menu.addMenuItem(this.newPackagesListMenuLabel);
         this.newPackagesExpander.actor.visible = false;
 
         this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
-        this.obsoletePackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
-        this.obsoletePackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
-        this.obsoletePackagesExpander.menu.addMenuItem(this.obsoletePackagesListMenuLabel);
         this.obsoletePackagesExpander.actor.visible = false;
 
         this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
-        this.residualPackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
-        this.residualPackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
-        this.residualPackagesExpander.menu.addMenuItem(this.residualPackagesListMenuLabel);
         this.residualPackagesExpander.actor.visible = false;
 
         this.autoremovablePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Autoremovable'));
-        this.autoremovablePackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
-        this.autoremovablePackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
-        this.autoremovablePackagesExpander.menu.addMenuItem(this.autoremovablePackagesListMenuLabel);
         this.autoremovablePackagesExpander.actor.visible = false;
 
         // Other standard menu items
@@ -472,37 +460,61 @@ const AptUpdateIndicator = new Lang.Class({
     },
 
     _updateNewPackagesStatus: function() {
-        if (this._newPackagesList.length == 0) {
+        this.newPackagesExpander.menu.removeAll();
+        if (this._newPackagesList.length == 0)
             this.newPackagesExpander.actor.visible = false;
-        } else {
-            this.newPackagesListMenuLabel.label.set_text( this._newPackagesList.join('\n') );
+        else {
+            for (let i = 0; i < this._newPackagesList.length; i++) {
+                let item = new PopupMenu.PopupMenuItem('');
+                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.label.set_text(this._newPackagesList[i]);
+                this.newPackagesExpander.menu.addMenuItem(item);
+            }
             this.newPackagesExpander.actor.visible = true;
         }
     },
 
     _updateObsoletePackagesStatus: function() {
+        this.obsoletePackagesExpander.menu.removeAll();
         if (this._obsoletePackagesList.length == 0)
             this.obsoletePackagesExpander.actor.visible = false;
         else {
-            this.obsoletePackagesListMenuLabel.label.set_text( this._obsoletePackagesList.join('\n') );
+            for (let i = 0; i < this._obsoletePackagesList.length; i++) {
+                let item = new PopupMenu.PopupMenuItem('');
+                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.label.set_text(this._obsoletePackagesList[i]);
+                this.obsoletePackagesExpander.menu.addMenuItem(item);
+            }
             this.obsoletePackagesExpander.actor.visible = true;
         }
     },
 
     _updateResidualPackagesStatus: function() {
+        this.residualPackagesExpander.menu.removeAll();
         if (this._residualPackagesList.length == 0)
             this.residualPackagesExpander.actor.visible = false;
         else {
-            this.residualPackagesListMenuLabel.label.set_text( this._residualPackagesList.join('\n') );
+            for (let i = 0; i < this._residualPackagesList.length; i++) {
+                let item = new PopupMenu.PopupMenuItem('');
+                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.label.set_text(this._residualPackagesList[i]);
+                this.residualPackagesExpander.menu.addMenuItem(item);
+            }
             this.residualPackagesExpander.actor.visible = true;
         }
     },
 
     _updateAutoremovablePackagesStatus: function() {
+        this.autoremovablePackagesExpander.menu.removeAll();
         if (this._autoremovablePackagesList.length == 0)
             this.autoremovablePackagesExpander.actor.visible = false;
         else {
-            this.autoremovablePackagesListMenuLabel.label.set_text( this._autoremovablePackagesList.join('\n') );
+            for (let i = 0; i < this._autoremovablePackagesList.length; i++) {
+                let item = new PopupMenu.PopupMenuItem('');
+                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.label.set_text(this._autoremovablePackagesList[i]);
+                this.autoremovablePackagesExpander.menu.addMenuItem(item);
+            }
             this.autoremovablePackagesExpander.actor.visible = true;
         }
     },
