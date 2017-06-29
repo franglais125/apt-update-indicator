@@ -80,7 +80,7 @@ const UpdateManager = new Lang.Class({
         this._applySettings();
 
         // Start network and directory monitors
-        this._netMonitor = new Monitors.NetworkMonitor();
+        this._netMonitor = new Monitors.NetworkMonitor(this);
         this._dirMonitor = new Monitors.DirectoryMonitor(this);
 
         // Initial run. We wait 30 seconds before listing the upgrades, this:
@@ -186,7 +186,7 @@ const UpdateManager = new Lang.Class({
                                                        CHECK_INTERVAL,
                                                        Lang.bind(this, function() {
                                                                this._isAutomaticCheck = true;
-                                                               this._checkUpdates();
+                                                               this._checkNetwork();
                                                                this._checkInterval();
                                                                return true;
                                                        }));
@@ -204,7 +204,7 @@ const UpdateManager = new Lang.Class({
                                                        CHECK_INTERVAL,
                                                        Lang.bind(this, function() {
                                                                this._isAutomaticCheck = true;
-                                                               this._checkUpdates();
+                                                               this._checkNetwork();
                                                                return true;
                                                        }));
         }
@@ -313,7 +313,7 @@ const UpdateManager = new Lang.Class({
             // Indicator buttons
             this._indicator.checkNowMenuItem,
             'activate',
-            Lang.bind(this, this._checkUpdates)
+            Lang.bind(this, this._checkNetwork)
         ],[
             this._indicator.applyUpdatesMenuItem,
             'activate',
@@ -361,11 +361,23 @@ const UpdateManager = new Lang.Class({
     },
 
     /* Update functions:
-     *     _checkUpdates
+     *     _checkNetwork
+     *     networkFailed
+     *     checkUpdates
      *     _checkUpdatesEnd
      */
 
-    _checkUpdates: function() {
+    _checkNetwork: function() {
+        this._indicator.showChecking(true);
+        this._netMonitor.networkTimeout();
+    },
+
+    networkFailed: function() {
+        this._indicator.showChecking(false);
+        this._indicator.updateStatus(STATUS.NO_INTERNET);
+    },
+
+    checkUpdates: function() {
         // Stop the dir monitor to prevent it from updating again right after
         // the update
         this._dirMonitor.stop();
@@ -375,25 +387,18 @@ const UpdateManager = new Lang.Class({
             return;
         }
         // Run asynchronously, to avoid  shell freeze - even for a 1s check
-        this._indicator.showChecking(true);
         try {
-            // First, check network access
-            if (this._netMonitor.connected) {
-                // Parse check command line
-                let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
-                if (!parseok) { throw 'Parse error' };
-                let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
-                                                                argvp,
-                                                                null,
-                                                                GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                null);
+            // Parse check command line
+            let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
+            if (!parseok) { throw 'Parse error' };
+            let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
+                                                            argvp,
+                                                            null,
+                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
+                                                            null);
 
-                // We will process the output at once when it's done
-                this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
-            } else {
-                this._indicator.showChecking(false);
-                this._indicator.updateStatus(STATUS.NO_INTERNET);
-            }
+            // We will process the output at once when it's done
+            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
         } catch (err) {
             this._indicator.showChecking(false);
             this._indicator.updateStatus(STATUS.ERROR);

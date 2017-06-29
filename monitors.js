@@ -23,57 +23,45 @@ const _ = Gettext.gettext;
 const NetworkMonitor = new Lang.Class({
     Name: 'NetworkMonitor',
 
-    _init: function() {
-        // When initializing, we wait a bit before the first network check
-        this._initializing = true;
-        this.connected = false;
+    _init: function(updateManager) {
+
+        this._updateManager = updateManager;
 
         // We check for the network status before trying to update apt-cache
         this._network_monitor = Gio.network_monitor_get_default();
 
-        // On network changes, wait 3 seconds before pinging.
-        // This avoids repeatedly sending async requests and flooding the logs.
         this._networkTimeoutId = 0;
-        this._connectionId = this._network_monitor.connect('network-changed',
-                                                           Lang.bind(this, this._networkTimeout));
-        this._networkTimeout();
+
+        let url = 'http://ftp.debian.org';
+        this._address = Gio.NetworkAddress.parse_uri(url, 80);
     },
 
-    _networkTimeout: function() {
+    networkTimeout: function() {
         if (this._networkTimeoutId) {
             GLib.source_remove(this._networkTimeoutId);
             this._networkTimeoutId = 0;
         }
 
-        // Block checks for updates while we ensure the connection is up
-        this.connected = false;
-
-        // Timeout in milliseconds. Just over a second, as there seems to be a 1s
-        // timeout elsewhere in the Shell: 'network-changed' is suspiciously
-        // emitted at 1s intervals very often.
-        let timeout = 1250;
-        if (this._initializing) {
-            timeout = 3000;
-            this._initializing = false;
-        }
-        this._networkTimeoutId = GLib.timeout_add(
+        // Timeout in seconds. We allow 10 seconds for the network check to
+        // finish. If it doesn't, we assume the network is down.
+        let timeout = 10;
+        this._networkTimeoutId = GLib.timeout_add_seconds(
             GLib.PRIORITY_DEFAULT,
             timeout,
             Lang.bind(this, function() {
-                this._checkConnectionState();
+                this._updateManager.networkFailed();
                 this._networkTimeoutId = 0;
                 return false;
             })
         );
+
+        this._checkConnectionState();
     },
 
     _checkConnectionState: function() {
-        let url = 'http://ftp.debian.org';
-        let address = Gio.NetworkAddress.parse_uri(url, 80);
         let cancellable = Gio.Cancellable.new();
-        this.connected = false;
         try {
-            this._network_monitor.can_reach_async(address, cancellable, Lang.bind(this, this._asyncReadyCallback));
+            this._network_monitor.can_reach_async(this._address, cancellable, Lang.bind(this, this._asyncReadyCallback));
         } catch (err) {
             let title = _('Can not connect to %s').format(url);
             log(title + '\n' + err.message);
@@ -81,15 +69,18 @@ const NetworkMonitor = new Lang.Class({
     },
 
     _asyncReadyCallback: function(nm, res) {
-        this.connected = this._network_monitor.can_reach_finish(res);
+        this._network_monitor.can_reach_finish(res);
+
+        if (this._networkTimeoutId) {
+            GLib.source_remove(this._networkTimeoutId);
+            this._networkTimeoutId = 0;
+        }
+
+        // If the network is up, perform update check
+        this._updateManager.checkUpdates();
     },
 
     destroy: function() {
-        if (this._connectionId) {
-            this._network_monitor.disconnect(this._connectionId);
-            this._connectionId = null;
-        }
-
         if (this._networkTimeoutId) {
             GLib.source_remove(this._networkTimeoutId);
             this._networkTimeoutId = 0;
