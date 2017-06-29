@@ -274,12 +274,12 @@ const AptUpdateIndicator = new Lang.Class({
 
             if (this._urgentList.length > 0) {
                 let header = new PopupMenu.PopupMenuItem('Important/Security')
-                header.actor.add_style_class_name('apt-update-indicator-urgentheader');
+                header.actor.add_style_class_name('apt-update-indicator-urgent-item-header');
                 this.updatesExpander.menu.addMenuItem(header);
 
                 for (let i = 0; i < this._urgentList.length; i++) {
                     let item = new PopupMenu.PopupMenuItem('');
-                    item.actor.add_style_class_name('apt-update-indicator-urgentlabel');
+                    item.actor.add_style_class_name('apt-update-indicator-urgent-item');
                     item.label.set_text(this._urgentList[i]);
                     this.updatesExpander.menu.addMenuItem(item);
                 }
@@ -295,14 +295,14 @@ const AptUpdateIndicator = new Lang.Class({
                     this.updatesExpander.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
                     let updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
-                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updateheader');
+                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-item-header');
                     updatesListMenuLabel.label.set_text('Regular');
                     this.updatesExpander.menu.addMenuItem(updatesListMenuLabel);
                 }
 
                 for (let i = 0; i < menuUpdateList.length; i++) {
                     let updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
-                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-item');
                     updatesListMenuLabel.label.set_text(menuUpdateList[i]);
                     this.updatesExpander.menu.addMenuItem(updatesListMenuLabel);
                 }
@@ -466,7 +466,7 @@ const AptUpdateIndicator = new Lang.Class({
         else {
             for (let i = 0; i < this._newPackagesList.length; i++) {
                 let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.actor.add_style_class_name('apt-update-indicator-item');
                 item.label.set_text(this._newPackagesList[i]);
                 this.newPackagesExpander.menu.addMenuItem(item);
             }
@@ -481,7 +481,7 @@ const AptUpdateIndicator = new Lang.Class({
         else {
             for (let i = 0; i < this._obsoletePackagesList.length; i++) {
                 let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.actor.add_style_class_name('apt-update-indicator-item');
                 item.label.set_text(this._obsoletePackagesList[i]);
                 this.obsoletePackagesExpander.menu.addMenuItem(item);
             }
@@ -496,7 +496,7 @@ const AptUpdateIndicator = new Lang.Class({
         else {
             for (let i = 0; i < this._residualPackagesList.length; i++) {
                 let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.actor.add_style_class_name('apt-update-indicator-item');
                 item.label.set_text(this._residualPackagesList[i]);
                 this.residualPackagesExpander.menu.addMenuItem(item);
             }
@@ -511,7 +511,7 @@ const AptUpdateIndicator = new Lang.Class({
         else {
             for (let i = 0; i < this._autoremovablePackagesList.length; i++) {
                 let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                item.actor.add_style_class_name('apt-update-indicator-item');
                 item.label.set_text(this._autoremovablePackagesList[i]);
                 this.autoremovablePackagesExpander.menu.addMenuItem(item);
             }
