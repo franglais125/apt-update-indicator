@@ -13,9 +13,24 @@
 
 .apt-update-indicator-updatelabel {
     font-family: monospace;
+    font-size: 12px;
+}
+
+.apt-update-indicator-updateheader {
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: bold;
 }
 
 .apt-update-indicator-urgentlabel {
     font-family: monospace;
     color: rgba(255, 60, 60, 1);
+    font-size: 14px;
+}
+
+.apt-update-indicator-urgentheader {
+    font-family: monospace;
+    color: rgba(255, 60, 60, 1);
+    font-size: 12px;
+    font-weight: bold;
 }

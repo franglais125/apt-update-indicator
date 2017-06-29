@@ -148,8 +148,6 @@ const AptUpdateIndicator = new Lang.Class({
         // Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
         // Scrollability will also be taken care of by the popupmenu
         this.updatesExpander = new PopupMenu.PopupSubMenuMenuItem('');
-        this.urgentListMenuLabel = null;
-        this.updatesListMenuLabel = null;
 
         this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
         this.newPackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
@@ -272,37 +270,31 @@ const AptUpdateIndicator = new Lang.Class({
         updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
             // Destroy existing labels to ensure correct display
-            if (this.urgentListMenuLabel) {
-                this.urgentListMenuLabel.destroy();
-                this.urgentListMenuLabel = null;
-            }
-            if (this.updatesListMenuLabel) {
-                this.updatesListMenuLabel.destroy();
-                this.updatesListMenuLabel = null;
-            }
+            this.updatesExpander.menu.removeAll();
 
             // Update the menu look:
             this._cleanUpgradeLists();
 
-            let icon_name = 'software-update-available-symbolic';
-            let menuUpdateList = this._updateList;
+            let icon_name = this._urgentList.length > 0 ?
+                'software-update-urgent-symbolic' :
+                'software-update-available-symbolic';
+            let menuUpdateList = this._urgentList.length > 0 ?
+                this._updateList.filter(Lang.bind(this,
+                    function(pkg) { return this._urgentList.indexOf(pkg) < 0; }
+                )) :
+                this._updateList;
 
             if (this._urgentList.length > 0) {
-                // Update icon name and updates list
-                icon_name = 'software-update-urgent-symbolic';
-                menuUpdateList = this._updateList.filter(Lang.bind(this,
-                    function(pkg) { return this._urgentList.indexOf(pkg) < 0; }
-                ));
+                let header = new PopupMenu.PopupMenuItem('Important/Security')
+                header.actor.add_style_class_name('apt-update-indicator-urgentheader');
+                this.updatesExpander.menu.addMenuItem(header);
 
-                this.urgentListMenuLabel = new PopupMenu.PopupMenuItem('');
-                this.urgentListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
-                this.updatesExpander.menu.addMenuItem(this.urgentListMenuLabel);
-
-                // If there are non-security updates, add an extra line
-                this.urgentListMenuLabel.label.set_text(
-                    'Important/Security\n\n' +
-                    this._urgentList.join(' \n')
-                );
+                for (let i = 0; i < this._urgentList.length; i++) {
+                    let item = new PopupMenu.PopupMenuItem('');
+                    item.actor.add_style_class_name('apt-update-indicator-urgentlabel');
+                    item.label.set_text(this._urgentList[i]);
+                    this.updatesExpander.menu.addMenuItem(item);
+                }
             }
 
             // Update indicator look:
@@ -310,16 +302,22 @@ const AptUpdateIndicator = new Lang.Class({
             this.label.set_text(updatesCount.toString());
 
             if (menuUpdateList.length > 0) {
-
-                this.updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
-                this.updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
-                this.updatesExpander.menu.addMenuItem(this.updatesListMenuLabel);
-
-                let subTitle = '';
+                // If there are urgent updates we need to add a section title
                 if (this._urgentList.length > 0) {
-                    subTitle = '\nRegular\n\n';
+                    this.updatesExpander.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+                    let updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
+                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updateheader');
+                    updatesListMenuLabel.label.set_text('Regular');
+                    this.updatesExpander.menu.addMenuItem(updatesListMenuLabel);
                 }
-                this.updatesListMenuLabel.label.set_text( subTitle + menuUpdateList.join(' \n') );
+
+                for (let i = 0; i < menuUpdateList.length; i++) {
+                    let updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
+                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
+                    updatesListMenuLabel.label.set_text(menuUpdateList[i]);
+                    this.updatesExpander.menu.addMenuItem(updatesListMenuLabel);
+                }
             }
 
             this._updateMenuExpander( true, Gettext.ngettext( '%d update pending',
