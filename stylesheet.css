@@ -1,8 +1,3 @@
-.apt-update-indicator-list {
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
 .apt-update-indicator-menubutton {
     /* Meant to be used as an override to display a small system-menu-action */
     border-radius: 10px;

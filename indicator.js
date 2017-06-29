@@ -148,7 +148,6 @@ const AptUpdateIndicator = new Lang.Class({
         // Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
         // Scrollability will also be taken care of by the popupmenu
         this.updatesExpander = new PopupMenu.PopupSubMenuMenuItem('');
-        this.updatesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.urgentListMenuLabel = null;
         this.updatesListMenuLabel = null;
 
@@ -156,28 +155,24 @@ const AptUpdateIndicator = new Lang.Class({
         this.newPackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
         this.newPackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
         this.newPackagesExpander.menu.addMenuItem(this.newPackagesListMenuLabel);
-        this.newPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.newPackagesExpander.actor.visible = false;
 
         this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
         this.obsoletePackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
         this.obsoletePackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
         this.obsoletePackagesExpander.menu.addMenuItem(this.obsoletePackagesListMenuLabel);
-        this.obsoletePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.obsoletePackagesExpander.actor.visible = false;
 
         this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
         this.residualPackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
         this.residualPackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
         this.residualPackagesExpander.menu.addMenuItem(this.residualPackagesListMenuLabel);
-        this.residualPackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.residualPackagesExpander.actor.visible = false;
 
         this.autoremovablePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Autoremovable'));
         this.autoremovablePackagesListMenuLabel = new PopupMenu.PopupMenuItem('');
         this.autoremovablePackagesListMenuLabel.actor.add_style_class_name('apt-update-indicator-updatelabel');
         this.autoremovablePackagesExpander.menu.addMenuItem(this.autoremovablePackagesListMenuLabel);
-        this.autoremovablePackagesExpander.menu.box.style_class = 'apt-update-indicator-list';
         this.autoremovablePackagesExpander.actor.visible = false;
 
         // Other standard menu items
