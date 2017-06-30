@@ -37,8 +37,8 @@ mkdir -p ${path}
 if [ "$ONLY_PRINT" -gt 0 ]; then
   if [ -f ${file} ]; then
     num=`cat ${file} | wc -l`
-    if [ "$num" -gt 500 ]; then
-      echo "** Too many! Showing only 500 **"
+    if [ "$num" -gt 499 ]; then
+      echo "* Too many! Showing only 500 *"
     fi
     head -500 $file
   fi
@@ -83,7 +83,8 @@ if [ ! -f ${file} ]; then
 fi
 
 # Print!
-if [ "$num" -gt 500 ]; then
-  echo "** Too many! Showing only 500 **"
+num=`cat ${file} | wc -l`
+if [ "$num" -gt 499 ]; then
+  echo "* Too many! Showing only 500 *"
 fi
 head -500 $file
