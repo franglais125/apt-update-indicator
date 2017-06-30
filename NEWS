@@ -1,5 +1,13 @@
 ## Changes
 
+### v17
+- Added keyboard shortcut to open the indicator
+- Ignore list: create a list of packages to be ignored in notifications
+- Changed default terminal to gnome-terminal
+- Use PopupMenuItem instead of GtkLabel to show lists
+- Changed font to monospace to allow for better formatting.
+- Better accessibility support for visually impaired users.
+
 ### v16
 - Small fix for string format
 
