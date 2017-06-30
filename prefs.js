@@ -264,6 +264,183 @@ function buildPrefsWidget(){
                   'active',
                   Gio.SettingsBindFlags.DEFAULT);
 
+    /*
+     * Ignore list tab:
+     * */
+    // Set up the List of packages
+    let column = new Gtk.TreeViewColumn();
+    column.set_title(_('Package name'));
+    buildable.get_object('ignore_list_treeview').append_column(column);
+
+    let renderer = new Gtk.CellRendererText();
+    column.pack_start(renderer, null);
+
+    column.set_cell_data_func(renderer, function() {
+        arguments[1].markup = arguments[2].get_value(arguments[3], 0);
+    });
+
+    let listStore = buildable.get_object('ignore_list_store');
+    let treeview  = buildable.get_object('ignore_list_treeview');
+    refreshUI(listStore, treeview, settings);
+    settings.connect(
+        'changed::ignore-list',
+        function() {refreshUI(listStore, treeview, settings);}
+    );
+
+    buildable.get_object('treeview_selection').connect(
+        'changed',
+        function(selection) {selectionChanged(selection, listStore);}
+    );
+
+    // Toolbar
+    buildable.get_object('ignore_list_toolbutton_add').connect(
+        'clicked',
+        function() {
+            let dialog = new Gtk.Dialog({ title: _('Add entry to ignore list'),
+                                          transient_for: box.get_toplevel(),
+                                          use_header_bar: true,
+                                          modal: true });
+
+            let sub_box = buildable.get_object('ignore_list_add_dialog');
+            dialog.get_content_area().add(sub_box);
+
+            // Objects
+            let entry = buildable.get_object('ignore_list_add_entry');
+            let saveButton = buildable.get_object('ignore_list_add_button_save');
+            let cancelButton = buildable.get_object('ignore_list_add_button_cancel');
+
+            // Clean the entry in case it was already used
+            entry.set_text('');
+            entry.connect('icon-release', Lang.bind(entry, function() {this.set_text('');}));
+
+            let saveButtonId = saveButton.connect(
+                'clicked',
+                function() {
+                    let name = entry.get_text();
+                    let entries = settings.get_string('ignore-list');
+
+                    if (entries.length > 0)
+                        entries = entries + '; ' + name;
+                    else
+                        entries = name;
+
+                    // Split, order alphabetically, remove duplicates and join
+                    entries = splitEntries(entries);
+                    entries.sort();
+                    entries = entries.filter(function(item, pos, ary) {
+                            return !pos || item != ary[pos - 1];
+                        });
+                    entries = entries.join('; ');
+
+                    settings.set_string('ignore-list', entries);
+
+                    close();
+                }
+            );
+
+            let cancelButtonId = cancelButton.connect(
+                'clicked',
+                close
+            );
+
+            dialog.connect('response', Lang.bind(this, function(dialog, id) {
+                close();
+            }));
+
+            dialog.show_all();
+
+            function close() {
+                buildable.get_object('ignore_list_add_button_save').disconnect(saveButtonId);
+                buildable.get_object('ignore_list_add_button_cancel').disconnect(cancelButtonId);
+
+                // remove the settings box so it doesn't get destroyed
+                dialog.get_content_area().remove(sub_box);
+                dialog.destroy();
+                return;
+            }
+        }
+    );
+
+    buildable.get_object('ignore_list_toolbutton_remove').connect(
+        'clicked',
+        function() {removeEntry(settings);}
+    );
+
+    buildable.get_object('ignore_list_toolbutton_edit').connect(
+        'clicked',
+        function() {
+            if (selected_entry < 0) return;
+
+            let dialog = new Gtk.Dialog({ title: _('Edit entry'),
+                                          transient_for: box.get_toplevel(),
+                                          use_header_bar: true,
+                                          modal: true });
+
+            let sub_box = buildable.get_object('ignore_list_edit_dialog');
+            dialog.get_content_area().add(sub_box);
+
+            // Objects
+            let entries = settings.get_string('ignore-list');
+            if (!entries.length) return;
+            entries = splitEntries(entries);
+
+            let entry = buildable.get_object('ignore_list_edit_entry');
+            let saveButton = buildable.get_object('ignore_list_edit_button_save');
+            let cancelButton = buildable.get_object('ignore_list_edit_button_cancel');
+
+            // Clean the entry in case it was already used
+            entry.set_text(entries[selected_entry]);
+            entry.connect('icon-release', Lang.bind(entry, function() {this.set_text('');}));
+
+            let saveButtonId = saveButton.connect(
+                'clicked',
+                function() {
+                    let name = entry.get_text();
+                    let entries = settings.get_string('ignore-list');
+
+                    if (entries.length > 0)
+                        entries = entries + '; ' + name;
+                    else
+                        entries = name;
+
+                    // Split, order alphabetically, remove duplicates and join
+                    entries = splitEntries(entries);
+                    entries.splice(selected_entry, 1);
+                    entries.sort();
+                    entries = entries.filter(function(item, pos, ary) {
+                            return !pos || item != ary[pos - 1];
+                        });
+                    entries = entries.join('; ');
+
+                    settings.set_string('ignore-list', entries);
+
+                    close();
+                }
+            );
+
+            let cancelButtonId = cancelButton.connect(
+                'clicked',
+                close
+            );
+
+            dialog.connect('response', Lang.bind(this, function(dialog, id) {
+                close();
+            }));
+
+            dialog.show_all();
+
+            function close() {
+                buildable.get_object('ignore_list_edit_button_save').disconnect(saveButtonId);
+                buildable.get_object('ignore_list_edit_button_cancel').disconnect(cancelButtonId);
+
+                // remove the settings box so it doesn't get destroyed
+                dialog.get_content_area().remove(sub_box);
+                dialog.destroy();
+                return;
+            }
+        }
+    );
+
     box.show_all();
 
     return box;
@@ -280,4 +457,89 @@ function setShortcut(settings) {
     else {
         settings.set_strv('apt-update-indicator-shortcut', []);
     }
+}
+
+let selected_entry = 0;
+
+function selectionChanged(select, listStore) {
+    let a = select.get_selected_rows(listStore)[0][0];
+
+    if (a !== undefined)
+        selected_entry = parseInt(a.to_string());
+}
+
+function removeEntry(settings) {
+    let entries = settings.get_string('ignore-list');
+    entries = splitEntries(entries);
+
+    if (!entries.length || selected_entry < 0)
+        return 0;
+
+    if (entries.length > 0)
+        entries.splice(selected_entry, 1);
+
+    if (entries.length > 1)
+        entries = entries.join('; ');
+    else if (entries[0])
+        entries = entries[0];
+    else
+        entries = '';
+
+    settings.set_string('ignore-list', entries);
+
+    return 0;
+}
+
+function splitEntries(entries) {
+    entries = entries.split('; ');
+
+    if (entries.length === 0)
+        entries = [];
+
+    if (entries.length > 0 && typeof entries != 'object')
+        entries = [entries];
+
+    return entries;
+}
+
+let list = null;
+function refreshUI(listStore, treeview, settings) {
+    let restoreForced = selected_entry;
+    let entries = settings.get_string('ignore-list');
+    if (list != entries) {
+        if (listStore !== undefined)
+            listStore.clear();
+
+        if (entries.length > 0) {
+            entries = String(entries).split('; ');
+
+            if (entries && typeof entries == 'string')
+                entries = [entries];
+
+            let current = listStore.get_iter_first();
+
+            for (let i in entries) {
+                current = listStore.append();
+                listStore.set_value(current, 0, entries[i]);
+            }
+        }
+
+        list = entries;
+    }
+
+    selected_entry = restoreForced;
+    changeSelection(treeview, entries);
+}
+
+function changeSelection(treeview, entries) {
+    if (selected_entry < 0 || !entries.length)
+        return;
+
+    let max = entries.length - 1;
+    if (selected_entry > max)
+        selected_entry = max;
+
+    let path = selected_entry;
+    path = Gtk.TreePath.new_from_string(String(path));
+    treeview.get_selection().select_path(path);
 }

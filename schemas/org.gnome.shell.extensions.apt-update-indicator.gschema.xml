@@ -170,5 +170,11 @@
         <description>When a package is no longer required, it is added to a list.</description>
     </key>
 
+    <key type="s" name="ignore-list">
+      <default>""</default>
+      <summary>List of packages to ignore for updates.</summary>
+      <description></description>
+    </key>
+
   </schema>
 </schemalist>
