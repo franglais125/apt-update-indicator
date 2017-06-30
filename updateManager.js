@@ -23,6 +23,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Indicator = Me.imports.indicator;
 const Monitors = Me.imports.monitors;
+const Prefs = Me.imports.prefs;
 const Utils = Me.imports.utils;
 
 const Gettext = imports.gettext.domain('apt-update-indicator');
@@ -94,6 +95,8 @@ const UpdateManager = new Lang.Class({
                                                                   this._initialTimeoutId = null;
                                                                   return false;
                                                           }));
+
+        this._ignoreListTimeoutId = 0
     },
 
     _applySettings: function() {
@@ -293,6 +296,25 @@ const UpdateManager = new Lang.Class({
             'changed::show-critical-updates',
             Lang.bind(this, function() {this._launchScript(SCRIPT.UPGRADES);})
         ],[
+            this._settings,
+            'changed::ignore-list',
+            Lang.bind(this, function() {
+                // We add a timeout in case many entries are deleted
+                if (this._ignoreListTimeoutId) {
+                    GLib.source_remove(this._ignoreListTimeoutId)
+                    this._ignoreListTimeoutId = 0;
+                }
+
+                this._ignoreListTimeoutId = GLib.timeout_add_seconds(
+                    GLib.PRIORITY_DEFAULT,
+                    5,
+                    Lang.bind(this, function() {
+                        this._launchScript(SCRIPT.UPGRADES);
+                        this._ignoreListTimeoutId = 0;
+                        return false;
+                    }));
+            })
+        ],[
         // Synaptic features
             this._settings,
             'changed::new-packages',
@@ -475,8 +497,10 @@ const UpdateManager = new Lang.Class({
 
         // Since this runs async, the indicator might have been destroyed!
         if (this._indicator) {
-            if (index == SCRIPT.UPGRADES)
+            if (index == SCRIPT.UPGRADES) {
+                packagesList = this._filterList(packagesList);
                 this._indicator._updateList = packagesList;
+            }
             else if (index == SCRIPT.NEW)
                 this._indicator._newPackagesList = packagesList;
             else if (index == SCRIPT.OBSOLETE)
@@ -619,6 +643,19 @@ const UpdateManager = new Lang.Class({
             this._indicator.lastCheckMenuItem.label.set_text(_('Last check: ') + date);
             this._indicator.lastCheckMenuItem.actor.visible = true;
         }
+    },
+
+    _filterList: function(packagesList) {
+        let ignoreList = this._settings.get_string('ignore-list');
+        ignoreList = Prefs.splitEntries(ignoreList);
+
+        return packagesList.filter(function(pkg) {
+            // only get the package name, in case the version is included
+            var pkgname = pkg.split('\t',2)[0];
+            if (ignoreList.indexOf(pkgname) !== -1)
+                return false;
+            return true;
+        });
     },
 
     destroy: function() {
