@@ -292,7 +292,9 @@ const AptUpdateIndicator = new Lang.Class({
             if (menuUpdateList.length > 0) {
                 // If there are urgent updates we need to add a section title
                 if (this._urgentList.length > 0) {
-                    this.updatesExpander.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+                    let separator = new PopupMenu.PopupSeparatorMenuItem();
+                    separator.actor.add_style_class_name('apt-update-indicator-separator');
+                    this.updatesExpander.menu.addMenuItem(separator);
 
                     let updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
                     updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-item-header');
