@@ -102,13 +102,13 @@ const DirectoryMonitor = new Lang.Class({
 
         let directory = '/var/lib/apt/lists';
         this._apt_dir = Gio.file_new_for_path(directory);
-        this._apt_monitor = this._apt_dir.monitor_directory(0, null, null);
+        this._apt_monitor = this._apt_dir.monitor_directory(0, null);
         this._apt_monitorId = this._apt_monitor.connect('changed',
                                                       Lang.bind(this, this._onFolderChanged));
 
         directory = '/var/lib/dpkg';
         this._dpkg_dir = Gio.file_new_for_path(directory);
-        this._dpkg_monitor = this._dpkg_dir.monitor_directory(0, null, null);
+        this._dpkg_monitor = this._dpkg_dir.monitor_directory(0, null);
         this._dpkg_monitorId = this._dpkg_monitor.connect('changed',
                                                         Lang.bind(this, this._onFolderChanged));
     },
