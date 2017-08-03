@@ -1,5 +1,9 @@
 ## Changes
 
+### v18
+- Don't force the use of `pkexec` for the custom check-updates command.
+- Small styling fix.
+
 ### v17
 - Added keyboard shortcut to open the indicator
 - Ignore list: create a list of packages to be ignored in notifications
