@@ -86,7 +86,7 @@
     </key>
 
     <key name="check-cmd-custom" type="s">
-      <default>"apt update"</default>
+      <default>"pkexec apt update"</default>
       <summary>Custom command to run to check for updates</summary>
       <description>Command to run to check for updates.</description>
     </key>

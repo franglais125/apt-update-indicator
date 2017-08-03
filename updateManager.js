@@ -138,7 +138,7 @@ const UpdateManager = new Lang.Class({
     _checkCMD: function() {
         if (this._settings.get_boolean('use-custom-cmd') &&
             this._settings.get_string('check-cmd-custom') !== '')
-            CHECK_CMD = '/usr/bin/pkexec ' + this._settings.get_string('check-cmd-custom');
+            CHECK_CMD = '/usr/bin/' + this._settings.get_string('check-cmd-custom');
         else
             CHECK_CMD = STOCK_CHECK_CMD;
     },
