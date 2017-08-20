@@ -63,7 +63,7 @@ function initTranslations(domain) {
  * Simplify global signals and function injections handling
  * abstract class
  */
-const BasicHandler = new Lang.Class({
+var BasicHandler = new Lang.Class({
     Name: 'AptUpdateIndicator.BasicHandler',
 
     _init: function() {
@@ -121,7 +121,7 @@ const BasicHandler = new Lang.Class({
 /**
  * Manage global signals
  */
-const GlobalSignalsHandler = new Lang.Class({
+var GlobalSignalsHandler = new Lang.Class({
     Name: 'AptUpdateIndicator.GlobalSignalHandler',
     Extends: BasicHandler,
 

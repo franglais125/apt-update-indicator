@@ -37,7 +37,7 @@ const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
 /* For error checking */
-const STATUS = {
+var STATUS = {
     UNKNOWN:      -1,
     ERROR:        -2,
     NO_INTERNET:  -3,
@@ -49,14 +49,14 @@ let UPDATES_PENDING = STATUS.UNKNOWN;
 let UPDATES_LIST    = [];
 
 /* Various packages statuses */
-const SCRIPT = {
+var SCRIPT = {
     UPGRADES:      0,
     NEW:           1,
     OBSOLETE:      2,
     RESIDUAL:      3,
     AUTOREMOVABLE: 4
 };
-const AptUpdateIndicator = new Lang.Class({
+var AptUpdateIndicator = new Lang.Class({
     Name: 'AptUpdateIndicator',
     Extends: PanelMenu.Button,
 

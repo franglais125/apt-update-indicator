@@ -20,7 +20,7 @@ const Lang = imports.lang;
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
-const NetworkMonitor = new Lang.Class({
+var NetworkMonitor = new Lang.Class({
     Name: 'NetworkMonitor',
 
     _init: function(updateManager) {
@@ -88,7 +88,7 @@ const NetworkMonitor = new Lang.Class({
     }
 });
 
-const DirectoryMonitor = new Lang.Class({
+var DirectoryMonitor = new Lang.Class({
     Name: 'DirectoryMonitor',
 
     _init: function(updateManager) {

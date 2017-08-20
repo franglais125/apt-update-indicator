@@ -36,18 +36,12 @@ let CHECK_CMD          = STOCK_CHECK_CMD;
 let UPDATE_CMD         = STOCK_UPDATE_CMD;
 
 /* Various packages statuses */
-const SCRIPT = {
-    UPGRADES:      0,
-    NEW:           1,
-    OBSOLETE:      2,
-    RESIDUAL:      3,
-    AUTOREMOVABLE: 4
-};
+const SCRIPT = Indicator.SCRIPT;
 
 /* For error checking */
 const STATUS = Indicator.STATUS;
 
-const UpdateManager = new Lang.Class({
+var UpdateManager = new Lang.Class({
     Name: 'UpdateManager',
 
     _TimeoutId: null,
