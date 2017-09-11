@@ -1,5 +1,8 @@
 ## Changes
 
+### v19
+- Add Gnome 3.26 support.
+
 ### v18
 - Don't force the use of `pkexec` for the custom check-updates command.
 - Small styling fix.
