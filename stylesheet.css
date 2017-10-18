@@ -13,22 +13,22 @@
 
 .apt-update-indicator-item {
     font-family: monospace;
-    font-size: 14px;
+    font-size: 0.9em;
 }
 
 .apt-update-indicator-item-header {
-    font-size: 16px;
+    font-size: 1em;
     font-weight: bold;
 }
 
 .apt-update-indicator-urgent-item {
     font-family: monospace;
-    font-size: 14px;
+    font-size: 0.9em;
     color: rgba(255, 60, 60, 1);
 }
 
 .apt-update-indicator-urgent-item-header {
-    font-size: 16px;
+    font-size: 1em;
     font-weight: bold;
     color: rgba(255, 60, 60, 1);
 }
