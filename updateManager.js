@@ -667,6 +667,11 @@ var UpdateManager = new Lang.Class({
                 this._process_stream[i] = null;
             }
 
+        if (this._urgencyCheckId) {
+            GLib.source_remove(this._urgencyCheckId);
+            this._urgencyCheckId = null;
+        }
+
         if (this._TimeoutId) {
             GLib.source_remove(this._TimeoutId);
             this._TimeoutId = null;
