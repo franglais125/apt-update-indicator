@@ -36,6 +36,8 @@ const Utils = Me.imports.utils;
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
+const Clipboard = St.Clipboard.get_default();
+
 /* For error checking */
 var STATUS = {
     UNKNOWN:      -1,
@@ -278,9 +280,10 @@ var AptUpdateIndicator = new Lang.Class({
                 this.updatesExpander.menu.addMenuItem(header);
 
                 for (let i = 0; i < this._urgentList.length; i++) {
-                    let item = new PopupMenu.PopupMenuItem('');
+                    let text = this._urgentList[i];
+                    let item = this._createItem(text);
+                    item.actor.remove_style_class_name('apt-update-indicator-item');
                     item.actor.add_style_class_name('apt-update-indicator-urgent-item');
-                    item.label.set_text(this._urgentList[i]);
                     this.updatesExpander.menu.addMenuItem(item);
                 }
             }
@@ -303,10 +306,9 @@ var AptUpdateIndicator = new Lang.Class({
                 }
 
                 for (let i = 0; i < menuUpdateList.length; i++) {
-                    let updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
-                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-item');
-                    updatesListMenuLabel.label.set_text(menuUpdateList[i]);
-                    this.updatesExpander.menu.addMenuItem(updatesListMenuLabel);
+                    let text = menuUpdateList[i];
+                    let item = this._createItem(text);
+                    this.updatesExpander.menu.addMenuItem(item);
                 }
             }
 
@@ -376,7 +378,7 @@ var AptUpdateIndicator = new Lang.Class({
             // Replace tab(s) with one space
             updateList = this._updateList.map(function(p) {
                 p = p.replace('\t', ' ');
-                return p.replace(/\s\s+/g, ' '); // Removes double saces (\s)
+                return p.replace(/\s\s+/g, ' '); // Removes double spaces (\s)
             });
 
             if (updateList.length > 50)
@@ -467,9 +469,8 @@ var AptUpdateIndicator = new Lang.Class({
             this.newPackagesExpander.actor.visible = false;
         else {
             for (let i = 0; i < this._newPackagesList.length; i++) {
-                let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-item');
-                item.label.set_text(this._newPackagesList[i]);
+                let text = this._newPackagesList[i];
+                let item = this._createItem(text);
                 this.newPackagesExpander.menu.addMenuItem(item);
             }
             this.newPackagesExpander.actor.visible = true;
@@ -482,9 +483,8 @@ var AptUpdateIndicator = new Lang.Class({
             this.obsoletePackagesExpander.actor.visible = false;
         else {
             for (let i = 0; i < this._obsoletePackagesList.length; i++) {
-                let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-item');
-                item.label.set_text(this._obsoletePackagesList[i]);
+                let text = this._obsoletePackagesList[i];
+                let item = this._createItem(text);
                 this.obsoletePackagesExpander.menu.addMenuItem(item);
             }
             this.obsoletePackagesExpander.actor.visible = true;
@@ -497,9 +497,8 @@ var AptUpdateIndicator = new Lang.Class({
             this.residualPackagesExpander.actor.visible = false;
         else {
             for (let i = 0; i < this._residualPackagesList.length; i++) {
-                let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-item');
-                item.label.set_text(this._residualPackagesList[i]);
+                let text = this._residualPackagesList[i];
+                let item = this._createItem(text);
                 this.residualPackagesExpander.menu.addMenuItem(item);
             }
             this.residualPackagesExpander.actor.visible = true;
@@ -512,13 +511,28 @@ var AptUpdateIndicator = new Lang.Class({
             this.autoremovablePackagesExpander.actor.visible = false;
         else {
             for (let i = 0; i < this._autoremovablePackagesList.length; i++) {
-                let item = new PopupMenu.PopupMenuItem('');
-                item.actor.add_style_class_name('apt-update-indicator-item');
-                item.label.set_text(this._autoremovablePackagesList[i]);
+                let text = this._autoremovablePackagesList[i];
+                let item = this._createItem(text);
                 this.autoremovablePackagesExpander.menu.addMenuItem(item);
             }
             this.autoremovablePackagesExpander.actor.visible = true;
         }
+    },
+
+    _createItem: function(text) {
+        let item = new PopupMenu.PopupMenuItem('');
+        item.actor.add_style_class_name('apt-update-indicator-item');
+        item.label.set_text(text);
+
+        // Remove tab character and then double spaces
+        text = text.replace('\t', ' ');
+        text = text.replace(/\s\s+/g, ' ');
+        item.connect('activate', function() {
+            Clipboard.set_text(St.ClipboardType.CLIPBOARD, text);
+            Clipboard.set_text(St.ClipboardType.PRIMARY, text);
+        });
+
+        return item;
     },
 
     _updateMenuExpander: function(enabled, label) {
