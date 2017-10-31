@@ -1,5 +1,9 @@
 ## Changes
 
+### v20
+- Add support to copy to clipboard when clicking on a package name.
+- Bug fixes.
+
 ### v19
 - Add Gnome 3.26 support.
 
