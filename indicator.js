@@ -193,7 +193,6 @@ var AptUpdateIndicator = new Lang.Class({
         this._signalsHandler.destroy();
 
         this.box.destroy();
-        this.label.destroy();
 
         this._disableShortcut();
 
