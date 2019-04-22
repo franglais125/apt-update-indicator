@@ -20,7 +20,6 @@ const Mainloop = imports.mainloop;
 const St = imports.gi.St;
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
-const Gtk = imports.gi.Gtk;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
 
@@ -87,9 +86,7 @@ var AptUpdateIndicator = new Lang.Class({
         let dontCreateMenu = false;
         this.parent(alignment, buttonName, dontCreateMenu);
 
-        Gtk.IconTheme.get_default().append_search_path(Me.dir.get_child('media').get_path());
-
-        this.updateIcon = new St.Icon({icon_name: 'apt-update-indicator-symbolic', style_class: 'system-status-icon'});
+        this.updateIcon = new St.Icon({icon_name: 'package-x-generic-symbolic', style_class: 'system-status-icon'});
 
         this.box = new St.BoxLayout({ vertical: false, style_class: 'panel-status-menu-box' });
         this.label = new St.Label({ text: '',
@@ -350,11 +347,11 @@ var AptUpdateIndicator = new Lang.Class({
                 this.updateIcon.set_icon_name('dialog-warning-symbolic');
                 this._updateMenuExpander( false, _('No internet') );
             } else if (updatesCount == STATUS.INITIALIZING) {
-                this.updateIcon.set_icon_name('apt-update-indicator-symbolic');
+                this.updateIcon.set_icon_name('package-x-generic-symbolic');
                 this._updateMenuExpander( false, _('Initializing') );
             } else {
                 // Up to date
-                this.updateIcon.set_icon_name('apt-update-indicator-symbolic');
+                this.updateIcon.set_icon_name('package-x-generic-symbolic');
                 this._updateMenuExpander( false, _('Up to date :)') );
                 UPDATES_LIST = []; // Reset stored list
             }
@@ -573,7 +570,7 @@ var AptUpdateIndicator = new Lang.Class({
             // We have to prepare this only once
             this._notifSource = new MessageTray.SystemNotificationSource();
             this._notifSource.createIcon = function() {
-                return new St.Icon({ icon_name: 'apt-update-indicator-symbolic' });
+                return new St.Icon({ icon_name: 'package-x-generic-symbolic' });
             };
             // Take care of not leaving unneeded sources
             this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
