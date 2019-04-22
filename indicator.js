@@ -15,6 +15,7 @@
 
 const Clutter = imports.gi.Clutter;
 const Lang = imports.lang;
+const Mainloop = imports.mainloop;
 
 const St = imports.gi.St;
 const GLib = imports.gi.GLib;
@@ -445,19 +446,32 @@ var AptUpdateIndicator = new Lang.Class({
     updatePackagesStatus: function(index) {
         switch (index) {
             case SCRIPT.UPGRADES:
-                this.updateStatus(this._updateList.length);
+                Mainloop.idle_add(
+                    Lang.bind(this,
+                        function() {
+                            this.updateStatus(this._updateList.length);
+                        })
+                );
                 break;
             case SCRIPT.NEW:
-                this._updateNewPackagesStatus();
+                Mainloop.idle_add(
+                    Lang.bind(this, this._updateNewPackagesStatus)
+                );
                 break;
             case SCRIPT.OBSOLETE:
-                this._updateObsoletePackagesStatus();
+                Mainloop.idle_add(
+                    Lang.bind(this, this._updateObsoletePackagesStatus)
+                );
                 break;
             case SCRIPT.RESIDUAL:
-                this._updateResidualPackagesStatus();
+                Mainloop.idle_add(
+                    Lang.bind(this, this._updateResidualPackagesStatus)
+                );
                 break;
             case SCRIPT.AUTOREMOVABLE:
-                this._updateAutoremovablePackagesStatus();
+                Mainloop.idle_add(
+                    Lang.bind(this, this._updateAutoremovablePackagesStatus)
+                );
                 break;
         }
     },
