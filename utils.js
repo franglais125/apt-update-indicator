@@ -6,6 +6,11 @@ const Gio = imports.gi.Gio;
 const Config = imports.misc.config;
 const ExtensionUtils = imports.misc.extensionUtils;
 
+var SignalsHandlerFlags = {
+    NONE: 0,
+    CONNECT_AFTER: 1
+};
+
 function getSettings() {
 	let extension = ExtensionUtils.getCurrentExtension();
 	let schema = 'org.gnome.shell.extensions.apt-update-indicator';
@@ -63,79 +68,93 @@ function initTranslations(domain) {
  * Simplify global signals and function injections handling
  * abstract class
  */
-var BasicHandler = new Lang.Class({
-    Name: 'AptUpdateIndicator.BasicHandler',
+const BasicHandler = class DashToDock_BasicHandler {
 
-    _init: function() {
+    constructor() {
         this._storage = new Object();
-    },
+    }
 
-    add: function(/* unlimited 3-long array arguments */) {
+    add(/* unlimited 3-long array arguments */) {
         // Convert arguments object to array, concatenate with generic
-        let args = Array.concat('generic', Array.slice(arguments));
         // Call addWithLabel with ags as if they were passed arguments
-        this.addWithLabel.apply(this, args);
-    },
+        this.addWithLabel('generic', ...arguments);
+    }
 
-    destroy: function() {
+    destroy() {
         for( let label in this._storage )
             this.removeWithLabel(label);
-    },
+    }
 
-    addWithLabel: function(label /* plus unlimited 3-long array arguments*/) {
+    addWithLabel(label /* plus unlimited 3-long array arguments*/) {
         if (this._storage[label] == undefined)
             this._storage[label] = new Array();
 
         // Skip first element of the arguments
         for (let i = 1; i < arguments.length; i++) {
             let item = this._storage[label];
-            item.push( this._create(arguments[i]));
+            try {
+                item.push(this._create(arguments[i]));
+            } catch (e) {
+                logError(e);
+            }
         }
-    },
+    }
 
-    removeWithLabel: function(label) {
+    removeWithLabel(label) {
         if (this._storage[label]) {
             for (let i = 0; i < this._storage[label].length; i++)
                 this._remove(this._storage[label][i]);
 
             delete this._storage[label];
         }
-    },
+    }
 
     // Virtual methods to be implemented by subclass
 
     /**
      * Create single element to be stored in the storage structure
      */
-    _create: function(item) {
-        throw new Error('no implementation of _create in ' + this);
-    },
+    _create(item) {
+        throw new GObject.NotImplementedError(`_create in ${this.constructor.name}`);
+    }
 
     /**
      * Correctly delete single element
      */
-    _remove: function(item) {
-        throw new Error('no implementation of _remove in ' + this);
+    _remove(item) {
+        throw new GObject.NotImplementedError(`_remove in ${this.constructor.name}`);
     }
-});
+};
 
 /**
  * Manage global signals
  */
-var GlobalSignalsHandler = new Lang.Class({
-    Name: 'AptUpdateIndicator.GlobalSignalHandler',
-    Extends: BasicHandler,
+var GlobalSignalsHandler = class DashToDock_GlobalSignalHandler extends BasicHandler {
 
-    _create: function(item) {
+    _create(item) {
         let object = item[0];
         let event = item[1];
         let callback = item[2]
-        let id = object.connect(event, callback);
+        let flags = item.length > 3 ? item[3] : SignalsHandlerFlags.NONE;
+
+        if (!object)
+            throw new Error('Impossible to connect to an invalid object');
+
+        let after = flags == SignalsHandlerFlags.CONNECT_AFTER;
+        let connector = after ? object.connect_after : object.connect;
+
+        if (!connector) {
+            throw new Error(`Requested to connect to signal '${event}', ` +
+                `but no implementation for 'connect${after ? '_after' : ''}' `+
+                `found in ${object.constructor.name}`);
+        }
+
+        let id = connector.call(object, event, callback);
 
         return [object, id];
-    },
+    }
 
-    _remove: function(item) {
+    _remove(item) {
          item[0].disconnect(item[1]);
     }
-});
+};
