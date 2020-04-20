@@ -234,8 +234,8 @@ msgid ""
 "The default command is \"pkcon refresh\", which uses packagekit with the apt "
 "backend. You can define a custom command below, to be executed using pkexec."
 msgstr ""
-Il comando predefinito è \"pkcon refresh\", che usa packagekit con apt "
-"backend. Puoi definire un comando personalizzato di seguito, da eseguire usando pkexec.
+"Il comando predefinito è \"pkcon refresh\", che usa packagekit con apt "
+"backend. Puoi definire un comando personalizzato di seguito, da eseguire usando pkexec."
 
 #: Settings.ui.h:34
 msgid "Use a custom command to check for updates"
@@ -255,7 +255,7 @@ msgid ""
 "repository."
 msgstr ""
 "Includi un articolo nell'indicatore con un elenco di nuovi pacchetti nella"
-"Repository".
+"Repository."
 
 #: Settings.ui.h:38
 msgid "New packages in repository"
@@ -288,7 +288,7 @@ msgid ""
 "Include an item in the indicator with a list of autoremovable packages. Run "
 "\"sudo apt autoremove\" to remove them."
 msgstr ""
-Includere un elemento nell'indicatore con un elenco di pacchetti mobili. Correre "
+"Includere un elemento nell'indicatore con un elenco di pacchetti mobili. Correre "
 "\"sudo apt autoremove\"per rimuoverli."
 
 #: Settings.ui.h:44
@@ -321,7 +321,7 @@ msgid ""
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU "
 "General Public License, version 2 or later</a> for details.</span>"
 msgstr ""
-<span size = \"small\"> Questo programma viene fornito SENZA NESSUNA GARANZIA.\n"
+"<span size = \"small\"> Questo programma viene fornito SENZA NESSUNA GARANZIA.\n"
 "Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU"
 "Licenza pubblica generale, versione 2 o successiva</a> per dettagli.</span>"
 
