@@ -16,7 +16,6 @@
 const GLib = imports.gi.GLib;
 const GObject = imports.gi.GObject;
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
@@ -47,11 +46,11 @@ var NetworkMonitor = class NetworkMonitor {
         this._networkTimeoutId = GLib.timeout_add_seconds(
             GLib.PRIORITY_DEFAULT,
             timeout,
-            Lang.bind(this, function() {
+            () => {
                 this._updateManager.networkFailed();
                 this._networkTimeoutId = 0;
                 return false;
-            })
+            }
         );
 
         this._checkConnectionState();
@@ -60,7 +59,7 @@ var NetworkMonitor = class NetworkMonitor {
     _checkConnectionState() {
         let cancellable = Gio.Cancellable.new();
         try {
-            this._network_monitor.can_reach_async(this._address, cancellable, Lang.bind(this, this._asyncReadyCallback));
+            this._network_monitor.can_reach_async(this._address, cancellable, this._asyncReadyCallback.bind(this));
         } catch (err) {
             let title = _('Can not connect to %s').format(url);
             log(title + '\n' + err.message);
@@ -102,13 +101,13 @@ var DirectoryMonitor = class DirectoryMonitor{
         this._apt_dir = Gio.file_new_for_path(directory);
         this._apt_monitor = this._apt_dir.monitor_directory(0, null);
         this._apt_monitorId = this._apt_monitor.connect('changed',
-                                                      Lang.bind(this, this._onFolderChanged));
+                                                        this._onFolderChanged.bind(this));
 
         directory = '/var/lib/dpkg';
         this._dpkg_dir = Gio.file_new_for_path(directory);
         this._dpkg_monitor = this._dpkg_dir.monitor_directory(0, null);
         this._dpkg_monitorId = this._dpkg_monitor.connect('changed',
-                                                        Lang.bind(this, this._onFolderChanged));
+                                                          this._onFolderChanged.bind(this));
     }
 
     stop() {
@@ -135,13 +134,13 @@ var DirectoryMonitor = class DirectoryMonitor{
         let timeout = 10;
         this._folderMonitorId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                         timeout,
-                                                        Lang.bind(this, function () {
+                                                        () => {
                                                             let checkUpgrades = 0;
                                                             this._updateManager._dontUpdateDate = true;
                                                             this._updateManager._launchScript(checkUpgrades);
                                                             this._folderMonitorId = null;
                                                             return false;
-                                                        }));
+                                                        });
     }
 
     destroy() {

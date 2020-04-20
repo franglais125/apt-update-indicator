@@ -17,7 +17,6 @@
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
@@ -85,12 +84,12 @@ function buildPrefsWidget(){
                       'value',
                       Gio.SettingsBindFlags.DEFAULT);
 
-        dialog.connect('response', Lang.bind(this, function(dialog, id) {
+        dialog.connect('response', (dialog, id) => {
             // remove the settings box so it doesn't get destroyed;
             dialog.get_content_area().remove(sub_box);
             dialog.destroy();
             return;
-        }));
+        });
 
         dialog.show_all();
 
@@ -129,12 +128,12 @@ function buildPrefsWidget(){
                       'sensitive',
                       Gio.SettingsBindFlags.DEFAULT);
 
-        dialog.connect('response', Lang.bind(this, function(dialog, id) {
+        dialog.connect('response', (dialog, id) => {
             // remove the settings box so it doesn't get destroyed;
             dialog.get_content_area().remove(sub_box);
             dialog.destroy();
             return;
-        }));
+        });
 
         dialog.show_all();
 
@@ -204,12 +203,12 @@ function buildPrefsWidget(){
                       'sensitive',
                       Gio.SettingsBindFlags.GET);
 
-        dialog.connect('response', Lang.bind(this, function(dialog, id) {
+        dialog.connect('response', (dialog, id) => {
             // remove the settings box so it doesn't get destroyed;
             dialog.get_content_area().remove(sub_box);
             dialog.destroy();
             return;
-        }));
+        });
 
         dialog.show_all();
 
@@ -230,7 +229,7 @@ function buildPrefsWidget(){
                   Gio.SettingsBindFlags.DEFAULT);
 
     // Reset button
-    buildable.get_object('reset_button').connect('clicked', Lang.bind(this, function() {
+    buildable.get_object('reset_button').connect('clicked', () => {
         // restore default settings for the relevant keys
         let keys = ['terminal',
                     'output-on-terminal',
@@ -243,7 +242,7 @@ function buildPrefsWidget(){
         }, this);
         // This one needs to be refreshed manually
         buildable.get_object('update_cmd_options').set_active(settings.get_enum('update-cmd-options'));
-    }));
+    });
 
 
     // Package status tab:
@@ -311,7 +310,7 @@ function buildPrefsWidget(){
 
             // Clean the entry in case it was already used
             entry.set_text('');
-            entry.connect('icon-release', Lang.bind(entry, function() {this.set_text('');}));
+            entry.connect('icon-release', () => {this.set_text('');});
 
             let saveButtonId = saveButton.connect(
                 'clicked',
@@ -343,9 +342,9 @@ function buildPrefsWidget(){
                 close
             );
 
-            dialog.connect('response', Lang.bind(this, function(dialog, id) {
+            dialog.connect('response', (dialog, id) => {
                 close();
-            }));
+            });
 
             dialog.show_all();
 
@@ -390,7 +389,7 @@ function buildPrefsWidget(){
 
             // Clean the entry in case it was already used
             entry.set_text(entries[selected_entry]);
-            entry.connect('icon-release', Lang.bind(entry, function() {this.set_text('');}));
+            entry.connect('icon-release', () => {this.set_text('');});
 
             let saveButtonId = saveButton.connect(
                 'clicked',
@@ -423,9 +422,9 @@ function buildPrefsWidget(){
                 close
             );
 
-            dialog.connect('response', Lang.bind(this, function(dialog, id) {
+            dialog.connect('response', (dialog, id) => {
                 close();
-            }));
+            });
 
             dialog.show_all();
 

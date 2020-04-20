@@ -14,7 +14,6 @@
 */
 
 const Clutter = imports.gi.Clutter;
-const Lang = imports.lang;
 const Mainloop = imports.mainloop;
 
 const St = imports.gi.St;
@@ -122,24 +121,24 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
         this._signalsHandler.add([
             this._settings,
             'changed::show-count',
-            Lang.bind(this, this._checkShowHideIndicator)
+            this._checkShowHideIndicator.bind(this)
         ],[
             this._settings,
             'changed::always-visible',
-            Lang.bind(this, this._checkShowHideIndicator)
+            this._checkShowHideIndicator.bind(this)
         ],[
             this._settings,
             'changed::use-shortcut',
-            Lang.bind(this, this._toggleShortcut)
+            this._toggleShortcut.bind(this)
         ],[
         // Bind some events
             this.menu,
             'open-state-changed',
-            Lang.bind(this, this._onMenuOpened)
+            this._onMenuOpened.bind(this)
         ],[
             this.settingsMenuItem,
             'activate',
-            Lang.bind(this, this._openSettings)
+            this._openSettings.bind(this)
         ]);
     }
 
@@ -265,9 +264,9 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
                 'software-update-urgent-symbolic' :
                 'software-update-available-symbolic';
             let menuUpdateList = this._urgentList.length > 0 ?
-                this._updateList.filter(Lang.bind(this,
-                    function(pkg) { return this._urgentList.indexOf(pkg) < 0; }
-                )) :
+                this._updateList.filter( () => {
+                    return this._urgentList.indexOf(pkg) < 0;}
+                ) :
                 this._updateList;
 
             if (this._urgentList.length > 0) {
@@ -443,30 +442,29 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
         switch (index) {
             case SCRIPT.UPGRADES:
                 Mainloop.idle_add(
-                    Lang.bind(this,
-                        function() {
-                            this.updateStatus(this._updateList.length);
-                        })
+                    () => {
+                        this.updateStatus(this._updateList.length);
+                    }
                 );
                 break;
             case SCRIPT.NEW:
                 Mainloop.idle_add(
-                    Lang.bind(this, this._updateNewPackagesStatus)
+                    this._updateNewPackagesStatus.bind(this)
                 );
                 break;
             case SCRIPT.OBSOLETE:
                 Mainloop.idle_add(
-                    Lang.bind(this, this._updateObsoletePackagesStatus)
+                    this._updateObsoletePackagesStatus.bind(this)
                 );
                 break;
             case SCRIPT.RESIDUAL:
                 Mainloop.idle_add(
-                    Lang.bind(this, this._updateResidualPackagesStatus)
+                    this._updateResidualPackagesStatus.bind(this)
                 );
                 break;
             case SCRIPT.AUTOREMOVABLE:
                 Mainloop.idle_add(
-                    Lang.bind(this, this._updateAutoremovablePackagesStatus)
+                    this._updateAutoremovablePackagesStatus.bind(this)
                 );
                 break;
         }
@@ -572,7 +570,7 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
                 return new St.Icon({ icon_name: 'package-x-generic-symbolic' });
             };
             // Take care of not leaving unneeded sources
-            this._notifSource.connect('destroy', Lang.bind(this, function() {this._notifSource = null;}));
+            this._notifSource.connect('destroy', () => {this._notifSource = null;});
             Main.messageTray.add(this._notifSource);
         }
         let notification = null;
@@ -580,7 +578,7 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
         // instead we will update previous
         if (this._notifSource.notifications.length == 0) {
             notification = new MessageTray.Notification(this._notifSource, title, message);
-            notification.addAction( _('Update now') , Lang.bind(this, function() {this._updateManager._applyUpdates()}) );
+            notification.addAction( _('Update now') , () => {this._updateManager._applyUpdates()});
         } else {
             notification = this._notifSource.notifications[0];
             notification.update( title, message, { clear: true });
@@ -601,7 +599,7 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
             Main.wm.addKeybinding('apt-update-indicator-shortcut', this._settings,
                                   Meta.KeyBindingFlags.NONE,
                                   Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW,
-                                  Lang.bind(this.menu, this.menu.toggle));
+                                  this.menu.toggle.bind(this.menu));
             this._shortcutIsSet = true;
         }
     }

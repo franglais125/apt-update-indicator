@@ -17,7 +17,6 @@
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
 const GObject = imports.gi.GObject;
-const Lang = imports.lang;
 
 const Util = imports.misc.util;
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -83,11 +82,11 @@ var UpdateManager = class UpdateManager {
         let initialRunTimeout = 30;
         this._initialTimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
                                                           initialRunTimeout,
-                                                          Lang.bind(this, function() {
-                                                                  this._launchScript(SCRIPT.UPGRADES);
-                                                                  this._initialTimeoutId = null;
-                                                                  return false;
-                                                          }));
+                                                          () => {
+                                                              this._launchScript(SCRIPT.UPGRADES);
+                                                              this._initialTimeoutId = null;
+                                                              return false;
+                                                          });
 
         this._ignoreListTimeoutId = 0
     }
@@ -179,13 +178,12 @@ var UpdateManager = class UpdateManager {
             }
 
             this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
-                                                       CHECK_INTERVAL,
-                                                       Lang.bind(this, function() {
-                                                               this._isAutomaticCheck = true;
-                                                               this._checkNetwork();
-                                                               this._checkInterval();
-                                                               return true;
-                                                       }));
+                                                       CHECK_INTERVAL, () => {
+                                                           this._isAutomaticCheck = true;
+                                                           this._checkNetwork();
+                                                           this._checkInterval();
+                                                           return true;
+                                                       });
         }
     }
 
@@ -197,12 +195,11 @@ var UpdateManager = class UpdateManager {
         let CHECK_INTERVAL = this._settings.get_int('check-interval') * 60 * 60;
         if (CHECK_INTERVAL) {
             this._TimeoutId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT,
-                                                       CHECK_INTERVAL,
-                                                       Lang.bind(this, function() {
+                                                       CHECK_INTERVAL, () => {
                                                                this._isAutomaticCheck = true;
                                                                this._checkNetwork();
                                                                return true;
-                                                       }));
+                                                       });
         }
 
     }
@@ -248,50 +245,54 @@ var UpdateManager = class UpdateManager {
         // Apply updates
             this._settings,
             'changed::update-cmd-options',
-            Lang.bind(this, this._updateCMD)
+            this._updateCMD.bind(this)
         ],[
             this._settings,
             'changed::terminal',
-            Lang.bind(this, this._updateCMD)
+            this._updateCMD.bind(this)
         ],[
             this._settings,
             'changed::output-on-terminal',
-            Lang.bind(this, this._updateCMD)
+            this._updateCMD.bind(this)
         ],[
             this._settings,
             'changed::update-cmd',
-            Lang.bind(this, this._updateCMD)
+            this._updateCMD.bind(this)
         ],[
         // Checking for updates
             this._settings,
             'changed::check-cmd-custom',
-            Lang.bind(this, this._checkCMD)
+            this._checkCMD.bind(this)
         ],[
             this._settings,
             'changed::use-custom-cmd',
-            Lang.bind(this, this._checkCMD)
+            this._checkCMD.bind(this)
         ],[
         // Basic settings
             this._settings,
             'changed::check-interval',
-            Lang.bind(this, this._initializeInterval)
+            this._initializeInterval.bind(this)
         ],[
         // Basic settings
             this._settings,
             'changed::interval-unit',
-            Lang.bind(this, this._initializeInterval)
+            this._initializeInterval.bind(this)
         ],[
             this._settings,
             'changed::strip-versions',
-            Lang.bind(this, function() {this._launchScript(SCRIPT.UPGRADES);})
+            () => {
+                this._launchScript(SCRIPT.UPGRADES);
+            }
         ],[
             this._settings,
             'changed::show-critical-updates',
-            Lang.bind(this, function() {this._launchScript(SCRIPT.UPGRADES);})
+            () => {
+                this._launchScript(SCRIPT.UPGRADES);
+            }
         ],[
             this._settings,
             'changed::ignore-list',
-            Lang.bind(this, function() {
+            () => {
                 // We add a timeout in case many entries are deleted
                 if (this._ignoreListTimeoutId) {
                     GLib.source_remove(this._ignoreListTimeoutId)
@@ -301,38 +302,38 @@ var UpdateManager = class UpdateManager {
                 this._ignoreListTimeoutId = GLib.timeout_add_seconds(
                     GLib.PRIORITY_DEFAULT,
                     5,
-                    Lang.bind(this, function() {
+                    () => {
                         this._launchScript(SCRIPT.UPGRADES);
                         this._ignoreListTimeoutId = 0;
                         return false;
-                    }));
-            })
+                    });
+            }
         ],[
         // Synaptic features
             this._settings,
             'changed::new-packages',
-            Lang.bind(this, this._newPackagesBinding)
+            this._newPackagesBinding.bind(this)
         ],[
             this._settings,
             'changed::obsolete-packages',
-            Lang.bind(this, this._obsoletePackagesBinding)
+            this._obsoletePackagesBinding.bind(this)
         ],[
             this._settings,
             'changed::residual-packages',
-            Lang.bind(this, this._residualPackagesBinding)
+            this._residualPackagesBinding.bind(this)
         ],[
             this._settings,
             'changed::autoremovable-packages',
-            Lang.bind(this, this._autoremovablePackagesBinding)
+            this._autoremovablePackagesBinding.bind(this)
         ],[
             // Indicator buttons
             this._indicator.checkNowMenuItem,
             'activate',
-            Lang.bind(this, this._checkNetwork)
+            this._checkNetwork.bind(this)
         ],[
             this._indicator.applyUpdatesMenuItem,
             'activate',
-            Lang.bind(this, this._applyUpdates)
+            this._applyUpdates.bind(this)
         ]);
     }
 
@@ -357,7 +358,7 @@ var UpdateManager = class UpdateManager {
                                                             null);
 
             // We will process the output at once when it's done
-            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._applyUpdatesEnd));
+            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, this._applyUpdatesEnd.bind(this));
         } catch (err) {
         }
     }
@@ -413,7 +414,7 @@ var UpdateManager = class UpdateManager {
                                                             null);
 
             // We will process the output at once when it's done
-            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUpdatesEnd));
+            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, this._checkUpdatesEnd.bind(this));
         } catch (err) {
             this._indicator.showChecking(false);
             this._indicator.updateStatus(STATUS.ERROR);
@@ -465,10 +466,9 @@ var UpdateManager = class UpdateManager {
             });
 
             // We will process the output at once when it's done
-            this._process_sourceId[index] = GLib.child_watch_add(0, pid, Lang.bind(this,
-                function() {
-                    this._packagesRead(index);
-                }));
+            this._process_sourceId[index] = GLib.child_watch_add(0, pid, () => {
+                this._packagesRead(index);
+            });
         } catch (err) {
             if (index == SCRIPT.UPGRADES) {
                 this._indicator.showChecking(false);
@@ -569,7 +569,7 @@ var UpdateManager = class UpdateManager {
             });
 
             // We will process the output at once when it's done
-            this._urgencyCheckId = GLib.child_watch_add(0, pid, Lang.bind(this, this._checkUrgencyRead));
+            this._urgencyCheckId = GLib.child_watch_add(0, pid, this._checkUrgencyRead.bind(this));
         } catch (err) {
         }
     }
