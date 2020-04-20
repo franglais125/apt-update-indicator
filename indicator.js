@@ -425,7 +425,7 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
             });
         } else {
             let tabWidth = 8;
-            let widthNeeded = tabWidth*(Math.floor(maxWidth / tabWidth) + 1) - 1;
+            let widthNeeded = tabWidth*(Math.floor(maxWidth / tabWidth) + 1) - 2;
             return list.map(function(p) {
                 var chunks = p.split('\t',2);
                 let difference = widthNeeded - chunks[0].length;
