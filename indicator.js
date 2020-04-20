@@ -10,7 +10,7 @@
     GNU General Public License for more details.
     You should have received a copy of the GNU General Public License
     along with Apt Update Indicator.  If not, see <http://www.gnu.org/licenses/>.
-    Copyright 2017 Fran Glais
+    Copyright 2017-2020 Fran Glais
 */
 
 const Clutter = imports.gi.Clutter;
@@ -19,6 +19,7 @@ const Mainloop = imports.mainloop;
 
 const St = imports.gi.St;
 const GLib = imports.gi.GLib;
+const GObject = imports.gi.GObject;
 const Gio = imports.gi.Gio;
 const Meta = imports.gi.Meta;
 const Shell = imports.gi.Shell;
@@ -58,33 +59,31 @@ var SCRIPT = {
     RESIDUAL:      3,
     AUTOREMOVABLE: 4
 };
-var AptUpdateIndicator = new Lang.Class({
-    Name: 'AptUpdateIndicator',
-    Extends: PanelMenu.Button,
 
-    _TimeoutId: null,
+var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends PanelMenu.Button {
+    _init(updateManager) {
 
-    _upgradeProcess_sourceId: null,
-    _upgradeProcess_stream: null,
+        this._TimeoutId = null;
 
-    _process_sourceId: [null, null, null, null],
-    _process_stream: [null, null, null, null],
+        this._upgradeProcess_sourceId = null;
+        this._upgradeProcess_stream = null;
 
-    _updateList: [],
-    _urgentList: [],
-    _newPackagesList: [],
-    _obsoletePackagesList: [],
-    _residualPackagesList: [],
-    _autoremovablePackagesList: [],
+        this._process_sourceId = [null, null, null, null];
+        this._process_stream =   [null, null, null, null];
 
-    _init: function(updateManager) {
+        this._updateList = [];
+        this._urgentList = [];
+        this._newPackagesList = [];
+        this._obsoletePackagesList = [];
+        this._residualPackagesList = [];
+        this._autoremovablePackagesList = [];
 
         this._updateManager = updateManager;
 
         let alignment = 0.0;
         let buttonName = 'AptUpdateIndicator';
         let dontCreateMenu = false;
-        this.parent(alignment, buttonName, dontCreateMenu);
+        super._init(alignment, buttonName, dontCreateMenu);
 
         this.updateIcon = new St.Icon({icon_name: 'package-x-generic-symbolic', style_class: 'system-status-icon'});
 
@@ -96,7 +95,7 @@ var AptUpdateIndicator = new Lang.Class({
 
         this.box.add_child(this.updateIcon);
         this.box.add_child(this.label);
-        this.actor.add_child(this.box);
+        this.add_child(this.box);
 
         // Prepare to track connections
         this._signalsHandler = new Utils.GlobalSignalsHandler();
@@ -112,13 +111,13 @@ var AptUpdateIndicator = new Lang.Class({
 
         this._shortcutIsSet = false;
         this._toggleShortcut();
-    },
+    }
 
-    _openSettings: function () {
+    _openSettings() {
         Util.spawn([ 'gnome-shell-extension-prefs', Me.uuid ]);
-    },
+    }
 
-    _bindSignals: function() {
+    _bindSignals() {
         // Bind settings
         this._signalsHandler.add([
             this._settings,
@@ -142,24 +141,24 @@ var AptUpdateIndicator = new Lang.Class({
             'activate',
             Lang.bind(this, this._openSettings)
         ]);
-    },
+    }
 
-    _assembleMenu: function() {
+    _assembleMenu() {
         // Prepare the special menu : a submenu for updates list that will look like a regular menu item when disabled
         // Scrollability will also be taken care of by the popupmenu
         this.updatesExpander = new PopupMenu.PopupSubMenuMenuItem('');
 
         this.newPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('New in repository'));
-        this.newPackagesExpander.actor.visible = false;
+        this.newPackagesExpander.visible = false;
 
         this.obsoletePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Local/Obsolete packages'));
-        this.obsoletePackagesExpander.actor.visible = false;
+        this.obsoletePackagesExpander.visible = false;
 
         this.residualPackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Residual config files'));
-        this.residualPackagesExpander.actor.visible = false;
+        this.residualPackagesExpander.visible = false;
 
         this.autoremovablePackagesExpander = new PopupMenu.PopupSubMenuMenuItem(_('Autoremovable'));
-        this.autoremovablePackagesExpander.actor.visible = false;
+        this.autoremovablePackagesExpander.visible = false;
 
         // Other standard menu items
         this.settingsMenuItem = new PopupMenu.PopupMenuItem(_('Settings'));
@@ -168,8 +167,8 @@ var AptUpdateIndicator = new Lang.Class({
         // "Check now" and "Last Check" menu items
         this.checkNowMenuItem = new PopupMenu.PopupMenuItem( _('Check now') );
         this.lastCheckMenuItem = new PopupMenu.PopupMenuItem( '' );
-        this.lastCheckMenuItem.actor.reactive = false;
-        this.lastCheckMenuItem.actor.visible = false;
+        this.lastCheckMenuItem.reactive = false;
+        this.lastCheckMenuItem.visible = false;
 
         // Assemble all menu items into the popup menu
         this.menu.addMenuItem(this.updatesExpander);
@@ -184,9 +183,9 @@ var AptUpdateIndicator = new Lang.Class({
         this.menu.addMenuItem(this.lastCheckMenuItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this.settingsMenuItem);
-    },
+    }
 
-    destroy: function() {
+    destroy() {
         // Disconnect global signals
         this._signalsHandler.destroy();
 
@@ -195,7 +194,7 @@ var AptUpdateIndicator = new Lang.Class({
         this._disableShortcut();
 
         this.parent();
-    },
+    }
 
     /* Menu functions:
      *     _checkShowHideIndicator
@@ -211,27 +210,27 @@ var AptUpdateIndicator = new Lang.Class({
      *     _updateMenuExpander
      */
 
-    _checkShowHideIndicator: function() {
+    _checkShowHideIndicator() {
         if ( this._upgradeProcess_sourceId )
             // Do not apply visibility change while checking for updates
             return;
 
         if (!this._settings.get_boolean('always-visible') && this._updateList.length < 1)
-            this.actor.visible = false;
+            this.visible = false;
         else
-            this.actor.visible = true;
+            this.visible = true;
 
         this.label.visible = this._settings.get_boolean('show-count') &&
                              this._updateList.length > 0;
-    },
+    }
 
-    _onMenuOpened: function() {
+    _onMenuOpened() {
         // This event is fired when menu is shown or hidden
         // Only open the submenu if the menu is being opened and there is something to show
         this._checkAutoExpandList();
-    },
+    }
 
-    _checkAutoExpandList: function() {
+    _checkAutoExpandList() {
         let count = this._updateList.length;
         if (this.menu.isOpen &&
             count > 0 &&
@@ -240,20 +239,20 @@ var AptUpdateIndicator = new Lang.Class({
         } else {
             this.updatesExpander.setSubmenuShown(false);
         }
-    },
+    }
 
-    showChecking: function(isChecking) {
+    showChecking(isChecking) {
         if (isChecking == true) {
             this.updateIcon.set_icon_name('emblem-synchronizing-symbolic');
-            this.checkNowMenuItem.actor.reactive = false;
+            this.checkNowMenuItem.reactive = false;
             this.checkNowMenuItem.label.set_text(_('Checking'));
         } else {
-            this.checkNowMenuItem.actor.reactive = true;
+            this.checkNowMenuItem.reactive = true;
             this.checkNowMenuItem.label.set_text(_('Check now'));
         }
-    },
+    }
 
-    updateStatus: function(updatesCount) {
+    updateStatus(updatesCount) {
         updatesCount = typeof updatesCount === 'number' ? updatesCount : this._updateList.length;
         if (updatesCount > 0) {
             // Destroy existing labels to ensure correct display
@@ -273,14 +272,14 @@ var AptUpdateIndicator = new Lang.Class({
 
             if (this._urgentList.length > 0) {
                 let header = new PopupMenu.PopupMenuItem('Important/Security')
-                header.actor.add_style_class_name('apt-update-indicator-urgent-item-header');
+                header.add_style_class_name('apt-update-indicator-urgent-item-header');
                 this.updatesExpander.menu.addMenuItem(header);
 
                 for (let i = 0; i < this._urgentList.length; i++) {
                     let text = this._urgentList[i];
                     let item = this._createItem(text);
-                    item.actor.remove_style_class_name('apt-update-indicator-item');
-                    item.actor.add_style_class_name('apt-update-indicator-urgent-item');
+                    item.remove_style_class_name('apt-update-indicator-item');
+                    item.add_style_class_name('apt-update-indicator-urgent-item');
                     this.updatesExpander.menu.addMenuItem(item);
                 }
             }
@@ -293,11 +292,11 @@ var AptUpdateIndicator = new Lang.Class({
                 // If there are urgent updates we need to add a section title
                 if (this._urgentList.length > 0) {
                     let separator = new PopupMenu.PopupSeparatorMenuItem();
-                    separator.actor.add_style_class_name('apt-update-indicator-separator');
+                    separator.add_style_class_name('apt-update-indicator-separator');
                     this.updatesExpander.menu.addMenuItem(separator);
 
                     let updatesListMenuLabel = new PopupMenu.PopupMenuItem('');
-                    updatesListMenuLabel.actor.add_style_class_name('apt-update-indicator-item-header');
+                    updatesListMenuLabel.add_style_class_name('apt-update-indicator-item-header');
                     updatesListMenuLabel.label.set_text('Regular');
                     this.updatesExpander.menu.addMenuItem(updatesListMenuLabel);
                 }
@@ -352,7 +351,7 @@ var AptUpdateIndicator = new Lang.Class({
             } else {
                 // Up to date
                 this.updateIcon.set_icon_name('package-x-generic-symbolic');
-                this._updateMenuExpander( false, _('Up to date :)') );
+                this._updateMenuExpander( false, _('Up to date') );
                 UPDATES_LIST = []; // Reset stored list
             }
         }
@@ -360,9 +359,9 @@ var AptUpdateIndicator = new Lang.Class({
         UPDATES_PENDING = updatesCount;
         this._checkAutoExpandList();
         this._checkShowHideIndicator();
-    },
+    }
 
-    _notify: function(updatesCount) {
+    _notify(updatesCount) {
         if (this._settings.get_int('verbosity') > 0) {
             let updateList = [];
             if (this._settings.get_int('verbosity') > 1) {
@@ -397,9 +396,9 @@ var AptUpdateIndicator = new Lang.Class({
                 Gettext.ngettext( 'There is %d update pending', 'There are %d updates pending', updatesCount ).format(updatesCount)
             );
         }
-    },
+    }
 
-    _cleanUpgradeLists: function() {
+    _cleanUpgradeLists() {
         // We first find the longest entry in both lists
         let maxWidth = 0;
         this._updateList.forEach(function(line) {
@@ -414,9 +413,9 @@ var AptUpdateIndicator = new Lang.Class({
         });
         this._updateList = this._cleanUpgradeList(this._updateList, maxWidth);
         this._urgentList = this._cleanUpgradeList(this._urgentList, maxWidth);
-    },
+    }
 
-    _cleanUpgradeList: function(list, maxWidth) {
+    _cleanUpgradeList(list, maxWidth) {
         if (this._settings.get_boolean('strip-versions') == true) {
             return list.map(function(p) {
                 // example: firefox 50.0-1
@@ -438,9 +437,9 @@ var AptUpdateIndicator = new Lang.Class({
                 return chunks[0] + spacing + chunks[1];
             });
         }
-    },
+    }
 
-    updatePackagesStatus: function(index) {
+    updatePackagesStatus(index) {
         switch (index) {
             case SCRIPT.UPGRADES:
                 Mainloop.idle_add(
@@ -471,67 +470,67 @@ var AptUpdateIndicator = new Lang.Class({
                 );
                 break;
         }
-    },
+    }
 
-    _updateNewPackagesStatus: function() {
+    _updateNewPackagesStatus() {
         this.newPackagesExpander.menu.removeAll();
         if (this._newPackagesList.length == 0)
-            this.newPackagesExpander.actor.visible = false;
+            this.newPackagesExpander.visible = false;
         else {
             for (let i = 0; i < this._newPackagesList.length; i++) {
                 let text = this._newPackagesList[i];
                 let item = this._createItem(text);
                 this.newPackagesExpander.menu.addMenuItem(item);
             }
-            this.newPackagesExpander.actor.visible = true;
+            this.newPackagesExpander.visible = true;
         }
-    },
+    }
 
-    _updateObsoletePackagesStatus: function() {
+    _updateObsoletePackagesStatus() {
         this.obsoletePackagesExpander.menu.removeAll();
         if (this._obsoletePackagesList.length == 0)
-            this.obsoletePackagesExpander.actor.visible = false;
+            this.obsoletePackagesExpander.visible = false;
         else {
             for (let i = 0; i < this._obsoletePackagesList.length; i++) {
                 let text = this._obsoletePackagesList[i];
                 let item = this._createItem(text);
                 this.obsoletePackagesExpander.menu.addMenuItem(item);
             }
-            this.obsoletePackagesExpander.actor.visible = true;
+            this.obsoletePackagesExpander.visible = true;
         }
-    },
+    }
 
-    _updateResidualPackagesStatus: function() {
+    _updateResidualPackagesStatus() {
         this.residualPackagesExpander.menu.removeAll();
         if (this._residualPackagesList.length == 0)
-            this.residualPackagesExpander.actor.visible = false;
+            this.residualPackagesExpander.visible = false;
         else {
             for (let i = 0; i < this._residualPackagesList.length; i++) {
                 let text = this._residualPackagesList[i];
                 let item = this._createItem(text);
                 this.residualPackagesExpander.menu.addMenuItem(item);
             }
-            this.residualPackagesExpander.actor.visible = true;
+            this.residualPackagesExpander.visible = true;
         }
-    },
+    }
 
-    _updateAutoremovablePackagesStatus: function() {
+    _updateAutoremovablePackagesStatus() {
         this.autoremovablePackagesExpander.menu.removeAll();
         if (this._autoremovablePackagesList.length == 0)
-            this.autoremovablePackagesExpander.actor.visible = false;
+            this.autoremovablePackagesExpander.visible = false;
         else {
             for (let i = 0; i < this._autoremovablePackagesList.length; i++) {
                 let text = this._autoremovablePackagesList[i];
                 let item = this._createItem(text);
                 this.autoremovablePackagesExpander.menu.addMenuItem(item);
             }
-            this.autoremovablePackagesExpander.actor.visible = true;
+            this.autoremovablePackagesExpander.visible = true;
         }
-    },
+    }
 
-    _createItem: function(text) {
+    _createItem(text) {
         let item = new PopupMenu.PopupMenuItem('');
-        item.actor.add_style_class_name('apt-update-indicator-item');
+        item.add_style_class_name('apt-update-indicator-item');
         item.label.set_text(text);
 
         // Remove tab character and then double spaces
@@ -543,29 +542,29 @@ var AptUpdateIndicator = new Lang.Class({
         });
 
         return item;
-    },
+    }
 
-    _updateMenuExpander: function(enabled, label) {
+    _updateMenuExpander(enabled, label) {
         if (label == '') {
             // No text, hide the menuitem
-            this.updatesExpander.actor.visible = false;
+            this.updatesExpander.visible = false;
         } else {
         // We make our expander look like a regular menu label if disabled
-            this.updatesExpander.actor.reactive = enabled;
+            this.updatesExpander.reactive = enabled;
             this.updatesExpander._triangle.visible = enabled;
             this.updatesExpander.label.set_text(label);
-            this.updatesExpander.actor.visible = true;
+            this.updatesExpander.visible = true;
         }
 
         // 'Update now' visibility is linked so let's save a few lines and set it here
-        this.applyUpdatesMenuItem.actor.reactive = enabled;
-    },
+        this.applyUpdatesMenuItem.reactive = enabled;
+    }
 
     /*
      * Notifications
      * */
 
-    _showNotification: function(title, message) {
+    _showNotification(title, message) {
         if (this._notifSource == null) {
             // We have to prepare this only once
             this._notifSource = new MessageTray.SystemNotificationSource();
@@ -587,17 +586,17 @@ var AptUpdateIndicator = new Lang.Class({
             notification.update( title, message, { clear: true });
         }
         notification.setTransient(this._settings.get_boolean('transient'));
-        this._notifSource.notify(notification);
-    },
+        this._notifSource.showNotification(notification);
+    }
 
-    _toggleShortcut: function() {
+    _toggleShortcut() {
         if (this._settings.get_boolean('use-shortcut'))
             this._enableShortcut();
         else
             this._disableShortcut();
-    },
+    }
 
-    _enableShortcut: function() {
+    _enableShortcut() {
         if (!this._shortcutIsSet) {
             Main.wm.addKeybinding('apt-update-indicator-shortcut', this._settings,
                                   Meta.KeyBindingFlags.NONE,
@@ -605,9 +604,9 @@ var AptUpdateIndicator = new Lang.Class({
                                   Lang.bind(this.menu, this.menu.toggle));
             this._shortcutIsSet = true;
         }
-    },
+    }
 
-    _disableShortcut: function() {
+    _disableShortcut() {
         if (this._shortcutIsSet) {
             Main.wm.removeKeybinding('apt-update-indicator-shortcut');
             this._shortcutIsSet = false;

@@ -1,16 +1,13 @@
-const Format = imports.format;
-
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const UpdateManager = Me.imports.updateManager;
 const Utils = Me.imports.utils;
 
 function init() {
-    String.prototype.format = Format.format;
-    Utils.initTranslations('apt-update-indicator');
+    ExtensionUtils.initTranslations('apt-update-indicator');
 }
 
-let updateManager;
+var updateManager;
 
 function enable() {
     updateManager = new UpdateManager.UpdateManager();

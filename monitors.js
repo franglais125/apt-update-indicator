@@ -14,16 +14,15 @@
 */
 
 const GLib = imports.gi.GLib;
+const GObject = imports.gi.GObject;
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
 
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
-var NetworkMonitor = new Lang.Class({
-    Name: 'NetworkMonitor',
-
-    _init: function(updateManager) {
+var NetworkMonitor = class NetworkMonitor {
+    constructor(updateManager) {
 
         this._updateManager = updateManager;
 
@@ -34,9 +33,9 @@ var NetworkMonitor = new Lang.Class({
 
         let url = 'http://ftp.debian.org';
         this._address = Gio.NetworkAddress.parse_uri(url, 80);
-    },
+    }
 
-    networkTimeout: function() {
+    networkTimeout() {
         if (this._networkTimeoutId) {
             GLib.source_remove(this._networkTimeoutId);
             this._networkTimeoutId = 0;
@@ -56,9 +55,9 @@ var NetworkMonitor = new Lang.Class({
         );
 
         this._checkConnectionState();
-    },
+    }
 
-    _checkConnectionState: function() {
+    _checkConnectionState() {
         let cancellable = Gio.Cancellable.new();
         try {
             this._network_monitor.can_reach_async(this._address, cancellable, Lang.bind(this, this._asyncReadyCallback));
@@ -66,9 +65,9 @@ var NetworkMonitor = new Lang.Class({
             let title = _('Can not connect to %s').format(url);
             log(title + '\n' + err.message);
         }
-    },
+    }
 
-    _asyncReadyCallback: function(nm, res) {
+    _asyncReadyCallback(nm, res) {
         this._network_monitor.can_reach_finish(res);
 
         if (this._networkTimeoutId) {
@@ -78,26 +77,25 @@ var NetworkMonitor = new Lang.Class({
 
         // If the network is up, perform update check
         this._updateManager.checkUpdates();
-    },
+    }
 
-    destroy: function() {
+    destroy() {
         if (this._networkTimeoutId) {
             GLib.source_remove(this._networkTimeoutId);
             this._networkTimeoutId = 0;
         }
     }
-});
+};
 
-var DirectoryMonitor = new Lang.Class({
-    Name: 'DirectoryMonitor',
+var DirectoryMonitor = class DirectoryMonitor{
 
-    _init: function(updateManager) {
+    constructor(updateManager) {
         this._updateManager = updateManager;
 
         this.start();
-    },
+    }
 
-    start: function() {
+    start() {
         this.stop();
 
         let directory = '/var/lib/apt/lists';
@@ -111,9 +109,9 @@ var DirectoryMonitor = new Lang.Class({
         this._dpkg_monitor = this._dpkg_dir.monitor_directory(0, null);
         this._dpkg_monitorId = this._dpkg_monitor.connect('changed',
                                                         Lang.bind(this, this._onFolderChanged));
-    },
+    }
 
-    stop: function() {
+    stop() {
         if (this._apt_monitorId) {
             this._apt_monitor.disconnect(this._apt_monitorId);
             this._apt_monitorId = null;
@@ -128,9 +126,9 @@ var DirectoryMonitor = new Lang.Class({
             GLib.source_remove(this._folderMonitorId);
             this._folderMonitorId = null;
         }
-    },
+    }
 
-    _onFolderChanged: function() {
+    _onFolderChanged() {
         // Apt cache has changed! Let's schedule a check in a few seconds
         if (this._folderMonitorId)
             GLib.source_remove(this._folderMonitorId);
@@ -144,9 +142,9 @@ var DirectoryMonitor = new Lang.Class({
                                                             this._folderMonitorId = null;
                                                             return false;
                                                         }));
-    },
+    }
 
-    destroy: function() {
+    destroy() {
         this.stop();
     }
-});
+};
