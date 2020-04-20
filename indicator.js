@@ -193,7 +193,7 @@ var AptUpdateIndicator = GObject.registerClass(class AptUpdateIndicator extends 
 
         this._disableShortcut();
 
-        this.parent();
+        super.destroy();
     }
 
     /* Menu functions:
