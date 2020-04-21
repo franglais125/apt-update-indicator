@@ -2,15 +2,13 @@
   "description": "Update indicator for Apt based distributions.\n\nCheck for updates from an indicator\n\nIt shows also the following package status (as in Synaptic):\n\u26ab Available updates\n\u26ab New packages in repository\n\u26ab Local/Obsolete packages\n\u26ab Residual config files\n\u26ab Autoremovable packages",
   "name": "Apt Update Indicator",
   "shell-version": [
-    "3.14",
-    "3.16",
-    "3.18",
-    "3.20",
-    "3.22",
-    "3.24",
-    "3.26"
+    "3.28",
+    "3.30",
+    "3.32",
+    "3.34",
+    "3.36"
   ],
   "url": "https://github.com/franglais125/apt-update-indicator",
   "uuid": "apt-update-indicator@franglais125.gmail.com",
-  "version": 20
+  "version": 21
 }

@@ -1,5 +1,10 @@
 ## Changes
 
+### v21
+- Add support for Gnome 3.28-3.36.
+- Drop support for older versions
+- Modernize process management: Gio.Subprocess.
+
 ### v20
 - Add support to copy to clipboard when clicking on a package name.
 - Bug fixes.
