@@ -47,12 +47,6 @@ var UpdateManager = class UpdateManager {
         this._TimeoutId = null;
         this._initialTimeoutId = null;
 
-        this._upgradeProcess_sourceId = null;
-        this._upgradeProcess_stream = null;
-
-        this._process_sourceId = [null, null, null, null, null];
-        this._process_stream =   [null, null, null, null, null];
-
         // Create indicator on the panel and initialize it
         this._indicator = new Indicator.AptUpdateIndicator(this);
         this._indicator.updateStatus(STATUS.INITIALIZING);
@@ -351,29 +345,24 @@ var UpdateManager = class UpdateManager {
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( UPDATE_CMD );
             if (!parseok) { throw 'Parse error' };
-            let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
-                                                            argvp,
-                                                            null,
-                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                            null);
+            let proc = new Gio.Subprocess({argv: argvp, flags: Gio.SubprocessFlags.STDOUT_PIPE});
+            proc.init(null);
 
-            // We will process the output at once when it's done
-            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, this._applyUpdatesEnd.bind(this));
+            // Asynchronously call the output handler when script output is ready
+            proc.communicate_utf8_async(null, null, this._applyUpdatesEnd.bind(this));
+
+            this._upgradeProcess_sourceId = 1;
         } catch (err) {
         }
     }
 
     _applyUpdatesEnd() {
         // Free resources
-        if (this._upgradeProcess_sourceId)
-            GLib.source_remove(this._upgradeProcess_sourceId);
         this._upgradeProcess_sourceId = null;
 
         // Check if updates are available
         this._dontUpdateDate = true;
         this._launchScript(SCRIPT.UPGRADES);
-
-        return GLib.SOURCE_REMOVE;
     }
 
     /* Update functions:
@@ -407,14 +396,14 @@ var UpdateManager = class UpdateManager {
             // Parse check command line
             let [parseok, argvp] = GLib.shell_parse_argv( CHECK_CMD );
             if (!parseok) { throw 'Parse error' };
-            let [, pid, , , ] = GLib.spawn_async_with_pipes(null,
-                                                            argvp,
-                                                            null,
-                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                            null);
+            let proc = new Gio.Subprocess({argv: argvp, flags: Gio.SubprocessFlags.STDOUT_PIPE});
+            proc.init(null);
 
-            // We will process the output at once when it's done
-            this._upgradeProcess_sourceId = GLib.child_watch_add(0, pid, this._checkUpdatesEnd.bind(this));
+            // Asynchronously call the output handler when script output is ready
+            proc.communicate_utf8_async(null, null, this._checkUpdatesEnd.bind(this));
+
+            this._upgradeProcess_sourceId = 1;
+
         } catch (err) {
             this._indicator.showChecking(false);
             this._indicator.updateStatus(STATUS.ERROR);
@@ -423,14 +412,10 @@ var UpdateManager = class UpdateManager {
 
     _checkUpdatesEnd() {
         // Free resources
-        if (this._upgradeProcess_sourceId)
-            GLib.source_remove(this._upgradeProcess_sourceId);
         this._upgradeProcess_sourceId = null;
 
         // Update indicator
         this._launchScript(SCRIPT.UPGRADES);
-
-        return GLib.SOURCE_REMOVE;
     }
 
     /* Extra packages functions:
@@ -454,21 +439,12 @@ var UpdateManager = class UpdateManager {
                           path + '/scripts/' + script_names[index] + '.sh',
                           this._initializing ? '1' : '0'];
 
-            let [, pid, , out_fd, ] = GLib.spawn_async_with_pipes(null,
-                                                                  script,
-                                                                  null,
-                                                                  GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                                  null);
+            let proc = new Gio.Subprocess({argv: script, flags: Gio.SubprocessFlags.STDOUT_PIPE});
+            proc.init(null);
 
-            // Let's buffer the command's output - that's an input for us !
-            this._process_stream[index] = new Gio.DataInputStream({
-                base_stream: new Gio.UnixInputStream({fd: out_fd})
-            });
+            // Asynchronously call the output handler when script output is ready
+            proc.communicate_utf8_async(null, null, this._packagesRead.bind(this, index));
 
-            // We will process the output at once when it's done
-            this._process_sourceId[index] = GLib.child_watch_add(0, pid, () => {
-                this._packagesRead(index);
-            });
         } catch (err) {
             if (index == SCRIPT.UPGRADES) {
                 this._indicator.showChecking(false);
@@ -477,16 +453,11 @@ var UpdateManager = class UpdateManager {
         }
     }
 
-    _packagesRead(index) {
+    _packagesRead(index, proc, result) {
         // Reset the new packages list
-        let packagesList = [];
-        let out, size;
-        if (this._process_stream[index]) {
-            do {
-                [out, size] = this._process_stream[index].read_line_utf8(null);
-                if (out) packagesList.push(out);
-            } while (out);
-        }
+        let [ok, output, ] = proc.communicate_utf8_finish(result);
+        let packagesList = output.split('\n');
+        packagesList.pop(); // Last item is empty
 
         // Since this runs async, the indicator might have been destroyed!
         if (this._indicator) {
@@ -508,15 +479,6 @@ var UpdateManager = class UpdateManager {
     }
 
     _packagesEnd(index) {
-        // Free resources
-        if (this._process_stream[index]) {
-            this._process_stream[index].close(null);
-            this._process_stream[index] = null;
-        }
-        if (this._process_sourceId[index])
-            GLib.source_remove(this._process_sourceId[index]);
-        this._process_sourceId[index] = null;
-
         // Since this runs async, the indicator might have been destroyed!
         if (this._indicator) {
             // Update indicator
@@ -548,42 +510,27 @@ var UpdateManager = class UpdateManager {
                 this._dirMonitor.start();
             }
         }
-
-        return GLib.SOURCE_REMOVE;
     }
 
     _checkUrgency() {
         try {
             let path = Me.dir.get_path();
-            let argvp = ['/bin/bash', path + '/scripts/urgency.sh'];
+            let script = ['/bin/bash', path + '/scripts/urgency.sh'];
 
-            let [, pid, , out_fd, ] = GLib.spawn_async_with_pipes(null,
-                                                            argvp,
-                                                            null,
-                                                            GLib.SpawnFlags.DO_NOT_REAP_CHILD,
-                                                            null);
-
-            // Let's buffer the command's output - that's an input for us !
-            this._urgency_process_stream = new Gio.DataInputStream({
-                base_stream: new Gio.UnixInputStream({fd: out_fd})
-            });
-
-            // We will process the output at once when it's done
-            this._urgencyCheckId = GLib.child_watch_add(0, pid, this._checkUrgencyRead.bind(this));
+            let proc = new Gio.Subprocess({argv: script, flags: Gio.SubprocessFlags.STDOUT_PIPE});
+            proc.init(null);
+            // Asynchronously call the output handler when script output is ready
+            proc.communicate_utf8_async(null, null, this._checkUrgencyRead.bind(this));
         } catch (err) {
+            global.log('Apt Update Indicator LOG: failed to run urgency.sh');
         }
     }
 
-    _checkUrgencyRead() {
+    _checkUrgencyRead(proc, result) {
         // Reset the new packages list
-        let urgencyList = [];
-        let out, size;
-        if (this._urgency_process_stream) {
-            do {
-                [out, size] = this._urgency_process_stream.read_line_utf8(null);
-                if (out) urgencyList.push(out);
-            } while (out);
-        }
+        let [ok, output, ] = proc.communicate_utf8_finish(result);
+        let urgencyList = output.split('\n');
+        urgencyList.pop(); // Last item is empty
 
         let cleanUrgentList = this._indicator._updateList.filter(function(pkg) {
             for (let i = 0; i < urgencyList.length; i++) {
@@ -597,19 +544,6 @@ var UpdateManager = class UpdateManager {
 
         this._indicator._urgentList = cleanUrgentList;
         this._indicator.updatePackagesStatus(SCRIPT.UPGRADES);
-
-        this._checkUrgencyEnd();
-    }
-
-    _checkUrgencyEnd() {
-        // Free resources
-        if (this._urgency_process_stream) {
-            this._urgency_process_stream.close(null);
-            this._urgency_process_stream = null;
-        }
-        if (this._urgencyCheckId)
-            GLib.source_remove(this._urgencyCheckId);
-        this._urgencyCheckId = null;
     }
 
     _lastCheck() {
@@ -652,25 +586,6 @@ var UpdateManager = class UpdateManager {
     }
 
     destroy() {
-        // Remove remaining processes to avoid zombies
-        if (this._upgradeProcess_sourceId) {
-            GLib.source_remove(this._upgradeProcess_sourceId);
-            this._upgradeProcess_sourceId = null;
-            this._upgradeProcess_stream = null;
-        }
-
-        for (let i = 0; i < SCRIPT.length; i++)
-            if (this._process_sourceId[i]) {
-                GLib.source_remove(this._process_sourceId[i]);
-                this._process_sourceId[i] = null;
-                this._process_stream[i] = null;
-            }
-
-        if (this._urgencyCheckId) {
-            GLib.source_remove(this._urgencyCheckId);
-            this._urgencyCheckId = null;
-        }
-
         if (this._TimeoutId) {
             GLib.source_remove(this._TimeoutId);
             this._TimeoutId = null;
