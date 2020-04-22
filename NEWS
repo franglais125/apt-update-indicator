@@ -1,5 +1,8 @@
 ## Changes
 
+### v22
+- Remove Gnome 3.30 and 3.32 as they are incompatible with newer GJS standards.
+
 ### v21
 - Add support for Gnome 3.28-3.36.
 - Drop support for older versions
