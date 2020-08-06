@@ -1,0 +1,340 @@
+# Swedish translations for arc-update-indicator extension.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Morgan Antonsson <morgan.antonsson@gmail.com>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Apt-Update-Indicator\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-01 15:26+0200\n"
+"PO-Revision-Date: 2020-08-06 22:57+0200\n"
+"Last-Translator: Morgan Antonsson <morgan.antonsson@gmail.com>\n"
+"Language-Team: \n"
+"Language: sv\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.3\n"
+
+#: indicator.js:150
+msgid "New in repository"
+msgstr "Nytt i förrådet"
+
+#: indicator.js:153 Settings.ui.h:47
+msgid "Local/Obsolete packages"
+msgstr "Lokala/föråldrade paket"
+
+#: indicator.js:156
+msgid "Residual config files"
+msgstr "Kvarlämnade konfigurationsfiler"
+
+#: indicator.js:159
+msgid "Autoremovable"
+msgstr "Autoborttagningsbara"
+
+#: indicator.js:163
+msgid "Settings"
+msgstr "Inställningar"
+
+#: indicator.js:164
+msgid "Apply updates"
+msgstr "Tillämpa uppdateringar"
+
+#: indicator.js:167 indicator.js:250
+msgid "Check now"
+msgstr "Kontrollera nu"
+
+#: indicator.js:247
+msgid "Checking"
+msgstr "Kontrollerar"
+
+#: indicator.js:310
+#, javascript-format
+msgid "%d update pending"
+msgid_plural "%d updates pending"
+msgstr[0] "%d uppdatering väntar"
+msgstr[1] "%d uppdateringar väntar"
+
+#: indicator.js:342
+msgid "Error"
+msgstr "Fel"
+
+#: indicator.js:346
+msgid "No internet"
+msgstr "Inget internet"
+
+#: indicator.js:349
+msgid "Initializing"
+msgstr "Initierar"
+
+#: indicator.js:353
+msgid "Up to date"
+msgstr "Aktuell"
+
+#: indicator.js:387 indicator.js:394
+msgid "New Update"
+msgid_plural "New Updates"
+msgstr[0] "Ny uppdatering"
+msgstr[1] "Nya uppdateringar"
+
+#: indicator.js:395
+#, javascript-format
+msgid "There is %d update pending"
+msgid_plural "There are %d updates pending"
+msgstr[0] "%d uppdatering väntar"
+msgstr[1] "%d uppdateringar väntar"
+
+#: indicator.js:581
+msgid "Update now"
+msgstr "Uppdatera nu"
+
+#: monitors.js:64
+#, javascript-format
+msgid "Can not connect to %s"
+msgstr "Kan inte ansluta till% s"
+
+#: updateManager.js:570
+msgid "Last check: "
+msgstr "Senaste kontroll: "
+
+#: Settings.ui.h:1
+msgid "Always show the indicator"
+msgstr "Visa alltid indikatorn"
+
+#: Settings.ui.h:2
+msgid "Show updates count on the indicator"
+msgstr "Visa antal uppdateringar i indikatorn"
+
+#: Settings.ui.h:3
+msgid "If updates count is less than this number (0 to disable)"
+msgstr "Om antalet uppdateringar är mindre än detta nummer (0 för att inaktivera)"
+
+#: Settings.ui.h:4
+msgid "Auto-expand updates list"
+msgstr "Expandera uppdateringslistan automatiskt"
+
+#: Settings.ui.h:5
+msgid "Send a notification when new updates are available"
+msgstr "Skicka en avisering när nya uppdateringar är tillgängliga"
+
+#: Settings.ui.h:6
+msgid "Use transient notifications (auto dismiss)"
+msgstr "Använd tillfälliga aviseringar (autoavvisande)"
+
+#: Settings.ui.h:7
+msgid "How much information to show on notifications"
+msgstr "Information att visa i aviseringar"
+
+#: Settings.ui.h:8
+msgid "Up to a maximum of 50 package names."
+msgstr "Upp till 50 paketnamn."
+
+#: Settings.ui.h:9
+msgid "Count only"
+msgstr "Endast antal"
+
+#: Settings.ui.h:10
+msgid "New updates names"
+msgstr "Nya uppdateringsnamn"
+
+#: Settings.ui.h:11
+msgid "All updates names"
+msgstr "Alla uppdateringsnamn"
+
+#: Settings.ui.h:12
+msgid "Command to update packages"
+msgstr "Kommando för att uppdatera paket"
+
+#: Settings.ui.h:13
+msgid "You can use sudo instead of pkexec for the terminal."
+msgstr "Du kan använda sudo i stället för pkexec för terminalen."
+
+#: Settings.ui.h:14
+msgid "Show output on terminal"
+msgstr "Visa utmatning i terminalen"
+
+#: Settings.ui.h:15
+msgid "Terminal to use"
+msgstr "Terminal att använda"
+
+#: Settings.ui.h:16
+msgid "Ex: xterm -e"
+msgstr "Ex: xterm -e"
+
+#: Settings.ui.h:17
+msgid "Clear entry"
+msgstr "Rensa post"
+
+#: Settings.ui.h:18
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: Settings.ui.h:19
+msgid "Save"
+msgstr "Spara"
+
+#: Settings.ui.h:20
+msgid "Check for updates every:"
+msgstr "Sök efter uppdateringar varje:"
+
+#: Settings.ui.h:21
+msgid "Automatic checks, 0 to disable"
+msgstr "Automatiska kontroller, 0 för att inaktivera"
+
+#: Settings.ui.h:22
+msgid "Hours"
+msgstr "timmar"
+
+#: Settings.ui.h:23
+msgid "Days"
+msgstr "dagar"
+
+#: Settings.ui.h:24
+msgid "Weeks"
+msgstr "veckor"
+
+#: Settings.ui.h:25
+msgid "Strip out version numbers"
+msgstr "Ta bort versionsnummer"
+
+#: Settings.ui.h:26
+msgid "Highlight security/important updates"
+msgstr "Markera säkerhets-/viktiga uppdateringar"
+
+#: Settings.ui.h:27
+msgid "Indicator"
+msgstr "Indikator"
+
+#: Settings.ui.h:28
+msgid "Notifications"
+msgstr "Notifieringar"
+
+#: Settings.ui.h:29
+msgid "Shortcut to open the indicator"
+msgstr "Genväg för att öppna indikatorn"
+
+#: Settings.ui.h:30
+msgid "Syntax: <Shift>, <Ctrl>, <Alt>, <Super>"
+msgstr "Syntax: <Shift>, <Ctrl>, <Alt>, <Super>"
+
+#: Settings.ui.h:31
+msgid "Basic settings"
+msgstr "Grundinställningar"
+
+#: Settings.ui.h:32
+msgid "Reset values for all commands"
+msgstr "Återställ värden för alla kommandon"
+
+#: Settings.ui.h:33
+msgid "Reset"
+msgstr "Återställ"
+
+#: Settings.ui.h:34
+msgid "Update method"
+msgstr "Uppdateringsmetod"
+
+#: Settings.ui.h:35
+msgid "Method to use to apply the updates."
+msgstr "Metod att använda för att tillämpa uppdateringarna."
+
+#: Settings.ui.h:36
+msgid "Launch gnome-software"
+msgstr "Starta GNOME Programvara"
+
+#: Settings.ui.h:37
+msgid "Update-manager (Ubuntu only)"
+msgstr "Programuppdaterare (endast Ubuntu)"
+
+#: Settings.ui.h:38
+msgid "Gnome package updater"
+msgstr "GNOME Paketuppdaterare"
+
+#: Settings.ui.h:39
+msgid "Custom"
+msgstr "Anpassad"
+
+#: Settings.ui.h:40
+msgid "The default command is \"pkcon refresh\", which uses packagekit with the apt backend. You can define a custom command below, to be executed using pkexec."
+msgstr "Standardkommandot är \"pkcon refresh\", som använder packagekit med apt backend. Du kan ange ett anpassat kommando som ska köras med pkexec nedan."
+
+#: Settings.ui.h:41
+msgid "Use a custom command to check for updates"
+msgstr "Använd ett anpassat kommando för att leta efter uppdateringar"
+
+#: Settings.ui.h:42
+msgid "Custom command to check for updates"
+msgstr "Anpassat kommando för att leta efter uppdateringar"
+
+#: Settings.ui.h:43
+msgid "Advanced settings"
+msgstr "Avancerade inställningar"
+
+#: Settings.ui.h:44
+msgid "Include an item in the indicator with a list of new packages in the repository."
+msgstr "Visa en lista över nya paket i förrådet som en post i indikatorn."
+
+#: Settings.ui.h:45
+msgid "New packages in repository"
+msgstr "Nya paket i förrådet"
+
+#: Settings.ui.h:46
+msgid "Include an item in the indicator with a list of obsolete or local packages. Obsolete packages are not available in the repository. Local packages are available, but an unavailable version is installed."
+msgstr "Visa en lista över föråldrade eller lokala paket som en post i indikatorn. Föråldrade paket är inte tillgängliga i förrådet. Lokala paket är tillgängliga, men en otillgänglig version är installerad."
+
+#: Settings.ui.h:48
+msgid "Include an item in the indicator with a list of packages that have residual config files. Run \"sudo apt purge pkgname\" to clean them."
+msgstr "Visa en lista över paket som har kvarlämnade konfigurationsfiler som en post i indikatorn. Kör \"sudo apt purge paketnamn\" för att rensa dem."
+
+#: Settings.ui.h:49
+msgid "Residual packages"
+msgstr "Restpaket"
+
+#: Settings.ui.h:50
+msgid "Include an item in the indicator with a list of autoremovable packages. Run \"sudo apt autoremove\" to remove them."
+msgstr "Visa en lista över automatiskt borttagningsbara paket som en post i indikatorn. Kör \"sudo apt autoremove\" för att ta bort dem."
+
+#: Settings.ui.h:51
+msgid "Autoremovable packages"
+msgstr "Automatiskt borttagningsbara paket"
+
+#: Settings.ui.h:52
+msgid "Package status"
+msgstr "Paketstatus"
+
+#: Settings.ui.h:53
+msgid "Packages in this list will be excluded from the updates. As an example, this is useful for packages that are downgraded manually."
+msgstr "Paket i denna lista kommer att utelämnas från uppdateringarna. Detta kan till exempel vara användbart för paket som har nedgraderats manuellt."
+
+#: Settings.ui.h:54
+msgid "Ignore"
+msgstr "Ignorera"
+
+#: Settings.ui.h:55
+msgid "version: "
+msgstr "version: "
+
+#: Settings.ui.h:56
+msgid "Adds an indicator to the top panel that allows to check for updates"
+msgstr "Lägger till en indikator i systemraden som gör det möjligt att kontrollera om det finns uppdateringar"
+
+#: Settings.ui.h:57
+msgid "Maintained by"
+msgstr "Underhålls av"
+
+#: Settings.ui.h:58
+msgid "Webpage"
+msgstr "Webbsida"
+
+#: Settings.ui.h:59
+msgid ""
+"<span size=\"small\">This program comes with ABSOLUTELY NO WARRANTY.\n"
+"Sethe <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU General Public License, version 2 or later</a> for details.</span>"
+msgstr ""
+"<span size=\"small\">Detta program kommer HELT UTAN GARANTI.\n"
+"Se <a href=\"https://www.gnu.org/licenses/old-licenses/gpl-2.0.html\">GNU General Public License, version 2 eller senare</a> för detaljer.</span>"
+
+#: Settings.ui.h:61
+msgid "About"
+msgstr "Om"
