@@ -440,7 +440,7 @@ function buildPrefsWidget(){
         }
     );
 
-    box.show_all();
+    // box.show_all();
 
     return box;
 };
