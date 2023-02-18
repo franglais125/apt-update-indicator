@@ -319,7 +319,7 @@ function buildPrefsWidget(){
 
             // Clean the entry in case it was already used
             entry.set_text('');
-            entry.connect('icon-release', () => {this.set_text('');});
+            entry.connect('icon-release', () => {entry.set_text('');});
 
             let saveButtonId = saveButton.connect(
                 'clicked',
@@ -398,7 +398,7 @@ function buildPrefsWidget(){
 
             // Clean the entry in case it was already used
             entry.set_text(entries[selected_entry]);
-            entry.connect('icon-release', () => {this.set_text('');});
+            entry.connect('icon-release', () => {entry.set_text('');});
 
             let saveButtonId = saveButton.connect(
                 'clicked',
