@@ -455,6 +455,7 @@
         <child>
           <object class="GtkEntry" id="ignore_list_add_entry">
             <property name="width_request">350</property>
+            <property name="focusable">1</property>
             <property name="secondary_icon_name">edit-clear-symbolic</property>
             <property name="secondary_icon_tooltip_text" translatable="1">Clear entry</property>
             <property name="placeholder_text" translatable="0">linux-image-amd64</property>
@@ -504,6 +505,7 @@
         <child>
           <object class="GtkEntry" id="ignore_list_edit_entry">
             <property name="width_request">350</property>
+            <property name="focusable">1</property>
             <property name="secondary_icon_name">edit-clear-symbolic</property>
             <property name="secondary_icon_tooltip_text" translatable="1">Clear entry</property>
             <property name="placeholder_text" translatable="0">linux-image-amd64</property>
