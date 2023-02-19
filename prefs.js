@@ -458,7 +458,13 @@ function buildPrefsWidget(){
 
 function setShortcut(settings) {
     let shortcut_text = settings.get_string('shortcut-text');
-    let [key, mods] = Gtk.accelerator_parse(shortcut_text);
+        let ok, key, mods;
+    
+    if (shellVersion >= 40) {
+        [ok, key, mods] = Gtk.accelerator_parse(shortcut_text);
+    } else {
+        [key, mods] = Gtk.accelerator_parse(shortcut_text);
+    }
 
     if (Gtk.accelerator_valid(key, mods)) {
         let shortcut = Gtk.accelerator_name(key, mods);
