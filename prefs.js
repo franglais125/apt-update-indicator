@@ -297,7 +297,7 @@ function buildPrefsWidget(){
 
     buildable.get_object('treeview_selection').connect(
         'changed',
-        function(selection) {selectionChanged(selection, listStore);}
+        function(selection) {selectionChanged(selection);}
     );
 
     // Toolbar
@@ -477,8 +477,8 @@ function setShortcut(settings) {
 
 let selected_entry = 0;
 
-function selectionChanged(select, listStore) {
-    let a = select.get_selected_rows(listStore)[0][0];
+function selectionChanged(select) {
+    let a = select.get_selected_rows()[0][0];
 
     if (a !== undefined)
         selected_entry = parseInt(a.to_string());
