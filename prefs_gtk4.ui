@@ -1,0 +1,1502 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file is part of Apt Update Indicator
+    Apt Update Indicator is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    Apt Update Indicator is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with Apt Update Indicator.  If not, see <http://www.gnu.org/licenses/>.
+    Copyright 2016 Raphaël Rochet
+    Copyright 2016-2017 Fran Glais
+-->
+<interface domain="apt-update-indicator">
+  <requires lib="gtk" version="4.0"/>
+
+  <object class="GtkAdjustment" id="Adjust_interval">
+    <property name="upper">99</property>
+    <property name="step_increment">1</property>
+  </object>
+
+  <object class="GtkAdjustment" id="Adjust_expand_list">
+    <property name="upper">500</property>
+    <property name="step_increment">1</property>
+  </object>
+
+  <object class="GtkListStore" id="ignore_list_store">
+    <columns>
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0">dummy</col>
+      </row>
+    </data>
+  </object>
+
+  <object class="GtkBox" id="indicator_dialog">
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
+    <property name="margin_top">12</property>
+    <property name="margin_bottom">12</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkFrame" id="frame_indicator">
+        <property name="child">
+          <object class="GtkListBox" id="listbox_indicator">
+            <property name="selection_mode">none</property>
+            <child>
+              <object class="GtkListBoxRow" id="always_visible_listboxrow_2">
+                <property name="child">
+                  <object class="GtkGrid" id="always_visible_grid_2">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">32</property>
+                    <child>
+                      <object class="GtkLabel" id="always_visible_label_2">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Always show the indicator</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="always_visible">
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow" id="show_count_listboxrow">
+                <property name="child">
+                  <object class="GtkGrid" id="show_count_grid">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">32</property>
+                    <child>
+                      <object class="GtkLabel" id="show_count_label">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Show updates count on the indicator</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="show_count">
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow" id="auto_expand_list_listboxrow">
+                <property name="child">
+                  <object class="GtkGrid" id="auto_expand_list_grid">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">32</property>
+                    <child>
+                      <object class="GtkLabel" id="auto_expand_list_description">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">If updates count is less than this number (0 to disable)</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="auto_expand_list_label">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Auto-expand updates list</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSpinButton" id="auto_expand_list">
+                        <property name="adjustment">Adjust_expand_list</property>
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <child type="label_item">
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkBox" id="notifications_dialog">
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
+    <property name="margin_top">12</property>
+    <property name="margin_bottom">12</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkFrame" id="frame_notifications">
+        <property name="child">
+          <object class="GtkListBox" id="listbox_notifications">
+            <property name="selection_mode">none</property>
+            <child>
+              <object class="GtkListBoxRow" id="notifications_listboxrow">
+                <property name="child">
+                  <object class="GtkGrid" id="notifications_grid">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">32</property>
+                    <child>
+                      <object class="GtkLabel" id="notifications_label">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Send a notification when new updates are available</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="notifications">
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="transient_notifications">
+                        <property name="label" translatable="yes">Use transient notifications (auto dismiss)</property>
+                        <property name="margin_top">12</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">2</property>
+                          <property name="column-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow" id="verbosity_listboxrow">
+                <property name="child">
+                  <object class="GtkGrid" id="verbosity_grid">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">32</property>
+                    <child>
+                      <object class="GtkLabel" id="verbosity_label">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">How much information to show on notifications</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="verbosity_description">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Up to a maximum of 50 package names.</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkComboBoxText" id="verbosity">
+                        <property name="valign">center</property>
+                        <items>
+                          <item translatable="yes">Count only</item>
+                          <item translatable="yes">New updates names</item>
+                          <item translatable="yes">All updates names</item>
+                        </items>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <child type="label_item">
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkBox" id="custom_command_dialog">
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
+    <property name="margin_top">12</property>
+    <property name="margin_bottom">12</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkFrame" id="frame_custom_command">
+        <property name="child">
+          <object class="GtkListBox" id="listbox_custom_command">
+            <property name="selection_mode">none</property>
+            <child>
+              <object class="GtkListBoxRow" id="update_command_listboxrow">
+                <property name="child">
+                  <object class="GtkGrid" id="update_command_grid">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">12</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Command to update packages</property>
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="update_command_description">
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">You can use sudo instead of pkexec for the terminal.</property>
+                        <property name="wrap">1</property>
+                        <property name="max-width-chars">25</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="field_updatecmd">
+                        <property name="valign">center</property>
+                        <property name="width-chars">30</property>
+                        <layout>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow" id="output_on_terminal_listboxrow">
+                <property name="child">
+                  <object class="GtkGrid" id="output_on_terminal_grid">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">12</property>
+                    <child>
+                      <object class="GtkLabel" id="output_on_terminal_label">
+                        <property name="label" translatable="yes">Show output on terminal</property>
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSwitch" id="output_on_terminal_switch">
+                        <property name="halign">end</property>
+                        <property name="valign">center</property>
+                        <layout>
+                          <property name="column">1</property>
+                          <property name="row">0</property>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkListBoxRow" id="terminal_listboxrow">
+                <property name="child">
+                  <object class="GtkGrid" id="terminal_grid">
+                    <property name="margin-start">12</property>
+                    <property name="margin-end">12</property>
+                    <property name="margin_top">12</property>
+                    <property name="margin_bottom">12</property>
+                    <property name="column_spacing">12</property>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Terminal to use</property>
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">0</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label" translatable="yes">Ex: xterm -e</property>
+                        <property name="hexpand">1</property>
+                        <property name="xalign">0</property>
+                        <style>
+                          <class name="dim-label"/>
+                        </style>
+                        <layout>
+                          <property name="column">0</property>
+                          <property name="row">1</property>
+                        </layout>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="terminal_entry">
+                        <property name="width-chars">30</property>
+                        <layout>
+                          <property name="row-span">2</property>
+                        </layout>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <child type="label_item">
+          <placeholder/>
+        </child>
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkBox" id="ignore_list_add_dialog">
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
+    <property name="margin_top">12</property>
+    <property name="margin_bottom">12</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox" id="ignore_list_add_box">
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkEntry" id="ignore_list_add_entry">
+            <property name="width_request">350</property>
+            <property name="focusable">1</property>
+            <property name="secondary_icon_name">edit-clear-symbolic</property>
+            <property name="secondary_icon_tooltip_text" translatable="yes">Clear entry</property>
+            <property name="placeholder_text" translatable="0">linux-image-amd64</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator" id="ignore_list_add_separator">
+        <property name="valign">center</property>
+        <property name="margin_top">5</property>
+        <property name="margin_bottom">5</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="ignore_list_add_button_box">
+        <property name="valign">baseline</property>
+        <property name="vexpand">0</property>
+        <child>
+          <object class="GtkButton" id="ignore_list_add_button_cancel">
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="receives_default">1</property>
+            <property name="halign">start</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="ignore_list_add_button_save">
+            <property name="label" translatable="yes">Save</property>
+            <property name="receives_default">1</property>
+            <property name="halign">end</property>
+            <property name="hexpand">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkBox" id="ignore_list_edit_dialog">
+    <property name="margin-start">12</property>
+    <property name="margin-end">12</property>
+    <property name="margin_top">12</property>
+    <property name="margin_bottom">12</property>
+    <property name="orientation">vertical</property>
+    <child>
+      <object class="GtkBox" id="ignore_list_edit_box">
+        <property name="spacing">5</property>
+        <child>
+          <object class="GtkEntry" id="ignore_list_edit_entry">
+            <property name="width_request">350</property>
+            <property name="focusable">1</property>
+            <property name="secondary_icon_name">edit-clear-symbolic</property>
+            <property name="secondary_icon_tooltip_text" translatable="yes">Clear entry</property>
+            <property name="placeholder_text" translatable="0">linux-image-amd64</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparator" id="ignore_list_edit_separator">
+        <property name="valign">center</property>
+        <property name="margin_top">5</property>
+        <property name="margin_bottom">5</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="ignore_list_edit_button_box">
+        <property name="valign">baseline</property>
+        <property name="vexpand">0</property>
+        <child>
+          <object class="GtkButton" id="ignore_list_edit_button_cancel">
+            <property name="label" translatable="yes">Cancel</property>
+            <property name="receives_default">1</property>
+            <property name="halign">start</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="ignore_list_edit_button_save">
+            <property name="label" translatable="yes">Save</property>
+            <property name="receives_default">1</property>
+            <property name="halign">end</property>
+            <property name="hexpand">true</property>
+          </object>
+        </child>
+      </object>
+    </child>
+  </object>
+
+  <object class="GtkNotebook" id="prefs_widget">
+    <property name="hexpand">1</property>
+    <property name="vexpand">1</property>
+
+    <child>
+      <object class="GtkNotebookPage">
+        <property name="child">
+          <object class="GtkBox" id="basic_settings_box">
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">12</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkFrame" id="check_updates_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="check_updates_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="interval_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="interval_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">12</property>
+                            <child>
+                              <object class="GtkLabel" id="interval_description">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Check for updates every:</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="interval_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Automatic checks, 0 to disable</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSpinButton" id="interval">
+                                <property name="adjustment">Adjust_interval</property>
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkComboBoxText" id="interval_unit_combo">
+                                <property name="valign">center</property>
+                                <items>
+                                  <item translatable="yes" id="0">Hours</item>
+                                  <item translatable="yes" id="1">Days</item>
+                                  <item translatable="yes" id="2">Weeks</item>
+                                </items>
+                                <layout>
+                                  <property name="column">2</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFrame" id="updates_menu_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="strip_versions_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="strip_versions_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="strip_versions_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="strip_versions_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Strip out version numbers</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="strip_versions_switch">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow" id="urgent_updates_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="urgent_updates_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="urgent_updates_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Highlight security/important updates</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="urgent_updates_switch">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFrame" id="indicator_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="indicator_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="always_visible_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="always_visible_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="always_visible_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Indicator</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="indicator_button">
+                                <property name="receives_default">1</property>
+                                <property name="halign">center</property>
+                                <property name="valign">center</property>
+                                <child>
+                                  <object class="GtkImage" id="indicator_image">
+                                    <property name="icon_name">emblem-system-symbolic</property>
+                                  </object>
+                                </child>
+                                <style>
+                                  <class name="circular"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFrame" id="notifications_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="notifications_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="notifications_listboxrow_2">
+                        <property name="child">
+                          <object class="GtkGrid" id="notifications_grid_2">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="notifications_label_2">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Notifications</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="notifications_button">
+                                <property name="receives_default">1</property>
+                                <property name="halign">center</property>
+                                <property name="valign">center</property>
+                                <child>
+                                  <object class="GtkImage" id="notifications_image">
+                                    <property name="icon_name">emblem-system-symbolic</property>
+                                  </object>
+                                </child>
+                                <style>
+                                  <class name="circular"/>
+                                </style>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFrame" id="shortcut_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="shortcut_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="listboxrow_shortcut">
+                        <property name="child">
+                          <object class="GtkGrid" id="grid_shortcut">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">12</property>
+                            <child>
+                              <object class="GtkLabel" id="shortcut_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Shortcut to open the indicator</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="shortcut_description">
+                                <property name="xalign">0</property>
+                                <property name="max-width-chars">40</property>
+                                <property name="label" translatable="yes">Syntax: &lt;Shift&gt;, &lt;Ctrl&gt;, &lt;Alt&gt;, &lt;Super&gt;</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="shortcut_entry">
+                                <property name="width-chars">18</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="use_shortcut">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="tab">
+          <object class="GtkLabel" id="basic_settings_label">
+            <property name="label" translatable="yes">Basic settings</property>
+          </object>
+        </property>
+      </object>
+    </child>
+
+    <child>
+      <object class="GtkNotebookPage">
+        <property name="child">
+          <object class="GtkBox" id="advanced_settings_box">
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">12</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkFrame" id="reset_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="reset_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="reset_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="reset_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="reset_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Reset values for all commands</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="reset_button">
+                                <property name="label" translatable="yes">Reset</property>
+                                <property name="receives_default">1</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFrame" id="update_command_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="update_command_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="update_cmd_options_list">
+                        <property name="child">
+                          <object class="GtkGrid" id="update_cmd_options_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="update_cmd_options_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Update method</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="update_cmd_options_description">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Method to use to apply the updates.</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkBox" id="click_box">
+                                <property name="spacing">6</property>
+                                <child>
+                                  <object class="GtkButton" id="update_cmd_button">
+                                    <property name="receives_default">1</property>
+                                    <property name="halign">center</property>
+                                    <property name="valign">center</property>
+                                    <child>
+                                      <object class="GtkImage" id="update_cmd_image">
+                                        <property name="icon_name">emblem-system-symbolic</property>
+                                      </object>
+                                    </child>
+                                    <style>
+                                      <class name="circular"/>
+                                    </style>
+                                  </object>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="update_cmd_options">
+                                    <property name="valign">center</property>
+                                    <items>
+                                      <item translatable="yes">Launch gnome-software</item>
+                                      <item translatable="yes">Update-manager (Ubuntu only)</item>
+                                      <item translatable="yes">Gnome package updater</item>
+                                      <item translatable="yes">Custom</item>
+                                    </items>
+                                  </object>
+                                </child>
+                                <layout>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkFrame" id="check_command_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="check_command_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="use_custom_cmd_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="use_custom_cmd_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="use_custom_cmd_description">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">The default command is &quot;pkcon refresh&quot;, which uses packagekit with the apt backend. You can define a custom command below, to be executed using pkexec.</property>
+                                <property name="wrap">1</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="use_custom_cmd_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Use a custom command to check for updates</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="use_custom_cmd_switch">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow" id="check_command_custom_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="check_command_custom_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">12</property>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label" translatable="yes">Custom command to check for updates</property>
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkEntry" id="field_checkcmd_custom">
+                                <property name="width-chars">20</property>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="tab">
+          <object class="GtkLabel" id="advanced_settings_label">
+            <property name="label" translatable="yes">Advanced settings</property>
+          </object>
+        </property>
+      </object>
+    </child>
+
+    <child>
+      <object class="GtkNotebookPage">
+        <property name="child">
+          <object class="GtkBox" id="package_status_box">
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">12</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkFrame" id="new_packages_frame">
+                <property name="child">
+                  <object class="GtkListBox" id="new_packages_listbox">
+                    <property name="selection_mode">none</property>
+                    <child>
+                      <object class="GtkListBoxRow" id="new_packages_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="new_packages_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="new_packages_description">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of new packages in the repository.</property>
+                                <property name="wrap">1</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="new_packages_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">New packages in repository</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="new_packages_switch">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow" id="obsolete_packages_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="obsolete_packages_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="obsolete_packages_description">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of obsolete or local packages. Obsolete packages are not available in the repository. Local packages are available, but an unavailable version is installed.</property>
+                                <property name="wrap">1</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="obsolete_packages_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Local/Obsolete packages</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="obsolete_packages_switch">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow" id="residual_packages_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="residual_packages_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="residual_packages_description">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of packages that have residual config files. Run &quot;sudo apt purge pkgname&quot; to clean them.</property>
+                                <property name="wrap">1</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="residual_packages_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Residual packages</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="residual_packages_switch">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkListBoxRow" id="autoremovable_packages_listboxrow">
+                        <property name="child">
+                          <object class="GtkGrid" id="autoremovable_packages_grid">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="margin_top">12</property>
+                            <property name="margin_bottom">12</property>
+                            <property name="column_spacing">32</property>
+                            <child>
+                              <object class="GtkLabel" id="autoremovable_packages_description">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of autoremovable packages. Run &quot;sudo apt autoremove&quot; to remove them.</property>
+                                <property name="wrap">1</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="autoremovable_packages_label">
+                                <property name="hexpand">1</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Autoremovable packages</property>
+                                <layout>
+                                  <property name="column">0</property>
+                                  <property name="row">0</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkSwitch" id="autoremovable_packages_switch">
+                                <property name="halign">end</property>
+                                <property name="valign">center</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">2</property>
+                                </layout>
+                              </object>
+                            </child>
+                          </object>
+                        </property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="tab">
+          <object class="GtkLabel" id="packages_status_label">
+            <property name="label" translatable="yes">Package status</property>
+          </object>
+        </property>
+      </object>
+    </child>
+
+    <child>
+      <object class="GtkNotebookPage">
+        <property name="child">
+          <object class="GtkBox" id="ignore_list_box">
+            <property name="margin-start">12</property>
+            <property name="margin-end">12</property>
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">12</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <child>
+              <object class="GtkLabel" id="ignore_list_title">
+                <property name="hexpand">1</property>
+                <property name="xalign">0</property>
+                <property name="label" translatable="yes">Packages in this list will be excluded from the updates. As an example, this is useful for packages that are downgraded manually.</property>
+                <property name="wrap">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="ignore_list_scrolledwindow">
+                <property name="vexpand">1</property>
+                <property name="min_content_width">300</property>
+                <property name="min_content_height">250</property>
+                <property name="child">
+                  <object class="GtkTreeView" id="ignore_list_treeview">
+                    <property name="model">ignore_list_store</property>
+                    <property name="reorderable">1</property>
+                    <property name="search_column">0</property>
+                    <property name="show_expanders">0</property>
+                    <property name="level_indentation">12</property>
+                    <property name="tooltip_column">1</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="treeview_selection"/>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="ignore_list_toolbar">
+                <property name="css-classes">toolbar</property>
+                <property name="can_focus">0</property>
+                <child>
+                  <object class="GtkButton" id="ignore_list_toolbutton_add">
+                    <property name="can_focus">0</property>
+                    <property name="icon_name">list-add-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="ignore_list_toolbutton_remove">
+                    <property name="can_focus">0</property>
+                    <property name="icon_name">list-remove-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="ignore_list_toolbutton_edit">
+                    <property name="can_focus">0</property>
+                    <property name="icon_name">text-editor-symbolic</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="tab">
+          <object class="GtkLabel" id="ignore_list_label">
+            <property name="label" translatable="yes">Ignore</property>
+          </object>
+        </property>
+      </object>
+    </child>
+
+    <child>
+      <object class="GtkNotebookPage">
+        <property name="child">
+          <object class="GtkBox" id="about">
+            <property name="margin_top">12</property>
+            <property name="margin_bottom">12</property>
+            <property name="hexpand">1</property>
+            <property name="vexpand">1</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">5</property>
+            <child>
+              <object class="GtkImage" id="logo">
+                <property name="pixel_size">64</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="extension_name">
+                <property name="label">&lt;b&gt;Apt Update Indicator&lt;/b&gt;</property>
+                <property name="use_markup">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="version_box">
+                <property name="halign">center</property>
+                <child>
+                  <object class="GtkLabel" id="extension_version_label">
+                    <property name="halign">end</property>
+                    <property name="label" translatable="yes">version: </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="extension_version">
+                    <property name="halign">start</property>
+                    <property name="label">...</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="extension_description">
+                <property name="label" translatable="yes">Adds an indicator to the top panel that allows to check for updates</property>
+                <property name="justify">center</property>
+                <property name="wrap">1</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkBox" id="maintainer_box">
+                <property name="halign">center</property>
+                <property name="spacing">5</property>
+                <child>
+                  <object class="GtkLabel" id="maintainer_label">
+                    <property name="label" translatable="yes">Maintained by</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="email_label">
+                    <property name="label">Fran Glais (&lt;a href=&quot;mailto:franglais125@gmail.com&quot;&gt;franglais125@gmail.com&lt;/a&gt;)</property>
+                    <property name="use_markup">1</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLinkButton" id="homepage_link">
+                <property name="label" translatable="yes">Webpage</property>
+                <property name="receives_default">1</property>
+                <property name="halign">center</property>
+                <property name="uri">https://github.com/franglais125/apt-update-indicator/</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="GNU_label">
+                <property name="vexpand">1</property>
+                <property name="valign">end</property>
+                <property name="label" translatable="yes">&lt;span size=&quot;small&quot;&gt;This program comes with ABSOLUTELY NO WARRANTY.
+Sethe &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU General Public License, version 2 or later&lt;/a&gt; for details.&lt;/span&gt;</property>
+                <property name="use_markup">1</property>
+                <property name="justify">center</property>
+                <property name="wrap">1</property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <property name="tab">
+          <object class="GtkLabel" id="about_label">
+            <property name="label" translatable="yes">About</property>
+          </object>
+        </property>
+      </object>
+    </child>
+
+  </object>
+
+</interface>

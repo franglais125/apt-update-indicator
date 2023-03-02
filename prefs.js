@@ -20,6 +20,11 @@ const Gio = imports.gi.Gio;
 const Me = imports.misc.extensionUtils.getCurrentExtension();
 const Utils = Me.imports.utils;
 
+const Config = imports.misc.config;
+const shellVersion = parseFloat(Config.PACKAGE_VERSION);
+
+const TEMPLATE_GTK = shellVersion < 40 ? 'prefs_gtk3.ui' : 'prefs_gtk4.ui';
+
 const Gettext = imports.gettext.domain('apt-update-indicator');
 const _ = Gettext.gettext;
 
@@ -34,9 +39,13 @@ function buildPrefsWidget(){
 
     // Prepare labels and controls
     let buildable = new Gtk.Builder();
-    buildable.add_from_file( Me.dir.get_path() + '/Settings.ui' );
+    buildable.add_from_file(`${Me.dir.get_path()}/${TEMPLATE_GTK}`);
     let box = buildable.get_object('prefs_widget');
 
+    // About tab
+    if (shellVersion >= 40) {
+        buildable.get_object('logo').set_from_file(`${Me.path}/media/logo.png`);
+    }
     buildable.get_object('extension_version').set_text(Me.metadata.version.toString());
 
     // Basic settings tab:
@@ -64,12 +73,12 @@ function buildPrefsWidget(){
     buildable.get_object('indicator_button').connect('clicked', function() {
 
         let dialog = new Gtk.Dialog({ title: _('Indicator options'),
-                                      transient_for: box.get_toplevel(),
+                                      transient_for: shellVersion >= 40 ? box.get_root() : box.get_toplevel(),
                                       use_header_bar: true,
                                       modal: true });
 
         let sub_box = buildable.get_object('indicator_dialog');
-        dialog.get_content_area().add(sub_box);
+        dialog.get_content_area()[shellVersion >= 40 ? 'append' : 'add'](sub_box);
 
         settings.bind('always-visible',
                       buildable.get_object('always_visible'),
@@ -91,7 +100,7 @@ function buildPrefsWidget(){
             return;
         });
 
-        dialog.show_all();
+        dialog[shellVersion >= 40 ? 'show' : 'show_all']();
 
     });
 
@@ -99,12 +108,12 @@ function buildPrefsWidget(){
     buildable.get_object('notifications_button').connect('clicked', function() {
 
         let dialog = new Gtk.Dialog({ title: _('Notification options'),
-                                      transient_for: box.get_toplevel(),
+                                      transient_for: shellVersion >= 40 ? box.get_root() : box.get_toplevel(),
                                       use_header_bar: true,
                                       modal: true });
 
         let sub_box = buildable.get_object('notifications_dialog');
-        dialog.get_content_area().add(sub_box);
+        dialog.get_content_area()[shellVersion >= 40 ? 'append' : 'add'](sub_box);
 
         settings.bind('notify',
                       buildable.get_object('notifications'),
@@ -135,7 +144,7 @@ function buildPrefsWidget(){
             return;
         });
 
-        dialog.show_all();
+        dialog[shellVersion >= 40 ? 'show' : 'show_all']();
 
     });
 
@@ -178,12 +187,12 @@ function buildPrefsWidget(){
     buildable.get_object('update_cmd_button').connect('clicked', function() {
 
         let dialog = new Gtk.Dialog({ title: _('Custom command for updates'),
-                                      transient_for: box.get_toplevel(),
+                                      transient_for: shellVersion >= 40 ? box.get_root() : box.get_toplevel(),
                                       use_header_bar: true,
                                       modal: true });
 
         let sub_box = buildable.get_object('custom_command_dialog');
-        dialog.get_content_area().add(sub_box);
+        dialog.get_content_area()[shellVersion >= 40 ? 'append' : 'add'](sub_box);
 
         settings.bind('output-on-terminal',
                       buildable.get_object('output_on_terminal_switch'),
@@ -210,7 +219,7 @@ function buildPrefsWidget(){
             return;
         });
 
-        dialog.show_all();
+        dialog[shellVersion >= 40 ? 'show' : 'show_all']();
 
     });
 
@@ -288,7 +297,7 @@ function buildPrefsWidget(){
 
     buildable.get_object('treeview_selection').connect(
         'changed',
-        function(selection) {selectionChanged(selection, listStore);}
+        function(selection) {selectionChanged(selection);}
     );
 
     // Toolbar
@@ -296,12 +305,12 @@ function buildPrefsWidget(){
         'clicked',
         function() {
             let dialog = new Gtk.Dialog({ title: _('Add entry to ignore list'),
-                                          transient_for: box.get_toplevel(),
+                                          transient_for: shellVersion >= 40 ? box.get_root() : box.get_toplevel(),
                                           use_header_bar: true,
                                           modal: true });
 
             let sub_box = buildable.get_object('ignore_list_add_dialog');
-            dialog.get_content_area().add(sub_box);
+            dialog.get_content_area()[shellVersion >= 40 ? 'append' : 'add'](sub_box);
 
             // Objects
             let entry = buildable.get_object('ignore_list_add_entry');
@@ -310,7 +319,7 @@ function buildPrefsWidget(){
 
             // Clean the entry in case it was already used
             entry.set_text('');
-            entry.connect('icon-release', () => {this.set_text('');});
+            entry.connect('icon-release', () => {entry.set_text('');});
 
             let saveButtonId = saveButton.connect(
                 'clicked',
@@ -346,7 +355,7 @@ function buildPrefsWidget(){
                 close();
             });
 
-            dialog.show_all();
+            dialog[shellVersion >= 40 ? 'show' : 'show_all']();
 
             function close() {
                 buildable.get_object('ignore_list_add_button_save').disconnect(saveButtonId);
@@ -371,12 +380,12 @@ function buildPrefsWidget(){
             if (selected_entry < 0) return;
 
             let dialog = new Gtk.Dialog({ title: _('Edit entry'),
-                                          transient_for: box.get_toplevel(),
+                                          transient_for: shellVersion >= 40 ? box.get_root() : box.get_toplevel(),
                                           use_header_bar: true,
                                           modal: true });
 
             let sub_box = buildable.get_object('ignore_list_edit_dialog');
-            dialog.get_content_area().add(sub_box);
+            dialog.get_content_area()[shellVersion >= 40 ? 'append' : 'add'](sub_box);
 
             // Objects
             let entries = settings.get_string('ignore-list');
@@ -389,7 +398,7 @@ function buildPrefsWidget(){
 
             // Clean the entry in case it was already used
             entry.set_text(entries[selected_entry]);
-            entry.connect('icon-release', () => {this.set_text('');});
+            entry.connect('icon-release', () => {entry.set_text('');});
 
             let saveButtonId = saveButton.connect(
                 'clicked',
@@ -426,7 +435,7 @@ function buildPrefsWidget(){
                 close();
             });
 
-            dialog.show_all();
+            dialog[shellVersion >= 40 ? 'show' : 'show_all']();
 
             function close() {
                 buildable.get_object('ignore_list_edit_button_save').disconnect(saveButtonId);
@@ -440,14 +449,22 @@ function buildPrefsWidget(){
         }
     );
 
-    box.show_all();
+    if (box.show_all) {
+        box.show_all()
+    }
 
     return box;
 };
 
 function setShortcut(settings) {
     let shortcut_text = settings.get_string('shortcut-text');
-    let [key, mods] = Gtk.accelerator_parse(shortcut_text);
+        let ok, key, mods;
+    
+    if (shellVersion >= 40) {
+        [ok, key, mods] = Gtk.accelerator_parse(shortcut_text);
+    } else {
+        [key, mods] = Gtk.accelerator_parse(shortcut_text);
+    }
 
     if (Gtk.accelerator_valid(key, mods)) {
         let shortcut = Gtk.accelerator_name(key, mods);
@@ -460,8 +477,8 @@ function setShortcut(settings) {
 
 let selected_entry = 0;
 
-function selectionChanged(select, listStore) {
-    let a = select.get_selected_rows(listStore)[0][0];
+function selectionChanged(select) {
+    let a = select.get_selected_rows()[0][0];
 
     if (a !== undefined)
         selected_entry = parseInt(a.to_string());
