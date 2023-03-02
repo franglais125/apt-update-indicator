@@ -62,7 +62,7 @@
                       <object class="GtkLabel" id="always_visible_label_2">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">Always show the indicator</property>
+                        <property name="label" translatable="yes">Always show the indicator</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -97,7 +97,7 @@
                       <object class="GtkLabel" id="show_count_label">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">Show updates count on the indicator</property>
+                        <property name="label" translatable="yes">Show updates count on the indicator</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -132,7 +132,7 @@
                       <object class="GtkLabel" id="auto_expand_list_description">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">If updates count is less than this number (0 to disable)</property>
+                        <property name="label" translatable="yes">If updates count is less than this number (0 to disable)</property>
                         <style>
                           <class name="dim-label"/>
                         </style>
@@ -146,7 +146,7 @@
                       <object class="GtkLabel" id="auto_expand_list_label">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">Auto-expand updates list</property>
+                        <property name="label" translatable="yes">Auto-expand updates list</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -202,7 +202,7 @@
                       <object class="GtkLabel" id="notifications_label">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">Send a notification when new updates are available</property>
+                        <property name="label" translatable="yes">Send a notification when new updates are available</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -222,7 +222,7 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="transient_notifications">
-                        <property name="label" translatable="1">Use transient notifications (auto dismiss)</property>
+                        <property name="label" translatable="yes">Use transient notifications (auto dismiss)</property>
                         <property name="margin_top">12</property>
                         <layout>
                           <property name="column">0</property>
@@ -248,7 +248,7 @@
                       <object class="GtkLabel" id="verbosity_label">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">How much information to show on notifications</property>
+                        <property name="label" translatable="yes">How much information to show on notifications</property>
                         <layout>
                           <property name="column">0</property>
                           <property name="row">0</property>
@@ -259,7 +259,7 @@
                       <object class="GtkLabel" id="verbosity_description">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">Up to a maximum of 50 package names.</property>
+                        <property name="label" translatable="yes">Up to a maximum of 50 package names.</property>
                         <style>
                           <class name="dim-label"/>
                         </style>
@@ -319,7 +319,7 @@
                     <property name="column_spacing">12</property>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label" translatable="1">Command to update packages</property>
+                        <property name="label" translatable="yes">Command to update packages</property>
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
                       </object>
@@ -328,7 +328,7 @@
                       <object class="GtkLabel" id="update_command_description">
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="1">You can use sudo instead of pkexec for the terminal.</property>
+                        <property name="label" translatable="yes">You can use sudo instead of pkexec for the terminal.</property>
                         <property name="wrap">1</property>
                         <property name="max-width-chars">25</property>
                         <style>
@@ -364,7 +364,7 @@
                     <property name="column_spacing">12</property>
                     <child>
                       <object class="GtkLabel" id="output_on_terminal_label">
-                        <property name="label" translatable="1">Show output on terminal</property>
+                        <property name="label" translatable="yes">Show output on terminal</property>
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
                         <layout>
@@ -399,7 +399,7 @@
                     <property name="column_spacing">12</property>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label" translatable="1">Terminal to use</property>
+                        <property name="label" translatable="yes">Terminal to use</property>
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
                         <layout>
@@ -410,7 +410,7 @@
                     </child>
                     <child>
                       <object class="GtkLabel">
-                        <property name="label" translatable="1">Ex: xterm -e</property>
+                        <property name="label" translatable="yes">Ex: xterm -e</property>
                         <property name="hexpand">1</property>
                         <property name="xalign">0</property>
                         <style>
@@ -457,7 +457,7 @@
             <property name="width_request">350</property>
             <property name="focusable">1</property>
             <property name="secondary_icon_name">edit-clear-symbolic</property>
-            <property name="secondary_icon_tooltip_text" translatable="1">Clear entry</property>
+            <property name="secondary_icon_tooltip_text" translatable="yes">Clear entry</property>
             <property name="placeholder_text" translatable="0">linux-image-amd64</property>
           </object>
         </child>
@@ -476,14 +476,14 @@
         <property name="vexpand">0</property>
         <child>
           <object class="GtkButton" id="ignore_list_add_button_cancel">
-            <property name="label" translatable="1">Cancel</property>
+            <property name="label" translatable="yes">Cancel</property>
             <property name="receives_default">1</property>
             <property name="halign">start</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="ignore_list_add_button_save">
-            <property name="label" translatable="1">Save</property>
+            <property name="label" translatable="yes">Save</property>
             <property name="receives_default">1</property>
             <property name="halign">end</property>
             <property name="hexpand">true</property>
@@ -507,7 +507,7 @@
             <property name="width_request">350</property>
             <property name="focusable">1</property>
             <property name="secondary_icon_name">edit-clear-symbolic</property>
-            <property name="secondary_icon_tooltip_text" translatable="1">Clear entry</property>
+            <property name="secondary_icon_tooltip_text" translatable="yes">Clear entry</property>
             <property name="placeholder_text" translatable="0">linux-image-amd64</property>
           </object>
         </child>
@@ -526,14 +526,14 @@
         <property name="vexpand">0</property>
         <child>
           <object class="GtkButton" id="ignore_list_edit_button_cancel">
-            <property name="label" translatable="1">Cancel</property>
+            <property name="label" translatable="yes">Cancel</property>
             <property name="receives_default">1</property>
             <property name="halign">start</property>
           </object>
         </child>
         <child>
           <object class="GtkButton" id="ignore_list_edit_button_save">
-            <property name="label" translatable="1">Save</property>
+            <property name="label" translatable="yes">Save</property>
             <property name="receives_default">1</property>
             <property name="halign">end</property>
             <property name="hexpand">true</property>
@@ -575,7 +575,7 @@
                               <object class="GtkLabel" id="interval_description">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Check for updates every:</property>
+                                <property name="label" translatable="yes">Check for updates every:</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -586,7 +586,7 @@
                               <object class="GtkLabel" id="interval_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Automatic checks, 0 to disable</property>
+                                <property name="label" translatable="yes">Automatic checks, 0 to disable</property>
                                 <style>
                                   <class name="dim-label"/>
                                 </style>
@@ -649,7 +649,7 @@
                               <object class="GtkLabel" id="strip_versions_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Strip out version numbers</property>
+                                <property name="label" translatable="yes">Strip out version numbers</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -684,7 +684,7 @@
                               <object class="GtkLabel" id="urgent_updates_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Highlight security/important updates</property>
+                                <property name="label" translatable="yes">Highlight security/important updates</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -728,7 +728,7 @@
                               <object class="GtkLabel" id="always_visible_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Indicator</property>
+                                <property name="label" translatable="yes">Indicator</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -776,7 +776,7 @@
                               <object class="GtkLabel" id="notifications_label_2">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Notifications</property>
+                                <property name="label" translatable="yes">Notifications</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -824,7 +824,7 @@
                               <object class="GtkLabel" id="shortcut_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Shortcut to open the indicator</property>
+                                <property name="label" translatable="yes">Shortcut to open the indicator</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -835,7 +835,7 @@
                               <object class="GtkLabel" id="shortcut_description">
                                 <property name="xalign">0</property>
                                 <property name="max-width-chars">40</property>
-                                <property name="label" translatable="1">Syntax: &lt;Shift&gt;, &lt;Ctrl&gt;, &lt;Alt&gt;, &lt;Super&gt;</property>
+                                <property name="label" translatable="yes">Syntax: &lt;Shift&gt;, &lt;Ctrl&gt;, &lt;Alt&gt;, &lt;Super&gt;</property>
                                 <style>
                                   <class name="dim-label"/>
                                 </style>
@@ -875,7 +875,7 @@
         </property>
         <property name="tab">
           <object class="GtkLabel" id="basic_settings_label">
-            <property name="label" translatable="1">Basic settings</property>
+            <property name="label" translatable="yes">Basic settings</property>
           </object>
         </property>
       </object>
@@ -909,7 +909,7 @@
                               <object class="GtkLabel" id="reset_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Reset values for all commands</property>
+                                <property name="label" translatable="yes">Reset values for all commands</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -918,7 +918,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="reset_button">
-                                <property name="label" translatable="1">Reset</property>
+                                <property name="label" translatable="yes">Reset</property>
                                 <property name="receives_default">1</property>
                               </object>
                             </child>
@@ -948,7 +948,7 @@
                               <object class="GtkLabel" id="update_cmd_options_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Update method</property>
+                                <property name="label" translatable="yes">Update method</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -959,7 +959,7 @@
                               <object class="GtkLabel" id="update_cmd_options_description">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Method to use to apply the updates.</property>
+                                <property name="label" translatable="yes">Method to use to apply the updates.</property>
                                 <style>
                                   <class name="dim-label"/>
                                 </style>
@@ -1029,7 +1029,7 @@
                               <object class="GtkLabel" id="use_custom_cmd_description">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">The default command is &quot;pkcon refresh&quot;, which uses packagekit with the apt backend. You can define a custom command below, to be executed using pkexec.</property>
+                                <property name="label" translatable="yes">The default command is &quot;pkcon refresh&quot;, which uses packagekit with the apt backend. You can define a custom command below, to be executed using pkexec.</property>
                                 <property name="wrap">1</property>
                                 <style>
                                   <class name="dim-label"/>
@@ -1044,7 +1044,7 @@
                               <object class="GtkLabel" id="use_custom_cmd_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Use a custom command to check for updates</property>
+                                <property name="label" translatable="yes">Use a custom command to check for updates</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -1077,7 +1077,7 @@
                             <property name="column_spacing">12</property>
                             <child>
                               <object class="GtkLabel">
-                                <property name="label" translatable="1">Custom command to check for updates</property>
+                                <property name="label" translatable="yes">Custom command to check for updates</property>
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
                               </object>
@@ -1099,7 +1099,7 @@
         </property>
         <property name="tab">
           <object class="GtkLabel" id="advanced_settings_label">
-            <property name="label" translatable="1">Advanced settings</property>
+            <property name="label" translatable="yes">Advanced settings</property>
           </object>
         </property>
       </object>
@@ -1133,7 +1133,7 @@
                               <object class="GtkLabel" id="new_packages_description">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Include an item in the indicator with a list of new packages in the repository.</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of new packages in the repository.</property>
                                 <property name="wrap">1</property>
                                 <style>
                                   <class name="dim-label"/>
@@ -1148,7 +1148,7 @@
                               <object class="GtkLabel" id="new_packages_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">New packages in repository</property>
+                                <property name="label" translatable="yes">New packages in repository</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -1183,7 +1183,7 @@
                               <object class="GtkLabel" id="obsolete_packages_description">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Include an item in the indicator with a list of obsolete or local packages. Obsolete packages are not available in the repository. Local packages are available, but an unavailable version is installed.</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of obsolete or local packages. Obsolete packages are not available in the repository. Local packages are available, but an unavailable version is installed.</property>
                                 <property name="wrap">1</property>
                                 <style>
                                   <class name="dim-label"/>
@@ -1198,7 +1198,7 @@
                               <object class="GtkLabel" id="obsolete_packages_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Local/Obsolete packages</property>
+                                <property name="label" translatable="yes">Local/Obsolete packages</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -1233,7 +1233,7 @@
                               <object class="GtkLabel" id="residual_packages_description">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Include an item in the indicator with a list of packages that have residual config files. Run &quot;sudo apt purge pkgname&quot; to clean them.</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of packages that have residual config files. Run &quot;sudo apt purge pkgname&quot; to clean them.</property>
                                 <property name="wrap">1</property>
                                 <style>
                                   <class name="dim-label"/>
@@ -1248,7 +1248,7 @@
                               <object class="GtkLabel" id="residual_packages_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Residual packages</property>
+                                <property name="label" translatable="yes">Residual packages</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -1283,7 +1283,7 @@
                               <object class="GtkLabel" id="autoremovable_packages_description">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Include an item in the indicator with a list of autoremovable packages. Run &quot;sudo apt autoremove&quot; to remove them.</property>
+                                <property name="label" translatable="yes">Include an item in the indicator with a list of autoremovable packages. Run &quot;sudo apt autoremove&quot; to remove them.</property>
                                 <property name="wrap">1</property>
                                 <style>
                                   <class name="dim-label"/>
@@ -1298,7 +1298,7 @@
                               <object class="GtkLabel" id="autoremovable_packages_label">
                                 <property name="hexpand">1</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="1">Autoremovable packages</property>
+                                <property name="label" translatable="yes">Autoremovable packages</property>
                                 <layout>
                                   <property name="column">0</property>
                                   <property name="row">0</property>
@@ -1328,7 +1328,7 @@
         </property>
         <property name="tab">
           <object class="GtkLabel" id="packages_status_label">
-            <property name="label" translatable="1">Package status</property>
+            <property name="label" translatable="yes">Package status</property>
           </object>
         </property>
       </object>
@@ -1348,7 +1348,7 @@
               <object class="GtkLabel" id="ignore_list_title">
                 <property name="hexpand">1</property>
                 <property name="xalign">0</property>
-                <property name="label" translatable="1">Packages in this list will be excluded from the updates. As an example, this is useful for packages that are downgraded manually.</property>
+                <property name="label" translatable="yes">Packages in this list will be excluded from the updates. As an example, this is useful for packages that are downgraded manually.</property>
                 <property name="wrap">1</property>
               </object>
             </child>
@@ -1400,7 +1400,7 @@
         </property>
         <property name="tab">
           <object class="GtkLabel" id="ignore_list_label">
-            <property name="label" translatable="1">Ignore</property>
+            <property name="label" translatable="yes">Ignore</property>
           </object>
         </property>
       </object>
@@ -1433,7 +1433,7 @@
                 <child>
                   <object class="GtkLabel" id="extension_version_label">
                     <property name="halign">end</property>
-                    <property name="label" translatable="1">version: </property>
+                    <property name="label" translatable="yes">version: </property>
                   </object>
                 </child>
                 <child>
@@ -1446,7 +1446,7 @@
             </child>
             <child>
               <object class="GtkLabel" id="extension_description">
-                <property name="label" translatable="1">Adds an indicator to the top panel that allows to check for updates</property>
+                <property name="label" translatable="yes">Adds an indicator to the top panel that allows to check for updates</property>
                 <property name="justify">center</property>
                 <property name="wrap">1</property>
               </object>
@@ -1457,7 +1457,7 @@
                 <property name="spacing">5</property>
                 <child>
                   <object class="GtkLabel" id="maintainer_label">
-                    <property name="label" translatable="1">Maintained by</property>
+                    <property name="label" translatable="yes">Maintained by</property>
                   </object>
                 </child>
                 <child>
@@ -1470,7 +1470,7 @@
             </child>
             <child>
               <object class="GtkLinkButton" id="homepage_link">
-                <property name="label" translatable="1">Webpage</property>
+                <property name="label" translatable="yes">Webpage</property>
                 <property name="receives_default">1</property>
                 <property name="halign">center</property>
                 <property name="uri">https://github.com/franglais125/apt-update-indicator/</property>
@@ -1480,7 +1480,7 @@
               <object class="GtkLabel" id="GNU_label">
                 <property name="vexpand">1</property>
                 <property name="valign">end</property>
-                <property name="label" translatable="1">&lt;span size=&quot;small&quot;&gt;This program comes with ABSOLUTELY NO WARRANTY.
+                <property name="label" translatable="yes">&lt;span size=&quot;small&quot;&gt;This program comes with ABSOLUTELY NO WARRANTY.
 Sethe &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/gpl-2.0.html&quot;&gt;GNU General Public License, version 2 or later&lt;/a&gt; for details.&lt;/span&gt;</property>
                 <property name="use_markup">1</property>
                 <property name="justify">center</property>
@@ -1491,7 +1491,7 @@ Sethe &lt;a href=&quot;https://www.gnu.org/licenses/old-licenses/gpl-2.0.html&qu
         </property>
         <property name="tab">
           <object class="GtkLabel" id="about_label">
-            <property name="label" translatable="1">About</property>
+            <property name="label" translatable="yes">About</property>
           </object>
         </property>
       </object>
